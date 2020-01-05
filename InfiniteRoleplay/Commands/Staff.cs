@@ -18,7 +18,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
             if (target == null)
                 return;
 
@@ -38,7 +38,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
             if (target == null)
                 return;
 
@@ -58,11 +58,11 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
             if (target == null)
                 return;
 
-            var targetDest = Functions.ObterPersonagemPorIdNome(player, idNomeDestino);
+            var targetDest = Functions.ObterPersonagemPorIdNome(player, idNomeDestino, false);
             if (targetDest == null)
                 return;
 
@@ -105,13 +105,8 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            foreach (var pl in Global.PersonagensOnline)
-            {
-                if (pl.UsuarioBD.Staff < 1)
-                    continue;
-
+            foreach (var pl in Global.PersonagensOnline.Where(x => x.UsuarioBD.Staff >= 1))
                 pl.Player.SendChatMessage("!{#32BBCE}" + $"(( [STAFF {p.UsuarioBD.Staff}] {p.UsuarioBD.Nome}: {mensagem} ))");
-            }
         }
 
         [Command("o", GreedyArg = true)]
@@ -126,6 +121,39 @@ namespace InfiniteRoleplay.Commands
 
             foreach (var pl in Global.PersonagensOnline)
                 pl.Player.SendChatMessage("!{#7FDDEB}" + $"(( {p.UsuarioBD.Nome}: {mensagem} ))");
+        }
+
+        [Command("kick", GreedyArg = true)]
+        public void CMD_kick(Client player, string idNome, string motivo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return;
+
+            using (var context = new RoleplayContext())
+            {
+                context.Punicoes.Add(new Entities.Punicao()
+                {
+                    Data = DateTime.Now,
+                    Duracao = 0,
+                    Motivo = motivo,
+                    Personagem = target.Codigo,
+                    Tipo = (int)TipoPunicao.Kick,
+                    UsuarioStaff = p.UsuarioBD.Codigo,
+                });
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Punicao, $"{p.UsuarioBD.Nome} kickou você. Motivo: {motivo}");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você kickou {target.Nome}. Motivo: {motivo}");
+            target.Player.Kick();
         }
         #endregion Staff 1
 
@@ -147,6 +175,7 @@ namespace InfiniteRoleplay.Commands
             target.Player.Health = vida;
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou sua vida para {vida}.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou a vida de {target.Nome} para {vida}.");
+            Functions.GravarLog(TipoLog.Staff, $"/vida {vida}", p, target);
         }
 
         [Command("colete")]
@@ -166,6 +195,7 @@ namespace InfiniteRoleplay.Commands
             target.Player.Armor = colete;
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou seu colete para {colete}.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou o colete de {target.Nome} para {colete}.");
+            Functions.GravarLog(TipoLog.Staff, $"/colete {colete}", p, target);
         }
 
         [Command("skin")]
@@ -189,7 +219,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            target.Player.SetSkin(pedHash); 
+            target.Player.SetSkin(pedHash);
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou sua skin para {pedHash.ToString()}.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou a skin de {target.Nome} para {pedHash.ToString()}.");
         }
@@ -230,6 +260,152 @@ namespace InfiniteRoleplay.Commands
             target.Player.SetAccessories(slot, drawable, texture);
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou seu acessório no slot {slot} para desenho {drawable} e textura {texture}.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou o acessório de {target.Nome} no slot {slot} para desenho {drawable} e textura {texture}.");
+        }
+
+        [Command("checar")]
+        public void CMD_checar(Client player, string idNome)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 2)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return;
+
+            Functions.MostrarStats(player, target);
+        }
+
+        [Command("ban", GreedyArg = true)]
+        public void CMD_ban(Client player, string idNome, int dias, string motivo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 2)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return;
+
+            using (var context = new RoleplayContext())
+            {
+                var ban = new Entities.Banimento()
+                {
+                    Data = DateTime.Now,
+                    Expiracao = null,
+                    Motivo = motivo,
+                    Usuario = target.UsuarioBD.Codigo,
+                    SocialClub = target.UsuarioBD.SocialClubRegistro,
+                    UsuarioStaff = p.UsuarioBD.Codigo,
+                };
+
+                if (dias > 0)
+                    ban.Expiracao = DateTime.Now.AddDays(dias);
+
+                context.Banimentos.Add(ban);
+
+                context.Punicoes.Add(new Entities.Punicao()
+                {
+                    Data = DateTime.Now,
+                    Duracao = dias,
+                    Motivo = motivo,
+                    Personagem = target.Codigo,
+                    Tipo = (int)TipoPunicao.Ban,
+                    UsuarioStaff = p.UsuarioBD.Codigo,
+                });
+                context.SaveChanges();
+            }
+
+            var strBan = dias == 0 ? "permanentemente" : $"por {dias} dia{(dias > 1 ? "s" : string.Empty)}";
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Punicao, $"{p.UsuarioBD.Nome} baniu você {strBan}. Motivo: {motivo}");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você baniu {target.Nome} {strBan}. Motivo: {motivo}");
+
+            target.Player.Kick();
+        }
+
+        [Command("banoff", GreedyArg = true)]
+        public void CMD_banoff(Client player, int personagem, int dias, string motivo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 2)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                var per = context.Personagens.FirstOrDefault(x => x.Codigo == personagem);
+                if (per == null)
+                {
+                    Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Personagem {personagem} não existe!");
+                    return;
+                }
+
+                var user = context.Usuarios.FirstOrDefault(x => x.Codigo == per.Usuario);
+
+                var ban = new Entities.Banimento()
+                {
+                    Data = DateTime.Now,
+                    Expiracao = null,
+                    Motivo = motivo,
+                    Usuario = user.Codigo,
+                    SocialClub = user.SocialClubRegistro,
+                    UsuarioStaff = p.UsuarioBD.Codigo,
+                };
+
+                if (dias > 0)
+                    ban.Expiracao = DateTime.Now.AddDays(dias);
+
+                context.Banimentos.Add(ban);
+
+                context.Punicoes.Add(new Entities.Punicao()
+                {
+                    Data = DateTime.Now,
+                    Duracao = dias,
+                    Motivo = motivo,
+                    Personagem = per.Codigo,
+                    Tipo = (int)TipoPunicao.Ban,
+                    UsuarioStaff = p.UsuarioBD.Codigo,
+                });
+                context.SaveChanges();
+
+                var strBan = dias == 0 ? "permanentemente" : $"por {dias} dia{(dias > 1 ? "s" : string.Empty)}";
+                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você baniu {per.Nome} {strBan}. Motivo: {motivo}");
+            }
+        }
+
+        [Command("unban")]
+        public void CMD_unban(Client player, int usuario)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 2)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                var ban = context.Banimentos.FirstOrDefault(x => x.Usuario == usuario);
+                if (ban == null)
+                {
+                    Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Usuário {usuario} não está banido!");
+                    return;
+                }
+
+                context.Banimentos.Remove(ban);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você desbaniu o usuário {usuario}!");
+            Functions.GravarLog(TipoLog.Staff, $"/unban {usuario}", p, null);
         }
         #endregion Staff 2
 
@@ -279,14 +455,21 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            bool isTemAlgoProximo = false;
             float distanceVer = 10f;
 
             foreach (var b in Global.Blips)
             {
                 float distance = player.Position.DistanceTo(new Vector3(b.PosX, b.PosY, b.PosZ));
                 if (distance <= distanceVer)
+                {
                     Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"[BLIP] {b.Codigo} | {b.Nome}");
+                    isTemAlgoProximo = true;
+                }
             }
+
+            if (!isTemAlgoProximo)
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum item!");
         }
 
         [Command("cblip", GreedyArg = true)]
@@ -344,6 +527,7 @@ namespace InfiniteRoleplay.Commands
 
             Global.Blips.Add(blip);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Blip {blip.Codigo} criado com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/cblip {blip.Codigo}", p, null);
         }
 
         [Command("rblip")]
@@ -370,6 +554,7 @@ namespace InfiniteRoleplay.Commands
 
             Global.Blips.Remove(blip);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Blip {blip.Codigo} removido com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/rblip {blip.Codigo}", p, null);
         }
 
         [Command("addwhite")]
@@ -399,6 +584,8 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
                 Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você adicionou {socialClub} na whitelist!");
             }
+
+            Functions.GravarLog(TipoLog.Staff, $"/addwhite {socialClub}", p, null);
         }
 
         [Command("delwhite")]
@@ -425,6 +612,8 @@ namespace InfiniteRoleplay.Commands
 
                 Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você removeu {socialClub} da whitelist!");
             }
+
+            Functions.GravarLog(TipoLog.Staff, $"/delwhite {socialClub}", p, null);
         }
 
         [Command("cfac", GreedyArg = true)]
@@ -464,6 +653,8 @@ namespace InfiniteRoleplay.Commands
 
             Global.Faccoes.Add(faccao);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você criou a facção {faccao.Codigo}!");
+
+            Functions.GravarLog(TipoLog.Staff, $"/cfac {faccao.Codigo}", p, null);
         }
 
         [Command("efac", GreedyArg = true)]
@@ -553,6 +744,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou o parâmetro {parametro} da facção {faccao.Codigo} para {valor}!");
+            Functions.GravarLog(TipoLog.Staff, $"/efac {faccao.Codigo} {parametro} {valor}", p, null);
         }
 
         [Command("rfac")]
@@ -588,6 +780,7 @@ namespace InfiniteRoleplay.Commands
             Global.Ranks.RemoveAll(x => x.Faccao == codigo);
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você removeu a facção {faccao.Codigo}!");
+            Functions.GravarLog(TipoLog.Staff, $"/rfac {faccao.Codigo}", p, null);
         }
 
         [Command("faccoes")]
@@ -643,13 +836,14 @@ namespace InfiniteRoleplay.Commands
             using (var context = new RoleplayContext())
             {
                 var ranks = context.Ranks.Where(x => x.Faccao == fac).ToList();
-                rank.Codigo = ranks.Count == 0 ? 1 : ranks.Max(x => x.Codigo) + 1; 
+                rank.Codigo = ranks.Count == 0 ? 1 : ranks.Max(x => x.Codigo) + 1;
                 context.Ranks.Add(rank);
                 context.SaveChanges();
             }
 
             Global.Ranks.Add(rank);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você criou o rank {rank.Nome} [{rank.Codigo}] da facção {faction.Nome} [{faction.Codigo}]!");
+            Functions.GravarLog(TipoLog.Staff, $"/crank {faction.Codigo} {rank.Codigo}", p, null);
         }
 
         [Command("rrank")]
@@ -683,6 +877,7 @@ namespace InfiniteRoleplay.Commands
 
             Global.Ranks.Remove(rk);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você removeu o rank {rk.Nome} [{rk.Codigo}] da facção {fac}!");
+            Functions.GravarLog(TipoLog.Staff, $"/rrank {fac} {rk.Codigo}", p, null);
         }
 
         [Command("erank", GreedyArg = true)]
@@ -717,6 +912,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou o nome do rank {rank} da facção {fac} para {nome}!");
+            Functions.GravarLog(TipoLog.Staff, $"/erank {fac} {rank} {nome}", p, null);
         }
 
         [Command("ranks")]
@@ -758,7 +954,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
             if (target == null)
                 return;
 
@@ -768,10 +964,11 @@ namespace InfiniteRoleplay.Commands
             target.UsuarioBD.Staff = staff;
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou seu nível staff para {staff}.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou o nível staff de {target.UsuarioBD.Nome} para {staff}.");
+            Functions.GravarLog(TipoLog.Staff, $"/staff {staff}", p, target);
         }
 
-        [Command("fac")]
-        public void CMD_fac(Client player, string idNome, int fac, int rank)
+        [Command("lider")]
+        public void CMD_lider(Client player, string idNome, int fac)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -791,18 +988,19 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var rk = Global.Ranks.FirstOrDefault(x => x.Faccao == fac && x.Codigo == rank);
+            var rk = Global.Ranks.FirstOrDefault(x => x.Faccao == fac && x.Codigo == faccao.RankLider);
             if (rk == null)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Rank {rank} da facção {fac} não existe!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Rank líder ({faccao.RankLider}) da facção {fac} não existe!");
                 return;
             }
 
             target.Faccao = fac;
-            target.Rank = rank;
+            target.Rank = faccao.RankLider;
 
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou sua facção para {faccao.Nome} [{faccao.Codigo}] ({rk.Nome} [{rk.Codigo}]).");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou a facção de {target.Nome} para {faccao.Nome} [{faccao.Codigo}] ({rk.Nome} [{rk.Codigo}]).");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} te deu a liderança da facção {faccao.Nome} [{faccao.Codigo}].");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu a liderança da facção {faccao.Nome} [{faccao.Codigo}] para {target.Nome}.");
+            Functions.GravarLog(TipoLog.Staff, $"/lider {fac}", p, target);
         }
         #endregion Staff 1337
     }

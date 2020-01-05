@@ -27,7 +27,7 @@ namespace InfiniteRoleplay
             NAPI.World.SetWeather(Weather.CLEAR);
             NAPI.World.SetTime(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
 
-            NAPI.Server.SetCommandErrorMessage("~r~<!>~w~ O comando informado não existe!");
+            NAPI.Server.SetCommandErrorMessage("!{#FF6A4D}<!>~w~ O comando informado não existe!");
 
             using (var context = new RoleplayContext())
             {
@@ -35,7 +35,7 @@ namespace InfiniteRoleplay
                 NAPI.Util.ConsoleOutput("Status online dos personagens limpo");
 
                 Global.Blips = context.Blips.ToList();
-                foreach(var b in Global.Blips)
+                foreach (var b in Global.Blips)
                 {
                     var blip = NAPI.Blip.CreateBlip(new Vector3(b.PosX, b.PosY, b.PosZ));
                     blip.Sprite = (uint)b.Tipo;
@@ -76,16 +76,24 @@ namespace InfiniteRoleplay
         [ServerEvent(Event.PlayerConnected)]
         public void OnPlayerConnected(Client player)
         {
-            NAPI.ClientEvent.TriggerClientEvent(player, "playerConnected");
-            player.Dimension = 1;
-            player.Position = new Vector3(-74.6524, -818.8309, 326.1756);
+            player.Name = player.SocialClubName;
+            player.Dimension = (uint)new Random().Next(1, 1000);
 
             using (var context = new RoleplayContext())
             {
-                if (context.Whitelist.Any(x => x.SocialClub == player.SocialClubName))
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "Digite /reg para registrar ou /log para logar se já possuir um usuário!");
-                else
-                    Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Sua SocialClub ({player.SocialClubName}) não está na whitelist. Solicite em https://discord.gg/53VHCrF");
+                if (!context.Whitelist.Any(x => x.SocialClub == player.SocialClubName))
+                {
+                    NAPI.ClientEvent.TriggerClientEvent(player, "mensagem", $"Sua SocialClub ({player.SocialClubName}) não está na whitelist. Solicite em: <input type='text' class='form-control' value='https://discord.gg/53VHCrF'>");
+                    player.Kick();
+                    return;
+                }
+
+                var banimento = context.Banimentos.FirstOrDefault(x => x.SocialClub == player.SocialClubName);
+                if (!Functions.VerificarBanimento(player, banimento))
+                    return;
+
+                var user = context.Usuarios.FirstOrDefault(x => x.SocialClubRegistro == player.SocialClubName);
+                NAPI.ClientEvent.TriggerClientEvent(player, "playerConnected", user?.Nome ?? string.Empty, "");
             }
         }
 
@@ -93,7 +101,7 @@ namespace InfiniteRoleplay
         public void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
             Functions.SalvarPersonagem(player, false);
-            Global.PersonagensOnline.RemoveAll(x => x.UsuarioBD.SocialClub == player.SocialClubName);
+            Global.PersonagensOnline.RemoveAll(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
         }
 
         [ServerEvent(Event.PlayerDeath)]

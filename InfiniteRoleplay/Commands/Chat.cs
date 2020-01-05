@@ -79,7 +79,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
             if (target == null)
                 return;
 
@@ -104,7 +104,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
             if (target == null)
                 return;
 

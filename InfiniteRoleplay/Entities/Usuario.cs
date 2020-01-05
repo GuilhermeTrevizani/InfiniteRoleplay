@@ -8,7 +8,8 @@ namespace InfiniteRoleplay.Entities
         public string Nome { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Senha { get; set; } = string.Empty;
-        public string SocialClub { get; set; } = string.Empty;
+        public string SocialClubRegistro { get; set; } = string.Empty;
+        public string SocialClubUltimoAcesso { get; set; } = string.Empty;
         public string IPRegistro { get; set; } = string.Empty;
         public DateTime DataRegistro { get; set; } = DateTime.MinValue;
         public string IPUltimoAcesso { get; set; } = string.Empty;

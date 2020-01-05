@@ -1,5 +1,7 @@
 ﻿using GTANetworkAPI;
+using InfiniteRoleplay.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
@@ -10,6 +12,8 @@ namespace InfiniteRoleplay.Entities
         public int Codigo { get; set; }
         public string Nome { get; set; } = string.Empty;
         public int Usuario { get; set; } = 0;
+        public string SocialClubRegistro { get; set; } = string.Empty;
+        public string SocialClubUltimoAcesso { get; set; } = string.Empty;
         public DateTime DataRegistro { get; set; } = DateTime.MinValue;
         public string IPRegistro { get; set; } = string.Empty;
         public DateTime DataUltimoAcesso { get; set; } = DateTime.MinValue;
@@ -35,7 +39,7 @@ namespace InfiniteRoleplay.Entities
         public Usuario UsuarioBD { get; set; }
 
         [NotMapped]
-        public Client Player { get => NAPI.Pools.GetAllPlayers().FirstOrDefault(x => x.SocialClubName == UsuarioBD.SocialClub); }
+        public Client Player { get => NAPI.Pools.GetAllPlayers().FirstOrDefault(x => x.SocialClubName == UsuarioBD.SocialClubRegistro); }
 
         [NotMapped]
         public DateTime DataUltimaVerificacao { get; set; }
@@ -45,5 +49,11 @@ namespace InfiniteRoleplay.Entities
 
         [NotMapped]
         public Rank RankBD { get => Global.Ranks.FirstOrDefault(x => x.Faccao == Faccao && x.Codigo == Rank); }
+
+        [NotMapped]
+        public List<Convite> Convites { get; set; }
+
+        [NotMapped]
+        public TextLabel TextLabel { get; set; }
     }
 }

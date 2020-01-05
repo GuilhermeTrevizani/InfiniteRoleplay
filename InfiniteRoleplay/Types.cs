@@ -6,6 +6,7 @@
         Erro,
         Sucesso,
         Titulo,
+        Punicao,
     }
 
     public enum TipoMensagemJogo
@@ -23,5 +24,23 @@
         Policial = 1,
         Medica = 2,
         Criminosa = 3,
+    }
+
+    public enum TipoPunicao
+    {
+        Kick = 1,
+        Ban = 2,
+    }
+
+    public enum TipoLog
+    {
+        Staff = 1,
+        FaccaoLider = 2,
+        FaccaoGestor = 3,
+    }
+
+    public enum TipoConvite
+    {
+        Faccao = 1,
     }
 }
