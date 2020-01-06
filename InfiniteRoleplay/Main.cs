@@ -34,6 +34,9 @@ namespace InfiniteRoleplay
                 context.Database.ExecuteSqlCommand("UPDATE Personagens SET Online=0");
                 NAPI.Util.ConsoleOutput("Status online dos personagens limpo");
 
+                Global.Parametros = context.Parametros.FirstOrDefault();
+                NAPI.Util.ConsoleOutput("Parametros carregados");
+
                 Global.Blips = context.Blips.ToList();
                 foreach (var b in Global.Blips)
                 {
@@ -46,7 +49,7 @@ namespace InfiniteRoleplay
                 NAPI.Util.ConsoleOutput($"Blips: {Global.Blips.Count}");
 
                 Global.Faccoes = context.Faccoes.ToList();
-                NAPI.Util.ConsoleOutput($"Faccções: {Global.Faccoes.Count}");
+                NAPI.Util.ConsoleOutput($"Faccoes: {Global.Faccoes.Count}");
 
                 Global.Ranks = context.Ranks.ToList();
                 NAPI.Util.ConsoleOutput($"Ranks: {Global.Ranks.Count}");

@@ -15,7 +15,7 @@ namespace InfiniteRoleplay
             if (p == null)
                 return;
 
-            var personagens = Global.PersonagensOnline.Where(x => x.ID > 0).OrderBy(x => x.ID).Select(x => new { id = x.ID, nome = x.Nome, ping = x.Player.Ping }).ToList();
+            var personagens = Global.PersonagensOnline.Where(x => x.ID > 0).OrderBy(x => x.ID == p.ID ? 0 : 1).ThenBy(x => x.ID).Select(x => new { id = x.ID, nome = x.Nome, ping = x.Player.Ping }).ToList();
             NAPI.ClientEvent.TriggerClientEvent(player, "playersOnline", personagens);
         }
 
@@ -129,7 +129,7 @@ namespace InfiniteRoleplay
                     UsuarioBD = user,
                 });
 
-                EVENT_voltarSelecionarPersonagem(player, "");
+                EVENT_voltarSelecionarPersonagem(player);
             }
         }
 
@@ -206,11 +206,12 @@ namespace InfiniteRoleplay
                     PosY = -1737.086f,
                     PosZ = 30.11018f,
                     Online = true,
-                    ID = Global.PersonagensOnline.Max(x => x.ID) + 1,
+                    ID = Functions.ObterNovoID(),
                     Faccao = 0,
                     Rank = 0,
                     Dimensao = 0,
                     TempoConectado = 0,
+                    Dinheiro = 0,
                 };
                 context.Personagens.Add(personagem);
                 context.SaveChanges();
@@ -238,14 +239,14 @@ namespace InfiniteRoleplay
                 var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == id && x.Usuario == p.UsuarioBD.Codigo);
                 if (personagem == null)
                 {
-                    EVENT_voltarSelecionarPersonagem(player, $"Personagem {id} não existe ou não pertence a você!");
+                    EVENT_voltarSelecionarPersonagem(player);
                     return;
                 }
 
                 personagem.DataUltimoAcesso = DateTime.Now;
                 personagem.IPUltimoAcesso = player.Address;
                 personagem.SocialClubUltimoAcesso = player.SocialClubName;
-                personagem.ID = Global.PersonagensOnline.Max(x => x.ID) + 1;
+                personagem.ID = Functions.ObterNovoID();
                 personagem.Online = true;
                 context.Personagens.Update(personagem);
                 context.SaveChanges();
@@ -259,7 +260,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("voltarSelecionarPersonagem")]
-        public void EVENT_voltarSelecionarPersonagem(Client player, string erro)
+        public static void EVENT_voltarSelecionarPersonagem(Client player, bool isTroca = false)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -271,7 +272,7 @@ namespace InfiniteRoleplay
             using (var context = new RoleplayContext())
             {
                 var personagens = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo).OrderBy(x => x.Codigo).Select(x => new { id = x.Codigo, nome = x.Nome }).ToList();
-                NAPI.ClientEvent.TriggerClientEvent(player, "selecionarPersonagem", personagens, erro);
+                NAPI.ClientEvent.TriggerClientEvent(player, "selecionarPersonagem", personagens, isTroca);
             }
         }
     }

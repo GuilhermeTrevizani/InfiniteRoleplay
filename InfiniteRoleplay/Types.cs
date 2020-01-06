@@ -37,6 +37,7 @@
         Staff = 1,
         FaccaoLider = 2,
         FaccaoGestor = 3,
+        Dinheiro,
     }
 
     public enum TipoConvite

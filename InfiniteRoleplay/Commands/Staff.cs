@@ -168,6 +168,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            if (vida < 1 || vida > 100)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Vida deve ser entre 1 e 100.");
+                return;
+            }
+
             var target = Functions.ObterPersonagemPorIdNome(player, idNome);
             if (target == null)
                 return;
@@ -185,6 +191,12 @@ namespace InfiniteRoleplay.Commands
             if (p?.UsuarioBD?.Staff < 2)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            if (colete < 1 || colete > 100)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Colete deve ser entre 1 e 100.");
                 return;
             }
 
@@ -1001,6 +1013,42 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} te deu a liderança da facção {faccao.Nome} [{faccao.Codigo}].");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu a liderança da facção {faccao.Nome} [{faccao.Codigo}] para {target.Nome}.");
             Functions.GravarLog(TipoLog.Staff, $"/lider {fac}", p, target);
+        }
+
+        [Command("parametros")]
+        public void CMD_parametros(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Parâmetros do Servidor");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Recorde Online: {Global.Parametros.RecordeOnline}");
+        }
+
+        [Command("dinheiro")]
+        public void CMD_dinheiro(Client player, string idNome, int dinheiro)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            if (target == null)
+                return;
+
+            target.Dinheiro += dinheiro;
+            target.SetDinheiro();
+
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} te deu ${dinheiro.ToString("N0")}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro.ToString("N0")} para {target.Nome}.");
+            Functions.GravarLog(TipoLog.Staff, $"/dinheiro {dinheiro}", p, target);
         }
         #endregion Staff 1337
     }

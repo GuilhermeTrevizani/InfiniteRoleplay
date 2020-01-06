@@ -31,6 +31,7 @@ namespace InfiniteRoleplay.Entities
         public int TempoConectado { get; set; } = 0;
         public int Faccao { get; set; } = 0;
         public int Rank { get; set; } = 0;
+        public int Dinheiro { get; set; } = 0;
 
         [NotMapped]
         public int ID { get; set; }
@@ -39,7 +40,7 @@ namespace InfiniteRoleplay.Entities
         public Usuario UsuarioBD { get; set; }
 
         [NotMapped]
-        public Client Player { get => NAPI.Pools.GetAllPlayers().FirstOrDefault(x => x.SocialClubName == UsuarioBD.SocialClubRegistro); }
+        public Client Player { get => NAPI.Pools.GetAllPlayers().FirstOrDefault(x => x.SocialClubName == UsuarioBD?.SocialClubRegistro); }
 
         [NotMapped]
         public DateTime DataUltimaVerificacao { get; set; }
@@ -55,5 +56,11 @@ namespace InfiniteRoleplay.Entities
 
         [NotMapped]
         public TextLabel TextLabel { get; set; }
+
+        public void SetDinheiro()
+        {
+            if (Player != null)
+                NAPI.ClientEvent.TriggerClientEvent(Player, "setDinheiro", Dinheiro.ToString("N0"));
+        }
     }
 }

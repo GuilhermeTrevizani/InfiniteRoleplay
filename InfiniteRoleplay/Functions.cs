@@ -46,6 +46,13 @@ namespace InfiniteRoleplay
             player.Health = p.Vida;
             player.Armor = p.Colete;
             player.SetSkin((uint)p.Skin);
+            p.SetDinheiro();
+
+            if (Global.PersonagensOnline.Count > Global.Parametros.RecordeOnline)
+            {
+                Global.Parametros.RecordeOnline = Global.PersonagensOnline.Count;
+                GravarParametros();
+            }
 
             NAPI.ClientEvent.TriggerClientEvent(player, "logarPersonagem");
         }
@@ -123,6 +130,7 @@ namespace InfiniteRoleplay
                 personagem.TempoConectado = p.TempoConectado;
                 personagem.Faccao = p.Faccao;
                 personagem.Rank = p.Rank;
+                personagem.Dinheiro = p.Dinheiro;
                 context.Personagens.Update(personagem);
                 context.SaveChanges();
             }
@@ -208,7 +216,7 @@ namespace InfiniteRoleplay
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.Staff}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado}");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: {p.Dinheiro.ToString("N0")}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor}");
 
             if (p.Faccao > 0)
@@ -260,6 +268,28 @@ namespace InfiniteRoleplay
                 });
                 context.SaveChanges();
             }
+        }
+
+        public static void GravarParametros()
+        {
+            using (var context = new RoleplayContext())
+            {
+                context.Parametros.Update(Global.Parametros);
+                context.SaveChanges();
+            }
+        }
+
+        public static int ObterNovoID()
+        {
+            for(var i=1; i <= NAPI.Server.GetMaxPlayers(); i++)
+            {
+                if (Global.PersonagensOnline.Any(x => x.ID == i))
+                    continue;
+
+                return i;
+            }
+
+            return 1;
         }
     }
 }

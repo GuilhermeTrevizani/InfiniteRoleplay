@@ -18,7 +18,7 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Infinite Roleplay");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "TECLAS: F2 (jogadores online)");
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "GERAL: /stopanim (/sa) /stats /id /aceitar (/ac) /recusar (/rc)");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "GERAL: /stopanim (/sa) /stats /id /aceitar (/ac) /recusar (/rc) /pagar /trocarper");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "CHAT: /me /do /g /b /baixo /s /pm");
 
             if (p.Faccao > 0)
@@ -42,6 +42,7 @@ namespace InfiniteRoleplay.Commands
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /gmx /tempo /proximo /cblip /rblip /addwhite /delwhite /staff");
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /cfac /efac /rfac /faccoes /crank /erank /rrank /ranks /lider");
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /parametros /dinheiro");
             }
         }
 
@@ -117,7 +118,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            switch((TipoConvite)tipo)
+            switch ((TipoConvite)tipo)
             {
                 case TipoConvite.Faccao:
                     int.TryParse(convite.Valor[0], out int faccao);
@@ -169,6 +170,62 @@ namespace InfiniteRoleplay.Commands
             }
 
             p.Convites.RemoveAll(x => x.Tipo == tipo);
+        }
+
+        [Command("pagar")]
+        public void CMD_pagar(Client player, string idNome, int dinheiro)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (p.Dinheiro < dinheiro)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            if (target == null)
+                return;
+
+            float distance = player.Position.DistanceTo(target.Player.Position);
+            if (distance > 2 || player.Dimension != target.Player.Dimension)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
+                return;
+            }
+
+            p.Dinheiro -= dinheiro;
+            target.Dinheiro += dinheiro;
+            p.SetDinheiro();
+            target.SetDinheiro();
+
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{Functions.ObterNomeIC(p)} te deu ${dinheiro.ToString("N0")}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro.ToString("N0")} para {Functions.ObterNomeIC(target)}.");
+            Functions.GravarLog(TipoLog.Dinheiro, $"/pagar {dinheiro}", p, target);
+        }
+
+        [Command("trocarperso")]
+        public void CMD_trocarperso(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            Functions.SalvarPersonagem(player, false);
+
+            Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(p)] = new Entities.Personagem()
+            {
+                UsuarioBD = p.UsuarioBD,
+            };
+            RemoteEvents.EVENT_voltarSelecionarPersonagem(player, true);
         }
     }
 }

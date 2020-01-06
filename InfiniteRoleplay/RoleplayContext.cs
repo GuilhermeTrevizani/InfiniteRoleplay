@@ -9,6 +9,7 @@ namespace InfiniteRoleplay
         public DbSet<Blip> Blips { get; set; }
         public DbSet<Faccao> Faccoes { get; set; }
         public DbSet<Log> Logs { get; set; }
+        public DbSet<Parametro> Parametros { get; set; }
         public DbSet<Personagem> Personagens { get; set; }
         public DbSet<PersonagemAcessorio> PersonagensAcessorios { get; set; }
         public DbSet<PersonagemArma> PersonagensArmas { get; set; }
@@ -30,6 +31,7 @@ namespace InfiniteRoleplay
             modelBuilder.Entity<Blip>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Faccao>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Log>().HasKey(x => x.Codigo);
+            modelBuilder.Entity<Parametro>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Personagem>().HasKey(x => x.Codigo);
             modelBuilder.Entity<PersonagemAcessorio>().HasKey(x => new { x.Codigo, x.Slot, x.Drawable, x.Texture });
             modelBuilder.Entity<PersonagemArma>().HasKey(x => new { x.Codigo, x.Arma });

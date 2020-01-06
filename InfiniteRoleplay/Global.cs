@@ -5,6 +5,7 @@ namespace InfiniteRoleplay
 {
     public static class Global
     {
+        public static Parametro Parametros { get; set; }
         public static List<Personagem> PersonagensOnline { get; set; }
         public static List<Blip> Blips { get; set; }
         public static List<Faccao> Faccoes { get; set; }
