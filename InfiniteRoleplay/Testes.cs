@@ -32,7 +32,7 @@ namespace InfiniteRoleplay
             sender.Vehicle.Delete();
         }
 
-        [Command("p")]
+        [Command("save")]
         public void Pos(Client sender)
         {
             NAPI.Util.ConsoleOutput($"{sender.Position.X.ToString().Replace(",", ".")}, {sender.Position.Y.ToString().Replace(",", ".")}, {sender.Position.Z.ToString().Replace(",", ".")}");
@@ -94,7 +94,7 @@ namespace InfiniteRoleplay
                     player.PlayAnimation("misstrevor1", "threaten_ortega_endloop_ort", (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl));
                     break;
                 default:
-                    player.SendChatMessage("action de 1 a 11 po");
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "action de 1 a 11 po");
                     break;
             }
         }

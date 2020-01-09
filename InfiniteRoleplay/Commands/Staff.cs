@@ -106,7 +106,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             foreach (var pl in Global.PersonagensOnline.Where(x => x.UsuarioBD.Staff >= 1))
-                pl.Player.SendChatMessage("!{#32BBCE}" + $"(( [STAFF {p.UsuarioBD.Staff}] {p.UsuarioBD.Nome}: {mensagem} ))");
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#32BBCE}" + $"(( [STAFF {p.UsuarioBD.Staff}] {p.UsuarioBD.Nome}: {mensagem} ))");
         }
 
         [Command("o", GreedyArg = true)]
@@ -120,7 +120,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             foreach (var pl in Global.PersonagensOnline)
-                pl.Player.SendChatMessage("!{#7FDDEB}" + $"(( {p.UsuarioBD.Nome}: {mensagem} ))");
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#7FDDEB}" + $"(( {p.UsuarioBD.Nome}: {mensagem} ))");
         }
 
         [Command("kick", GreedyArg = true)]
@@ -468,14 +468,24 @@ namespace InfiniteRoleplay.Commands
             }
 
             bool isTemAlgoProximo = false;
-            float distanceVer = 10f;
+            float distanceVer = 5f;
 
             foreach (var b in Global.Blips)
             {
                 float distance = player.Position.DistanceTo(new Vector3(b.PosX, b.PosY, b.PosZ));
                 if (distance <= distanceVer)
                 {
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"[BLIP] {b.Codigo} | {b.Nome}");
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Blip {b.Codigo}");
+                    isTemAlgoProximo = true;
+                }
+            }
+ 
+            foreach (var prop in Global.Propriedades)
+            {
+                float distance = player.Position.DistanceTo(new Vector3(prop.EntradaPosX, prop.EntradaPosY, prop.EntradaPosZ));
+                if (distance <= distanceVer)
+                {
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Propriedade {prop.Codigo}");
                     isTemAlgoProximo = true;
                 }
             }
@@ -485,7 +495,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("cblip", GreedyArg = true)]
-        public void CMD_cblip(Client player, uint tipo, int cor, string nome = "")
+        public void CMD_cblip(Client player, int tipo, int cor, string nome = "")
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -521,7 +531,7 @@ namespace InfiniteRoleplay.Commands
                 PosY = player.Position.Y,
                 PosZ = player.Position.Z,
                 Cor = cor,
-                Tipo = (int)tipo,
+                Tipo = tipo,
                 Nome = nome,
             };
 
@@ -531,11 +541,7 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
             }
 
-            var blipv = NAPI.Blip.CreateBlip(player.Position);
-            blipv.Sprite = tipo;
-            blipv.Color = cor;
-            blipv.Name = Functions.ObterNomePadraoBlip((int)tipo, nome);
-            blipv.SetData(nameof(blip.Codigo), blip.Codigo);
+            blip.CriarIdentificador();
 
             Global.Blips.Add(blip);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Blip {blip.Codigo} criado com sucesso!");
@@ -561,8 +567,7 @@ namespace InfiniteRoleplay.Commands
             using (var context = new RoleplayContext())
                 context.Database.ExecuteSqlCommand($"DELETE FROM Blips WHERE Codigo = {codigo}");
 
-            var blipv = NAPI.Pools.GetAllBlips().FirstOrDefault(x => x.GetData(nameof(blip.Codigo)) == codigo);
-            blipv?.Delete();
+            blip.DeletarIdentificador();
 
             Global.Blips.Remove(blip);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Blip {blip.Codigo} removido com sucesso!");
@@ -670,7 +675,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("efac", GreedyArg = true)]
-        public void CMD_efac(Client player, int codigo, string parametro, string valor)
+        public void CMD_efac(Client player, int codigo, string parametro = "", string valor = "")
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -813,7 +818,7 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "Lista de Facções");
             foreach (var f in Global.Faccoes)
-                player.SendChatMessage("!{#" + f.Cor + "}" + $"{f.Nome} [{f.Codigo}]");
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#" + f.Cor + "}" + $"{f.Nome} [{f.Codigo}]");
         }
 
         [Command("crank", GreedyArg = true)]
@@ -951,9 +956,9 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            player.SendChatMessage("!{#" + faction.Cor + "}" + $"{faction.Nome} [{faction.Codigo}]");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#" + faction.Cor + "}" + $"{faction.Nome} [{faction.Codigo}]");
             foreach (var r in ranks)
-                player.SendChatMessage($"{r.Nome} [{r.Codigo}]");
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{r.Nome} [{r.Codigo}]");
         }
 
         [Command("staff")]
@@ -1049,6 +1054,154 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} te deu ${dinheiro.ToString("N0")}.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro.ToString("N0")} para {target.Nome}.");
             Functions.GravarLog(TipoLog.Staff, $"/dinheiro {dinheiro}", p, target);
+        }
+
+        [Command("cprop")]
+        public void CMD_cprop(Client player, int interior, int valor)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            if (!Enum.IsDefined(typeof(TipoInterior), interior))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Interior inválido!");
+                return;
+            }
+
+            if (valor <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor deve ser maior que 0.");
+                return;
+            }
+
+            var saida = Functions.ObterPosicaoPorInterior((TipoInterior)interior);
+
+            var prop = new Entities.Propriedade()
+            {
+                EntradaPosX = player.Position.X,
+                EntradaPosY = player.Position.Y,
+                EntradaPosZ = player.Position.Z,
+                Valor = valor,
+                Personagem = 0,
+                SaidaPosX = saida.X,
+                SaidaPosY = saida.Y,
+                SaidaPosZ = saida.Z,
+            };
+
+            using (var context = new RoleplayContext())
+            {
+                context.Propriedades.Add(prop);
+                context.SaveChanges();
+            }
+
+            prop.CriarIdentificador();
+
+            Global.Propriedades.Add(prop);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Propriedade {prop.Codigo} criada com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/cprop {prop.Codigo} {prop.Valor}", p, null);
+        }
+
+        [Command("rprop")]
+        public void CMD_rprop(Client player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var prop = Global.Propriedades.FirstOrDefault(x => x.Codigo == codigo);
+            if (prop == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Propriedade {codigo} não existe!");
+                return;
+            }
+
+            if (prop.Personagem > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Propriedade {codigo} possui um dono!");
+                return;
+            }
+
+            using (var context = new RoleplayContext())
+                context.Database.ExecuteSqlCommand($"DELETE FROM Propriedades WHERE Codigo = {codigo}");
+
+            prop.DeletarIdentificador();
+
+            Global.Propriedades.Remove(prop);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Propriedade {prop.Codigo} removida com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/rprop {prop.Codigo}", p, null);
+        }
+
+        [Command("eprop", GreedyArg = true)]
+        public void CMD_eprop(Client player, int codigo, string parametro = "", string valor = "")
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var prop = Global.Propriedades.FirstOrDefault(x => x.Codigo == codigo);
+            if (prop == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Propriedade {codigo} não existe!");
+                return;
+            }
+
+            int.TryParse(valor, out int valorInt);
+
+            switch (parametro)
+            {
+                case "valor":
+                    if (valorInt <= 0)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor deve ser maior que 0.");
+                        return;
+                    }
+
+                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].Valor = valorInt;
+                    break;
+                case "int":
+                    if (!Enum.IsDefined(typeof(TipoInterior), valorInt))
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Interior inválido!");
+                        return;
+                    }
+
+                    var pos = Functions.ObterPosicaoPorInterior((TipoInterior)valorInt);
+                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosX = pos.X;
+                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosY = pos.Y;
+                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosZ = pos.Z;
+                    break;
+                case "pos":
+                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosX = player.Position.X;
+                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosY = player.Position.Y;
+                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosZ = player.Position.Z;
+
+                    valor = "sua posição atual";
+                    break;
+                default:
+                    Functions.EnviarMensagem(player, TipoMensagem.Erro, "Parâmetro inválido. Utilize: valor, int, pos");
+                    return;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                context.Propriedades.Update(Global.Propriedades[Global.Propriedades.IndexOf(prop)]);
+                context.SaveChanges();
+            }
+
+            Global.Propriedades[Global.Propriedades.IndexOf(prop)].CriarIdentificador();
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou o parâmetro {parametro} da propriedade {prop.Codigo} para {valor}!");
+            Functions.GravarLog(TipoLog.Staff, $"/eprop {prop.Codigo} {parametro} {valor}", p, null);
         }
         #endregion Staff 1337
     }

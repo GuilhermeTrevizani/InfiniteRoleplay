@@ -90,8 +90,8 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            player.SendChatMessage("!{#F2FF43}" + $"{Functions.ObterNomeIC(p)} sussura: {mensagem}");
-            target.Player.SendChatMessage("!{#F0E90D}" + $"{Functions.ObterNomeIC(p)} sussura: {mensagem}");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"{Functions.ObterNomeIC(p)} sussura: {mensagem}");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"{Functions.ObterNomeIC(p)} sussura: {mensagem}");
         }
 
         [Command("/pm", GreedyArg = true)]
@@ -108,8 +108,8 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
-            player.SendChatMessage("!{#F2FF43}" + $"(( PM para {target.Nome} [{target.ID}]: {mensagem} ))");
-            target.Player.SendChatMessage("!{#F0E90D}" + $"(( PM de {p.Nome} [{p.ID}]: {mensagem} ))");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"(( PM para {target.Nome} [{target.ID}]: {mensagem} ))");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"(( PM de {p.Nome} [{p.ID}]: {mensagem} ))");
         }
     }
 }

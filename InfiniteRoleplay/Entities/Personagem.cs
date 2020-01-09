@@ -55,7 +55,7 @@ namespace InfiniteRoleplay.Entities
         public List<Convite> Convites { get; set; }
 
         [NotMapped]
-        public TextLabel TextLabel { get; set; }
+        public List<Propriedade> Propriedades { get => Global.Propriedades.Where(x => x.Personagem == Codigo).ToList(); }
 
         public void SetDinheiro()
         {

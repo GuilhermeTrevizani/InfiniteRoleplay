@@ -29,6 +29,13 @@ namespace InfiniteRoleplay
 
             NAPI.Server.SetCommandErrorMessage("!{#FF6A4D}<!>~w~ O comando informado não existe!");
 
+            string host = NAPI.Resource.GetSetting<string>(this, "db_host");
+            string db = NAPI.Resource.GetSetting<string>(this, "db_database");
+            string user = NAPI.Resource.GetSetting<string>(this, "db_username");
+            string pass = NAPI.Resource.GetSetting<string>(this, "db_password");
+
+            Global.ConnectionString = $"Server={host};Database={db};Uid={user};Pwd={pass}";
+
             using (var context = new RoleplayContext())
             {
                 context.Database.ExecuteSqlCommand("UPDATE Personagens SET Online=0");
@@ -39,13 +46,7 @@ namespace InfiniteRoleplay
 
                 Global.Blips = context.Blips.ToList();
                 foreach (var b in Global.Blips)
-                {
-                    var blip = NAPI.Blip.CreateBlip(new Vector3(b.PosX, b.PosY, b.PosZ));
-                    blip.Sprite = (uint)b.Tipo;
-                    blip.Color = b.Cor;
-                    blip.Name = Functions.ObterNomePadraoBlip(b.Tipo, b.Nome);
-                    blip.SetData(nameof(b.Codigo), b.Codigo);
-                }
+                    b.CriarIdentificador();
                 NAPI.Util.ConsoleOutput($"Blips: {Global.Blips.Count}");
 
                 Global.Faccoes = context.Faccoes.ToList();
@@ -53,6 +54,11 @@ namespace InfiniteRoleplay
 
                 Global.Ranks = context.Ranks.ToList();
                 NAPI.Util.ConsoleOutput($"Ranks: {Global.Ranks.Count}");
+
+                Global.Propriedades = context.Propriedades.ToList();
+                foreach (var p in Global.Propriedades)
+                    p.CriarIdentificador();
+                NAPI.Util.ConsoleOutput($"Propriedades: {Global.Propriedades.Count}");
             }
 
             Global.PersonagensOnline = new List<Personagem>();

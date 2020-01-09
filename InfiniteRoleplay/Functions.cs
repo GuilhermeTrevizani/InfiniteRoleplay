@@ -138,9 +138,10 @@ namespace InfiniteRoleplay
 
         public static void SendMessageToNearbyPlayers(Client player, string message, TipoMensagemJogo type, float range, bool excludePlayer = false)
         {
+            var p = Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
             float distanceGap = range / 5;
 
-            List<Client> targetList = NAPI.Pools.GetAllPlayers().Where(p => Global.PersonagensOnline.Any(x => x.UsuarioBD.SocialClubRegistro == p.SocialClubName) && p.Dimension == player.Dimension).ToList();
+            List<Client> targetList = NAPI.Pools.GetAllPlayers().Where(x => Global.PersonagensOnline.Any(y => y.UsuarioBD.SocialClubRegistro == x.SocialClubName) && x.Dimension == player.Dimension).ToList();
 
             foreach (Client target in targetList)
             {
@@ -152,26 +153,25 @@ namespace InfiniteRoleplay
                     {
                         string chatMessageColor = GetChatMessageColor(distance, distanceGap);
 
-                        var p = Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
                         switch (type)
                         {
                             case TipoMensagemJogo.ChatICNormal:
-                                target.SendChatMessage(chatMessageColor + $"{ObterNomeIC(p)} diz: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{ObterNomeIC(p)} diz: {message}");
                                 break;
                             case TipoMensagemJogo.ChatICGrito:
-                                target.SendChatMessage(chatMessageColor + $"{ObterNomeIC(p)} grita: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{ObterNomeIC(p)} grita: {message}");
                                 break;
                             case TipoMensagemJogo.Me:
-                                target.SendChatMessage("!{#C2A2DA}" + $"{ObterNomeIC(p)} {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{ObterNomeIC(p)} {message}");
                                 break;
                             case TipoMensagemJogo.Do:
-                                target.SendChatMessage("!{#C2A2DA}" + $"{message} (( {ObterNomeIC(p)} ))");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{message} (( {ObterNomeIC(p)} ))");
                                 break;
                             case TipoMensagemJogo.ChatOOC:
-                                target.SendChatMessage("!{#bababa}" + $"(( {ObterNomeIC(p)} [{p.ID}]: {message} ))");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#bababa}" + $"(( {ObterNomeIC(p)} [{p.ID}]: {message} ))");
                                 break;
                             case TipoMensagemJogo.ChatICBaixo:
-                                target.SendChatMessage(chatMessageColor + $"{ObterNomeIC(p)} diz [baixo]: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"[BAIXO] {ObterNomeIC(p)} diz: {message}");
                                 break;
                         }
                     }
@@ -206,21 +206,25 @@ namespace InfiniteRoleplay
             return nome;
         }
 
-        public static string ObterNomeIC(Personagem p)
-        {
-            return p.Nome;
-        }
+        public static string ObterNomeIC(Personagem p) => p.Nome;
 
         public static void MostrarStats(Client player, Personagem p)
         {
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.Staff}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado}");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: {p.Dinheiro.ToString("N0")}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro.ToString("N0")}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor}");
 
             if (p.Faccao > 0)
                 EnviarMensagem(player, TipoMensagem.Nenhum, $"Facção: {p.FaccaoBD?.Nome} [{p.Faccao}] | Rank: {p.RankBD?.Nome} [{p.Rank}]");
+
+            if (p.Propriedades.Count > 0)
+            {
+                EnviarMensagem(player, TipoMensagem.Titulo, $"Propriedades de {p.Nome} [{p.Codigo}]");
+                foreach (var prop in p.Propriedades)
+                    EnviarMensagem(player, TipoMensagem.Nenhum, $"Código: {prop.Codigo} | Valor: ${prop.Valor.ToString("N0")}");
+            }
         }
 
         public static bool VerificarBanimento(Client player, Banimento ban)
@@ -281,7 +285,7 @@ namespace InfiniteRoleplay
 
         public static int ObterNovoID()
         {
-            for(var i=1; i <= NAPI.Server.GetMaxPlayers(); i++)
+            for (var i = 1; i <= NAPI.Server.GetMaxPlayers(); i++)
             {
                 if (Global.PersonagensOnline.Any(x => x.ID == i))
                     continue;
@@ -290,6 +294,50 @@ namespace InfiniteRoleplay
             }
 
             return 1;
+        }
+
+        public static Vector3 ObterPosicaoPorInterior(TipoInterior tipo)
+        {
+            switch (tipo)
+            {
+                case TipoInterior.Motel:
+                    return new Vector3(151.2564, -1007.868, -98.99999);
+                case TipoInterior.CasaBaixa:
+                    return new Vector3(265.9522, -1007.485, -101.0085);
+                case TipoInterior.CasaMedia:
+                    return new Vector3(346.4499, -1012.996, -99.19622);
+                case TipoInterior.IntegrityWay28:
+                    return new Vector3(-31.34092, -594.9429, 80.0309);
+                case TipoInterior.IntegrityWay30:
+                    return new Vector3(-17.61359, -589.3938, 90.11487);
+                case TipoInterior.DellPerroHeights4:
+                    return new Vector3(-1452.225, -540.4642, 74.04436);
+                case TipoInterior.DellPerroHeights7:
+                    return new Vector3(-1451.26, -523.9634, 56.92898);
+                case TipoInterior.RichardMajestic2:
+                    return new Vector3(-912.6351, -364.9724, 114.2748);
+                case TipoInterior.TinselTowers42:
+                    return new Vector3(-603.1113, 58.93406, 98.20017);
+                case TipoInterior.EclipseTowers3:
+                    return new Vector3(-785.1537, 323.8156, 211.9973);
+                case TipoInterior.WildOatsDrive3655:
+                    return new Vector3(-174.3753, 497.3086, 137.6669);
+                case TipoInterior.NorthConkerAvenue2044:
+                    return new Vector3(341.9306, 437.7751, 149.3901);
+                case TipoInterior.NorthConkerAvenue2045:
+                    return new Vector3(373.5803, 423.7043, 145.9078);
+                case TipoInterior.HillcrestAvenue2862:
+                    return new Vector3(-682.3693, 592.2678, 145.393);
+                case TipoInterior.HillcrestAvenue2868:
+                    return new Vector3(-758.4348, 618.8454, 144.1539);
+                case TipoInterior.HillcrestAvenue2874:
+                    return new Vector3(-859.7643, 690.8358, 152.8607);
+                case TipoInterior.WhispymoundDrive2677:
+                    return new Vector3(117.209, 559.8086, 184.3048);
+                case TipoInterior.MadWayneThunder2133:
+                    return new Vector3(-1289.775, 449.3125, 97.90256);
+            }
+            return new Vector3();
         }
     }
 }

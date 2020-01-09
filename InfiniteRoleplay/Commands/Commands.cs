@@ -17,8 +17,8 @@ namespace InfiniteRoleplay.Commands
             }
 
             Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Infinite Roleplay");
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "TECLAS: F2 (jogadores online)");
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "GERAL: /stopanim (/sa) /stats /id /aceitar (/ac) /recusar (/rc) /pagar /trocarper");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "TECLAS: F2 (jogadores online) F3 (mostrar/ocultar cursor)");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "GERAL: /stopanim (/sa) /stats /id /aceitar (/ac) /recusar (/rc) /pagar /trocarper /entrar /sair /p");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "CHAT: /me /do /g /b /baixo /s /pm");
 
             if (p.Faccao > 0)
@@ -42,7 +42,7 @@ namespace InfiniteRoleplay.Commands
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /gmx /tempo /proximo /cblip /rblip /addwhite /delwhite /staff");
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /cfac /efac /rfac /faccoes /crank /erank /rrank /ranks /lider");
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /parametros /dinheiro");
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /parametros /dinheiro /cprop /rprop /eprop");
             }
         }
 
@@ -118,6 +118,8 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            var target = Global.PersonagensOnline.FirstOrDefault(x => x.Codigo == convite.Personagem);
+
             switch ((TipoConvite)tipo)
             {
                 case TipoConvite.Faccao:
@@ -127,9 +129,60 @@ namespace InfiniteRoleplay.Commands
                     p.Rank = rank;
 
                     Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você aceitou o convite para entrar na facção.");
-                    var target = Global.PersonagensOnline.FirstOrDefault(x => x.Codigo == convite.Personagem);
                     if (target != null)
                         Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} aceitou seu convite para entrar na facção.");
+                    break;
+                case TipoConvite.VendaPropriedade:
+                    if (target == null)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Dono da propriedade não está online!");
+                        break;
+                    }
+
+                    float distance = player.Position.DistanceTo(target.Player.Position);
+                    if (distance > 2 || player.Dimension != target.Player.Dimension)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Dono da propriedade não está próximo de você!");
+                        return;
+                    }
+
+                    int.TryParse(convite.Valor[0], out int propriedade);
+                    int.TryParse(convite.Valor[1], out int valor);
+                    if (p.Dinheiro < valor)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
+                        break;
+                    }
+
+                    var prop = Global.Propriedades.FirstOrDefault(x => x.Codigo == propriedade);
+                    if (prop == null)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Propriedade inválida!");
+                        break;
+                    }
+
+                    distance = player.Position.DistanceTo(new Vector3(prop.EntradaPosX, prop.EntradaPosY, prop.EntradaPosZ));
+                    if (distance > 2)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo da propriedade!");
+                        return;
+                    }
+
+                    p.Dinheiro -= valor;
+                    p.SetDinheiro();
+                    target.Dinheiro += valor;
+                    target.SetDinheiro();
+
+                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].Personagem = p.Codigo;
+
+                    using (var context = new RoleplayContext())
+                    {
+                        context.Propriedades.Update(Global.Propriedades[Global.Propriedades.IndexOf(prop)]);
+                        context.SaveChanges();
+                    }
+
+                    Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade {prop.Codigo} de {Functions.ObterNomeIC(target)} por ${valor.ToString("N0")}.");
+                    Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Você vendeu a propriedade {prop.Codigo} para {Functions.ObterNomeIC(p)} por ${valor.ToString("N0")}.");
                     break;
             }
 
@@ -159,15 +212,25 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            var target = Global.PersonagensOnline.FirstOrDefault(x => x.Codigo == convite.Personagem);
+            var strPlayer = string.Empty;
+            var strTarget = string.Empty;
+
             switch ((TipoConvite)tipo)
             {
                 case TipoConvite.Faccao:
-                    Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você recusou o convite para entrar na facção.");
-                    var target = Global.PersonagensOnline.FirstOrDefault(x => x.Codigo == convite.Personagem);
-                    if (target != null)
-                        Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} recusou seu convite para entrar na facção.");
+                    strPlayer = strTarget = "entrar na facção";
+                    break;
+                case TipoConvite.VendaPropriedade:
+                    strPlayer = "compra da propriedade";
+                    strTarget = "venda da propriedade";
                     break;
             }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você recusou o convite para {strPlayer}.");
+
+            if (target != null)
+                Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} recusou seu convite para {strTarget}.");
 
             p.Convites.RemoveAll(x => x.Tipo == tipo);
         }

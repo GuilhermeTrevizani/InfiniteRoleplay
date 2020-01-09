@@ -5,11 +5,13 @@ namespace InfiniteRoleplay
 {
     public static class Global
     {
+        public static string ConnectionString { get; set; }
         public static Parametro Parametros { get; set; }
         public static List<Personagem> PersonagensOnline { get; set; }
         public static List<Blip> Blips { get; set; }
         public static List<Faccao> Faccoes { get; set; }
         public static List<Rank> Ranks { get; set; }
+        public static List<Propriedade> Propriedades { get; set; }
     }
 
     public class Constants

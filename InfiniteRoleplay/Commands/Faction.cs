@@ -25,7 +25,7 @@ namespace InfiniteRoleplay.Commands
 
             var players = Global.PersonagensOnline.Where(x => x.Faccao == p.Faccao);
             foreach (var pl in players)
-                pl.Player.SendChatMessage("!{#" + p.FaccaoBD.Cor + "}" + $"(( {p.RankBD.Nome} {p.Nome} [{p.ID}]: {mensagem} ))");
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"(( {p.RankBD.Nome} {p.Nome} [{p.ID}]: {mensagem} ))");
         }
 
         [Command("membros")]
@@ -39,9 +39,9 @@ namespace InfiniteRoleplay.Commands
             }
 
             var players = Global.PersonagensOnline.Where(x => x.Faccao == p.Faccao).OrderByDescending(x => x.Rank).ThenBy(x => x.Nome);
-            player.SendChatMessage("!{#" + p.FaccaoBD.Cor + "}" + p.FaccaoBD.Nome);
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + p.FaccaoBD.Nome);
             foreach (var pl in players)
-                player.SendChatMessage($"{pl.RankBD.Nome} {pl.Nome} [{pl.ID}] (( {pl.UsuarioBD.Nome} ))");
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{pl.RankBD.Nome} {pl.Nome} [{pl.ID}] (( {pl.UsuarioBD.Nome} ))");
         }
 
         [Command("blockf")]

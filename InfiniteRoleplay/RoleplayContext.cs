@@ -14,6 +14,7 @@ namespace InfiniteRoleplay
         public DbSet<PersonagemAcessorio> PersonagensAcessorios { get; set; }
         public DbSet<PersonagemArma> PersonagensArmas { get; set; }
         public DbSet<PersonagemRoupa> PersonagensRoupas { get; set; }
+        public DbSet<Propriedade> Propriedades { get; set; }
         public DbSet<Punicao> Punicoes { get; set; }
         public DbSet<Rank> Ranks { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
@@ -21,8 +22,7 @@ namespace InfiniteRoleplay
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseMySql($"Server=localhost;Database=bdinfiniteroleplay;Uid=root;Pwd=");
-            optionsBuilder.UseMySql($"Server=localhost;Database=bdinfiniteroleplay;Uid=root;Pwd=NdVawtSLq95u");
+            optionsBuilder.UseMySql(Global.ConnectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,6 +36,7 @@ namespace InfiniteRoleplay
             modelBuilder.Entity<PersonagemAcessorio>().HasKey(x => new { x.Codigo, x.Slot, x.Drawable, x.Texture });
             modelBuilder.Entity<PersonagemArma>().HasKey(x => new { x.Codigo, x.Arma });
             modelBuilder.Entity<PersonagemRoupa>().HasKey(x => new { x.Codigo, x.Slot, x.Drawable, x.Texture });
+            modelBuilder.Entity<Propriedade>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Punicao>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Rank>().HasKey(x => new { x.Faccao, x.Codigo });
             modelBuilder.Entity<Usuario>().HasKey(x => x.Codigo);
