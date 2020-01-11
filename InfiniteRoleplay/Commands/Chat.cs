@@ -40,7 +40,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.ChatICGrito, 45.0f);
+            Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.ChatICGrito, 35.0f);
         }
 
         [Command("b", GreedyArg = true)]

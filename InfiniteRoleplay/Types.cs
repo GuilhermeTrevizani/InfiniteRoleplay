@@ -17,6 +17,7 @@
         ChatICGrito,
         ChatOOC,
         ChatICBaixo,
+        Megafone,
     }
 
     public enum TipoFaccao

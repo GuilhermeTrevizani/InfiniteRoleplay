@@ -173,5 +173,22 @@ namespace InfiniteRoleplay.Commands
 
             Functions.GravarLog(TipoLog.FaccaoGestor, "/demitir", p, target);
         }
+
+        #region Policial
+
+        #endregion
+
+        [Command("m", GreedyArg = true)]
+        public void CMD_m(Client player, string mensagem)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial!");
+                return;
+            }
+
+            Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.Megafone, 70.0f);
+        }
     }
 }

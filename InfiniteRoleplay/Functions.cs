@@ -173,6 +173,9 @@ namespace InfiniteRoleplay
                             case TipoMensagemJogo.ChatICBaixo:
                                 EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"[BAIXO] {ObterNomeIC(p)} diz: {message}");
                                 break;
+                            case TipoMensagemJogo.Megafone:
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#F2FF43}" + $"[MEGAFONE] {ObterNomeIC(p)} diz: {message}");
+                                break;
                         }
                     }
                 }

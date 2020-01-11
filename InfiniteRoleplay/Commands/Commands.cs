@@ -1,5 +1,7 @@
 ﻿using GTANetworkAPI;
+using InfiniteRoleplay.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -11,39 +13,118 @@ namespace InfiniteRoleplay.Commands
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
                 return;
-            }
 
-            Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Infinite Roleplay");
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "TECLAS: F2 (jogadores online) F3 (mostrar/ocultar cursor)");
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "GERAL: /stopanim (/sa) /stats /id /aceitar (/ac) /recusar (/rc) /pagar /trocarper /entrar /sair /p");
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "CHAT: /me /do /g /b /baixo /s /pm");
+            var listaComandos = new List<Comando>()
+            {
+                new Comando("Teclas", "F2", "Jogadores online"),
+                new Comando("Teclas", "F3", "Mostrar/ocultar cursor"),
+                new Comando("Geral", "/stopanim /sa"),
+                new Comando("Geral", "/stats"),
+                new Comando("Geral", "/id"),
+                new Comando("Geral", "/aceitar /ac"),
+                new Comando("Geral", "/recusar /rc"),
+                new Comando("Geral", "/pagar"),
+                new Comando("Geral", "/trocarpersonagem"),
+                new Comando("Geral", "/entrar"),
+                new Comando("Geral", "/sair"),
+                new Comando("Geral", "/p"),
+                new Comando("Chat IC", "/me"),
+                new Comando("Chat IC", "/do"),
+                new Comando("Chat IC", "/g"),
+                new Comando("Chat IC", "/baixo"),
+                new Comando("Chat IC", "/s"),
+                new Comando("Chat OOC", "/b"),
+                new Comando("Chat OOC", "/pm"),
+            };
 
             if (p.Faccao > 0)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "FACÇÃO: /f /membros");
+                listaComandos.AddRange(new List<Comando>()
+                {
+                    new Comando("Facção", "/f"),
+                    new Comando("Facção", "/membros"),
+                });
+
+                if (p.FaccaoBD.Tipo == (int)TipoFaccao.Policial)
+                    listaComandos.AddRange(new List<Comando>()
+                    {
+                        new Comando("Facção Policial", "/m"),
+                    });
 
                 if (p.Rank >= p.FaccaoBD.RankGestor)
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "FACÇÃO GESTOR: /blockf /convidar /rank /demitir");
+                    listaComandos.AddRange(new List<Comando>()
+                    {
+                        new Comando("Facção Gestor", "/blockf"),
+                        new Comando("Facção Gestor", "/convidar"),
+                        new Comando("Facção Gestor", "/rank"),
+                        new Comando("Facção Gestor", "/demitir"),
+                    });
 
                 if (p.Rank >= p.FaccaoBD.RankLider)
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "FACÇÃO LÍDER: /crank /erank /rrank /ranks");
+                    listaComandos.AddRange(new List<Comando>()
+                    {
+                        new Comando("Facção Líder", "/crank"),
+                        new Comando("Facção Líder", "/erank"),
+                        new Comando("Facção Líder", "/rrank"),
+                        new Comando("Facção Líder", "/ranks"),
+                    });
             }
 
             if (p.UsuarioBD.Staff >= 1)
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1: /ir /trazer /tp /vw /o /a /kick");
+                listaComandos.AddRange(new List<Comando>()
+                {
+                    new Comando("Staff 1", "/ir"),
+                    new Comando("Staff 1", "/trazer"),
+                    new Comando("Staff 1", "/tp"),
+                    new Comando("Staff 1", "/vw"),
+                    new Comando("Staff 1", "/o"),
+                    new Comando("Staff 1", "/a"),
+                    new Comando("Staff 1", "/kick"),
+                });
 
             if (p.UsuarioBD.Staff >= 2)
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 2: /vida /colete /skin /skina /skinc /checar /ban /unban /banoff");
+                listaComandos.AddRange(new List<Comando>()
+                {
+                    new Comando("Staff 2", "/vida"),
+                    new Comando("Staff 2", "/colete"),
+                    new Comando("Staff 2", "/skin"),
+                    new Comando("Staff 2", "/skina"),
+                    new Comando("Staff 2", "/skinc"),
+                    new Comando("Staff 2", "/checar"),
+                    new Comando("Staff 2", "/ban"),
+                    new Comando("Staff 2", "/unban"),
+                    new Comando("Staff 2", "/banoff"),
+                });
 
             if (p.UsuarioBD.Staff >= 1337)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /gmx /tempo /proximo /cblip /rblip /addwhite /delwhite /staff");
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /cfac /efac /rfac /faccoes /crank /erank /rrank /ranks /lider");
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "STAFF 1337: /parametros /dinheiro /cprop /rprop /eprop");
-            }
+                listaComandos.AddRange(new List<Comando>()
+                {
+                    new Comando("Staff 1337", "/gmx"),
+                    new Comando("Staff 1337", "/tempo"),
+                    new Comando("Staff 1337", "/proximo"),
+                    new Comando("Staff 1337", "/cblip"),
+                    new Comando("Staff 1337", "/rblip"),
+                    new Comando("Staff 1337", "/addwhite"),
+                    new Comando("Staff 1337", "/delwhite"),
+                    new Comando("Staff 1337", "/staff"),
+                    new Comando("Staff 1337", "/cfac"),
+                    new Comando("Staff 1337", "/efac"),
+                    new Comando("Staff 1337", "/rfac"),
+                    new Comando("Staff 1337", "/faccoes"),
+                    new Comando("Staff 1337", "/crank"),
+                    new Comando("Staff 1337", "/erank"),
+                    new Comando("Staff 1337", "/rrank"),
+                    new Comando("Staff 1337", "/ranks"),
+                    new Comando("Staff 1337", "/lider"),
+                    new Comando("Staff 1337", "/parametros"),
+                    new Comando("Staff 1337", "/dinheiro"),
+                    new Comando("Staff 1337", "/cprop"),
+                    new Comando("Staff 1337", "/rprop"),
+                    new Comando("Staff 1337", "/eprop"),
+                });
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "comandoAjuda", listaComandos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome).ToList());
         }
 
         [Command("stopanim", Alias = "sa")]
@@ -272,8 +353,8 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Dinheiro, $"/pagar {dinheiro}", p, target);
         }
 
-        [Command("trocarperso")]
-        public void CMD_trocarperso(Client player)
+        [Command("trocarpersonagem")]
+        public void CMD_trocarpersonagem(Client player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
