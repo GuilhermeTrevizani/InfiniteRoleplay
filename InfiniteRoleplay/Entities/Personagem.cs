@@ -32,6 +32,7 @@ namespace InfiniteRoleplay.Entities
         public int Faccao { get; set; } = 0;
         public int Rank { get; set; } = 0;
         public int Dinheiro { get; set; } = 0;
+        public int Celular { get; set; } = 0;
 
         [NotMapped]
         public int ID { get; set; }
@@ -57,10 +58,50 @@ namespace InfiniteRoleplay.Entities
         [NotMapped]
         public List<Propriedade> Propriedades { get => Global.Propriedades.Where(x => x.Personagem == Codigo).ToList(); }
 
+        [NotMapped]
+        public string NomeIC { get => Nome; }
+
+        [NotMapped]
+        public List<PersonagemContato> Contatos { get; set; }
+
+        [NotMapped]
+        public int NumeroLigacao { get; set; } = 0;
+
+        [NotMapped]
+        public int StatusLigacao { get; set; } = 0;
+
+        [NotMapped]
+        public string ExtraLigacao { get; set; } = string.Empty;
+
+        [NotMapped]
+        public TagTimer TimerCelular { get; set; }
+
+        [NotMapped]
+        public bool IsTrabalhoFaccao { get; set; } = false;
+
         public void SetDinheiro()
         {
             if (Player != null)
                 NAPI.ClientEvent.TriggerClientEvent(Player, "setDinheiro", Dinheiro.ToString("N0"));
+        }
+
+        public string ObterNomeContato(int numero)
+        {
+            var contato = Contatos.FirstOrDefault(x => x.Celular == numero);
+            return contato == null ? numero.ToString() : contato.Nome;
+        }
+
+        public void LimparLigacao(bool isApenasPararTimer = false)
+        {
+            TimerCelular?.Stop();
+            TimerCelular = null;
+
+            if (!isApenasPararTimer)
+            {
+                NumeroLigacao = 0;
+                StatusLigacao = 0;
+                ExtraLigacao = string.Empty;
+            }
         }
     }
 }

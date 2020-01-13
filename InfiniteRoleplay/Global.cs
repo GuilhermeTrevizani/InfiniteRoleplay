@@ -12,6 +12,9 @@ namespace InfiniteRoleplay
         public static List<Faccao> Faccoes { get; set; }
         public static List<Rank> Ranks { get; set; }
         public static List<Propriedade> Propriedades { get; set; }
+        public static List<Preco> Precos { get; set; }
+        public static List<Veiculo> Veiculos { get; set; }
+        public static List<Ponto> Pontos { get; set; }
     }
 
     public class Constants

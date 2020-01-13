@@ -21,7 +21,7 @@ namespace InfiniteRoleplay.Entities
             BlipGTA = NAPI.Blip.CreateBlip(new Vector3(PosX, PosY, PosZ));
             BlipGTA.Sprite = (uint)Tipo;
             BlipGTA.Color = Cor;
-            BlipGTA.Name = Functions.ObterNomePadraoBlip(Tipo, Nome);
+            BlipGTA.Name = Nome;
         }
 
         public void DeletarIdentificador()

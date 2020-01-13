@@ -18,6 +18,8 @@
         ChatOOC,
         ChatICBaixo,
         Megafone,
+        Celular,
+        Ame,
     }
 
     public enum TipoFaccao
@@ -46,6 +48,7 @@
     {
         Faccao = 1,
         VendaPropriedade = 2,
+        Revista = 3,
     }
 
     public enum TipoInterior
@@ -68,5 +71,16 @@
         HillcrestAvenue2874 = 16,
         WhispymoundDrive2677 = 17,
         MadWayneThunder2133 = 18,
+    }
+
+    public enum TipoPreco
+    {
+        Veiculo = 1,
+    }
+
+    public enum TipoPonto
+    {
+        Concessionaria = 1,
+        Multas = 2,
     }
 }

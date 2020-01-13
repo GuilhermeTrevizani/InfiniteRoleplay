@@ -17,14 +17,13 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.FaccaoBD.ChatBloqueado)
+            if (p.FaccaoBD.IsChatBloqueado)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Chat da facção está bloqueado!");
                 return;
             }
 
-            var players = Global.PersonagensOnline.Where(x => x.Faccao == p.Faccao);
-            foreach (var pl in players)
+            foreach (var pl in Global.PersonagensOnline.Where(x => x.Faccao == p.Faccao))
                 Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"(( {p.RankBD.Nome} {p.Nome} [{p.ID}]: {mensagem} ))");
         }
 
@@ -54,8 +53,8 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            Global.Faccoes[Global.Faccoes.IndexOf(p.FaccaoBD)].ChatBloqueado = !p.FaccaoBD.ChatBloqueado;
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(!p.FaccaoBD.ChatBloqueado ? "des" : string.Empty)}bloqueou o chat da facção!");
+            Global.Faccoes[Global.Faccoes.IndexOf(p.FaccaoBD)].IsChatBloqueado = !p.FaccaoBD.IsChatBloqueado;
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(!p.FaccaoBD.IsChatBloqueado ? "des" : string.Empty)}bloqueou o chat da facção!");
         }
 
         [Command("convidar")]
@@ -174,21 +173,136 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.FaccaoGestor, "/demitir", p, target);
         }
 
-        #region Policial
-
-        #endregion
-
         [Command("m", GreedyArg = true)]
         public void CMD_m(Client player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
             }
 
             Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.Megafone, 70.0f);
+        }
+
+        [Command("duty")]
+        public void CMD_duty(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial && p?.FaccaoBD?.Tipo != (int)TipoFaccao.Medica)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou médica!");
+                return;
+            }
+
+            p.IsTrabalhoFaccao = !p.IsTrabalhoFaccao;
+            foreach (var pl in Global.PersonagensOnline.Where(x => x.Faccao == p.Faccao))
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"{p.RankBD.Nome} {p.Nome} {(p.IsTrabalhoFaccao ? "entrou em" : "saiu de")} serviço!");
+        }
+
+        [Command("sairfaccao")]
+        public void CMD_sairfaccao(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.Faccao == 0 || p?.Rank == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção!");
+                return;
+            }
+
+            p.Faccao = p.Rank = 0;
+            p.IsTrabalhoFaccao = false;
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, "Você saiu da facção.");
+        }
+
+        [Command("multar", GreedyArg = true)]
+        public void CMD_multar(Client player, string idNome, int valor, string motivo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsTrabalhoFaccao)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return;
+
+            if (valor <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor inválido!");
+                return;
+            }
+
+            if (motivo.Length > 255)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Motivo não pode ter mais que 255 caracteres!");
+                return;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                context.Multas.Update(new Entities.Multa()
+                {
+                    Motivo = motivo,
+                    PersonagemMultado = target.Codigo,
+                    PersonagemPolicial = p.Codigo,
+                    Valor = valor,
+                });
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {target.Nome} por ${valor.ToString("N0")}. Motivo: {motivo}");
+            if (target.Celular > 0)
+                Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] SMS de {target.ObterNomeContato(911)}: Você recebeu uma multa de ${valor.ToString("N0")}. Motivo: {motivo}");
+        }
+
+        [Command("multaroff", GreedyArg = true)]
+        public void CMD_multaroff(Client player, string nomeCompleto, int valor, string motivo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsTrabalhoFaccao)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
+                return;
+            }
+
+            if (valor <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor inválido!");
+                return;
+            }
+
+            if (motivo.Length > 255)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Motivo não pode ter mais que 255 caracteres!");
+                return;
+            }
+
+            nomeCompleto = nomeCompleto.Replace("_", " ");
+
+            using (var context = new RoleplayContext())
+            {
+                var personagem = context.Personagens.FirstOrDefault(x => x.Nome.ToLower() == nomeCompleto.ToLower() && !x.Online);
+                if (personagem == null)
+                {
+                    Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Personagem {nomeCompleto} não encontrado ou está online!");
+                    return;
+                }
+
+                context.Multas.Update(new Entities.Multa()
+                {
+                    Motivo = motivo,
+                    PersonagemMultado = personagem.Codigo,
+                    PersonagemPolicial = p.Codigo,
+                    Valor = valor,
+                });
+                context.SaveChanges();
+
+                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {personagem.Nome} por ${valor.ToString("N0")}. Motivo: {motivo}");
+            }
         }
     }
 }

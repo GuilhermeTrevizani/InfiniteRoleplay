@@ -25,10 +25,14 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Geral", "/aceitar /ac"),
                 new Comando("Geral", "/recusar /rc"),
                 new Comando("Geral", "/pagar"),
-                new Comando("Geral", "/trocarpersonagem"),
-                new Comando("Geral", "/entrar"),
-                new Comando("Geral", "/sair"),
-                new Comando("Geral", "/p"),
+                new Comando("Geral", "/revistar"),
+                new Comando("Geral", "/multas"),
+                new Comando("Propriedades", "/entrar"),
+                new Comando("Propriedades", "/sair"),
+                new Comando("Propriedades", "/ptrancar"),
+                new Comando("Propriedades", "/pcomprar"),
+                new Comando("Propriedades", "/pvender"),
+                new Comando("Propriedades", "/pvenderpara"),
                 new Comando("Chat IC", "/me"),
                 new Comando("Chat IC", "/do"),
                 new Comando("Chat IC", "/g"),
@@ -36,6 +40,18 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Chat IC", "/s"),
                 new Comando("Chat OOC", "/b"),
                 new Comando("Chat OOC", "/pm"),
+                new Comando("Celular", "/sms"),
+                new Comando("Celular", "/desligar /des"),
+                new Comando("Celular", "/ligar"),
+                new Comando("Celular", "/atender"),
+                new Comando("Celular", "/celular"),
+                new Comando("Veículos", "/vcomprar"),
+                new Comando("Veículos", "/motor"),
+                new Comando("Veículos", "/vtrancar"),
+                new Comando("Veículos", "/vcomprarvaga"),
+                new Comando("Veículos", "/vestacionar"),
+                new Comando("Veículos", "/vspawn"),
+                new Comando("Veículos", "/vlista"),
             };
 
             if (p.Faccao > 0)
@@ -44,12 +60,22 @@ namespace InfiniteRoleplay.Commands
                 {
                     new Comando("Facção", "/f"),
                     new Comando("Facção", "/membros"),
+                    new Comando("Facção", "/sairfaccao"),
                 });
 
                 if (p.FaccaoBD.Tipo == (int)TipoFaccao.Policial)
                     listaComandos.AddRange(new List<Comando>()
                     {
                         new Comando("Facção Policial", "/m"),
+                        new Comando("Facção Policial", "/duty"),
+                        new Comando("Facção Policial", "/multar"),
+                        new Comando("Facção Policial", "/multaroff"),
+                    });
+                else if (p.FaccaoBD.Tipo == (int)TipoFaccao.Medica)
+
+                    listaComandos.AddRange(new List<Comando>()
+                    {
+                        new Comando("Facção Médica", "/duty"),
                     });
 
                 if (p.Rank >= p.FaccaoBD.RankGestor)
@@ -81,6 +107,8 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1", "/o"),
                     new Comando("Staff 1", "/a"),
                     new Comando("Staff 1", "/kick"),
+                    new Comando("Staff 1", "/irveh"),
+                    new Comando("Staff 1", "/trazerveh"),
                 });
 
             if (p.UsuarioBD.Staff >= 2)
@@ -109,7 +137,11 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/delwhite"),
                     new Comando("Staff 1337", "/staff"),
                     new Comando("Staff 1337", "/cfac"),
-                    new Comando("Staff 1337", "/efac"),
+                    new Comando("Staff 1337", "/efacnome"),
+                    new Comando("Staff 1337", "/efactipo"),
+                    new Comando("Staff 1337", "/efaccor"),
+                    new Comando("Staff 1337", "/efacrankgestor"),
+                    new Comando("Staff 1337", "/efacranklider"),
                     new Comando("Staff 1337", "/rfac"),
                     new Comando("Staff 1337", "/faccoes"),
                     new Comando("Staff 1337", "/crank"),
@@ -121,7 +153,15 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/dinheiro"),
                     new Comando("Staff 1337", "/cprop"),
                     new Comando("Staff 1337", "/rprop"),
-                    new Comando("Staff 1337", "/eprop"),
+                    new Comando("Staff 1337", "/epropvalor"),
+                    new Comando("Staff 1337", "/epropinterior"),
+                    new Comando("Staff 1337", "/eproppos"),
+                    new Comando("Staff 1337", "/irblip"),
+                    new Comando("Staff 1337", "/irprop"),
+                    new Comando("Staff 1337", "/cpreco"),
+                    new Comando("Staff 1337", "/rpreco"),
+                    new Comando("Staff 1337", "/cponto"),
+                    new Comando("Staff 1337", "/rponto"),
                 });
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoAjuda", listaComandos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome).ToList());
@@ -220,7 +260,7 @@ namespace InfiniteRoleplay.Commands
                         break;
                     }
 
-                    float distance = player.Position.DistanceTo(target.Player.Position);
+                    var distance = player.Position.DistanceTo(target.Player.Position);
                     if (distance > 2 || player.Dimension != target.Player.Dimension)
                     {
                         Functions.EnviarMensagem(player, TipoMensagem.Erro, "Dono da propriedade não está próximo de você!");
@@ -262,8 +302,26 @@ namespace InfiniteRoleplay.Commands
                         context.SaveChanges();
                     }
 
-                    Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade {prop.Codigo} de {Functions.ObterNomeIC(target)} por ${valor.ToString("N0")}.");
-                    Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Você vendeu a propriedade {prop.Codigo} para {Functions.ObterNomeIC(p)} por ${valor.ToString("N0")}.");
+                    Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade {prop.Codigo} de {target.NomeIC} por ${valor.ToString("N0")}.");
+                    Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Você vendeu a propriedade {prop.Codigo} para {p.NomeIC} por ${valor.ToString("N0")}.");
+                    break;
+                case TipoConvite.Revista:
+                    if (target == null)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Solicitante da revista não está online!");
+                        break;
+                    }
+
+                    float dist = player.Position.DistanceTo(target.Player.Position);
+                    if (dist > 2 || player.Dimension != target.Player.Dimension)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Solicitante da revista não está próximo de você!");
+                        return;
+                    }
+
+                    Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você aceitou ser revistado.");
+                    Functions.EnviarMensagem(target.Player, TipoMensagem.Titulo, $"Revista em {p.NomeIC}");
+                    Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"Celular: {p.Celular}  | Dinheiro: ${p.Dinheiro.ToString("N0")}");
                     break;
             }
 
@@ -306,12 +364,15 @@ namespace InfiniteRoleplay.Commands
                     strPlayer = "compra da propriedade";
                     strTarget = "venda da propriedade";
                     break;
+                case TipoConvite.Revista:
+                    strPlayer = strTarget = "revista";
+                    break;
             }
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você recusou o convite para {strPlayer}.");
 
             if (target != null)
-                Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} recusou seu convite para {strTarget}.");
+                Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} recusou seu convite para {strTarget}.");
 
             p.Convites.RemoveAll(x => x.Tipo == tipo);
         }
@@ -348,13 +409,13 @@ namespace InfiniteRoleplay.Commands
             p.SetDinheiro();
             target.SetDinheiro();
 
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{Functions.ObterNomeIC(p)} te deu ${dinheiro.ToString("N0")}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro.ToString("N0")} para {Functions.ObterNomeIC(target)}.");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} te deu ${dinheiro.ToString("N0")}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro.ToString("N0")} para {target.NomeIC}.");
             Functions.GravarLog(TipoLog.Dinheiro, $"/pagar {dinheiro}", p, target);
         }
 
-        [Command("trocarpersonagem")]
-        public void CMD_trocarpersonagem(Client player)
+        [Command("revistar")]
+        public void CMD_revistar(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -363,13 +424,27 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            Functions.SalvarPersonagem(player, false);
-
-            Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(p)] = new Entities.Personagem()
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return; 
+            
+            float distance = player.Position.DistanceTo(target.Player.Position);
+            if (distance > 2 || player.Dimension != target.Player.Dimension)
             {
-                UsuarioBD = p.UsuarioBD,
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
+                return;
+            }
+
+            var convite = new Convite()
+            {
+                Tipo = (int)TipoConvite.Revista,
+                Personagem = p.Codigo,
             };
-            RemoteEvents.EVENT_voltarSelecionarPersonagem(player, true);
+            target.Convites.RemoveAll(x => x.Tipo == (int)TipoConvite.Faccao);
+            target.Convites.Add(convite);
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você solicitou uma revista para {target.Nome}.");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Solicitou uma revista em você. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
         }
     }
 }

@@ -69,7 +69,7 @@ namespace InfiniteRoleplay.Commands
             Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.ChatICBaixo, player.Dimension > 0 ? 3.75f : 5);
         }
 
-        [Command("/s", GreedyArg = true)]
+        [Command("s", GreedyArg = true)]
         public void CMD_s(Client player, string idNome, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
@@ -90,11 +90,11 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"{Functions.ObterNomeIC(p)} sussura: {mensagem}");
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"{Functions.ObterNomeIC(p)} sussura: {mensagem}");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"{p.NomeIC} sussura: {mensagem}");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"{p.NomeIC} sussura: {mensagem}");
         }
 
-        [Command("/pm", GreedyArg = true)]
+        [Command("pm", GreedyArg = true)]
         public void CMD_pm(Client player, string idNome, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);

@@ -1,5 +1,6 @@
 ﻿using GTANetworkAPI;
 using InfiniteRoleplay.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,9 @@ namespace InfiniteRoleplay
             player.Armor = p.Colete;
             player.SetSkin((uint)p.Skin);
             p.SetDinheiro();
+
+            using (var context = new RoleplayContext())
+                p.Contatos = context.PersonagensContatos.Where(x => x.Codigo == p.Codigo).ToList();
 
             if (Global.PersonagensOnline.Count > Global.Parametros.RecordeOnline)
             {
@@ -116,6 +120,17 @@ namespace InfiniteRoleplay
                 p.DataUltimaVerificacao = DateTime.Now;
             }
 
+            if (!isOnline && p.Celular > 0)
+            {
+                p.LimparLigacao();
+                var pLigando = Global.PersonagensOnline.FirstOrDefault(x => x.NumeroLigacao == p.Celular);
+                if (pLigando != null)
+                {
+                    pLigando.LimparLigacao();
+                    EnviarMensagem(pLigando.Player, TipoMensagem.Nenhum, "!{#e6a250}" + $"[CELULAR] Sua ligação para {pLigando.ObterNomeContato(p.Celular)} caiu!");
+                }
+            }
+
             using (var context = new RoleplayContext())
             {
                 var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == p.Codigo);
@@ -131,7 +146,12 @@ namespace InfiniteRoleplay
                 personagem.Faccao = p.Faccao;
                 personagem.Rank = p.Rank;
                 personagem.Dinheiro = p.Dinheiro;
+                personagem.Celular = p.Celular;
                 context.Personagens.Update(personagem);
+
+                context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
+                context.PersonagensContatos.AddRange(p.Contatos);
+
                 context.SaveChanges();
             }
         }
@@ -156,25 +176,31 @@ namespace InfiniteRoleplay
                         switch (type)
                         {
                             case TipoMensagemJogo.ChatICNormal:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{ObterNomeIC(p)} diz: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{p.NomeIC} diz: {message}");
                                 break;
                             case TipoMensagemJogo.ChatICGrito:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{ObterNomeIC(p)} grita: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{p.NomeIC} grita: {message}");
                                 break;
                             case TipoMensagemJogo.Me:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{ObterNomeIC(p)} {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{p.NomeIC} {message}");
                                 break;
                             case TipoMensagemJogo.Do:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{message} (( {ObterNomeIC(p)} ))");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{message} (( {p.NomeIC} ))");
                                 break;
                             case TipoMensagemJogo.ChatOOC:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#bababa}" + $"(( {ObterNomeIC(p)} [{p.ID}]: {message} ))");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#bababa}" + $"(( {p.NomeIC} [{p.ID}]: {message} ))");
                                 break;
                             case TipoMensagemJogo.ChatICBaixo:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"[BAIXO] {ObterNomeIC(p)} diz: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"[BAIXO] {p.NomeIC} diz: {message}");
                                 break;
                             case TipoMensagemJogo.Megafone:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#F2FF43}" + $"[MEGAFONE] {ObterNomeIC(p)} diz: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#F2FF43}" + $"[MEGAFONE] {p.NomeIC} diz: {message}");
+                                break;
+                            case TipoMensagemJogo.Celular:
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"[CELULAR] {p.NomeIC} diz: {message}");
+                                break;
+                            case TipoMensagemJogo.Ame:
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{p.NomeIC} {message}");
                                 break;
                         }
                     }
@@ -198,24 +224,11 @@ namespace InfiniteRoleplay
             return color;
         }
 
-        public static string ObterNomePadraoBlip(int tipo, string nome)
-        {
-            switch (tipo)
-            {
-                case 361:
-                    return "Posto de Gasolina";
-            }
-
-            return nome;
-        }
-
-        public static string ObterNomeIC(Personagem p) => p.Nome;
-
         public static void MostrarStats(Client player, Personagem p)
         {
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.Staff}");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado} | Celular: {p.Celular}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro.ToString("N0")}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor}");
 
@@ -341,6 +354,104 @@ namespace InfiniteRoleplay
                     return new Vector3(-1289.775, 449.3125, 97.90256);
             }
             return new Vector3();
+        }
+
+        public static void EnviarMensagemCelular(Personagem p, Personagem target, string mensagem)
+        {
+            SendMessageToNearbyPlayers(p.Player, mensagem, TipoMensagemJogo.Celular, p.Player.Dimension > 0 ? 7.5f : 10.0f, false);
+
+            if (target != null)
+                EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {target.ObterNomeContato(p.Celular)} diz: {mensagem}");
+        }
+
+        public static void EnviarMensagemTipoFaccao(TipoFaccao tipo, string mensagem, bool isSomenteParaTrabalho, bool isCorFaccao)
+        {
+            var players = Global.PersonagensOnline.Where(x => x.FaccaoBD?.Tipo == (int)tipo);
+
+            if (isSomenteParaTrabalho)
+                players = players.Where(x => x.IsTrabalhoFaccao);
+
+            foreach (var pl in players)
+                EnviarMensagem(pl.Player, TipoMensagem.Nenhum, (isCorFaccao ? "!{#" + pl.FaccaoBD.Cor + "}" : string.Empty) + mensagem);
+        }
+
+        public static void ComprarVeiculo(Client player, string erro)
+        {
+            var p = ObterPersonagem(player);
+            if (p == null)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            var ponto = Global.Pontos.FirstOrDefault(x => x.Tipo == (int)TipoPonto.Concessionaria && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2);
+            if (ponto == null)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum ponto de compra de veículos!");
+                return;
+            }
+
+            var veiculos = Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Veiculo).OrderBy(x => x.Nome).Select(x => new
+            {
+                x.Nome,
+                Preco = $"${x.Valor.ToString("N0")}",
+            }).ToList();
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "comandoVComprar", veiculos, erro);
+        }
+
+        public static string GerarPlacaVeiculo()
+        {
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var random = new Random();
+            return $"{chars[random.Next(25)]}{chars[random.Next(25)]}{random.Next(0, 99999).ToString().PadLeft(5, '0')}{chars[random.Next(25)]}";
+        }
+
+        public static void AbrirCelular(Client player, string msg, int tipoMsg)
+        {
+            var p = ObterPersonagem(player);
+            if ((p?.Celular ?? 0) == 0)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não possui um celular!");
+                return;
+            }
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "abrirCelular", p.Contatos.OrderBy(x => x.Nome).ToList(), msg, tipoMsg);
+        }
+
+        public static void VisualizarMultas(Client player, string erro)
+        {
+            var p = ObterPersonagem(player);
+            if (p == null)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            var ponto = Global.Pontos.FirstOrDefault(x => x.Tipo == (int)TipoPonto.Multas && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2);
+            if (ponto == null)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum ponto de pagamento de multas!");
+                return;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                var multas = context.Multas.Where(x => !x.DataPagamento.HasValue && x.PersonagemMultado == p.Codigo).OrderBy(x => x.Data).Select(x => new
+                {
+                    x.Codigo,
+                    x.Motivo,
+                    Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
+                    Valor = $"${x.Valor.ToString("N0")}",
+                }).ToList();
+                if (multas.Count == 0)
+                {
+                    EnviarMensagem(player, TipoMensagem.Erro, "Você não possui multas pendentes!");
+                    return;
+                }
+
+                NAPI.ClientEvent.TriggerClientEvent(player, "visualizarMultas", multas, erro);
+            }
         }
     }
 }

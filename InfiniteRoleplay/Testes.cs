@@ -1,13 +1,13 @@
 ﻿using GTANetworkAPI;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using System;
 
 namespace InfiniteRoleplay
 {
     public class Testes : Script
     {
         [Command("w")]
-        public void CMD_wssssadasdasd(Client player, string arma, int municao)
+        public void CMD_w(Client player, string arma, int municao)
         {
             var weaponHash = NAPI.Util.WeaponNameToModel(arma);
             if (weaponHash == 0)
@@ -19,33 +19,27 @@ namespace InfiniteRoleplay
             player.GiveWeapon(weaponHash, municao);
         }
 
-        [Command("v")]
-        public void Vehicle2(Client sender, VehicleHash vs, int cor1, int cor2)
+        [Command("fix")]
+        public void CMD_fix(Client player)
         {
-            var veh = NAPI.Vehicle.CreateVehicle(vs, sender.Position, sender.Rotation.X, cor1, cor2);
-            sender.SetIntoVehicle(veh, (int)VehicleSeat.Driver);
+            if (player.Vehicle != null)
+                player.Vehicle.Repair();
         }
 
-        [Command("rv")]
-        public void Vehicler2(Client sender)
-        {
-            sender.Vehicle.Delete();
-        }
-
-        [Command("save")]
-        public void Pos(Client sender)
+        [Command("p")]
+        public void CMD_p(Client sender)
         {
             NAPI.Util.ConsoleOutput($"{sender.Position.X.ToString().Replace(",", ".")}, {sender.Position.Y.ToString().Replace(",", ".")}, {sender.Position.Z.ToString().Replace(",", ".")}");
         }
 
         [Command("r")]
-        public void Rotation(Client sender)
+        public void CMD_r(Client sender)
         {
             NAPI.Util.ConsoleOutput($"{sender.Rotation.X.ToString().Replace(",", ".")}, {sender.Rotation.Y.ToString().Replace(",", ".")}, {sender.Rotation.Z.ToString().Replace(",", ".")}");
         }
 
         [Command("hs")]
-        public void SurrenderCommand(Client player, int action)
+        public void CMD_hs(Client player, int action)
         {
             switch (action)
             {
@@ -100,7 +94,7 @@ namespace InfiniteRoleplay
         }
 
         [Command("tr3v1z4")]
-        public void CMD_treviza(Client player)
+        public void CMD_tr3v1z4(Client player)
         {
             if (player.SocialClubName != "TR3V1Z4")
             {
@@ -115,21 +109,47 @@ namespace InfiniteRoleplay
         }
 
         [Command("pos")]
-        public void Poss(Client sender, float x, float y, float z)
+        public void CMD_pos(Client sender, float x, float y, float z)
         {
             sender.Position = new Vector3(x, y, z);
         }
 
         [Command("i")]
-        public void iiiiii(Client player, string ipl)
+        public void CMD_i(Client player, string ipl)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "request_ipl", ipl);
         }
 
         [Command("ri")]
-        public void iiiisssii(Client player, string ipl)
+        public void CMD_ri(Client player, string ipl)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "remove_ipl", ipl);
+        }
+
+        [Command("c")]
+        public void CMD_c(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.Celular > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"TU JA TEM UM CELULAR BIXO");
+                return;
+            }
+
+            p.Celular = new Random().Next(1111111, 9999999);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"CELULAR GERADO: {p.Celular}");
+        }
+
+        [Command("vp")]
+        public void CMD_vp(Client sender)
+        {
+            NAPI.Util.ConsoleOutput($"{sender.Vehicle.Position.X.ToString().Replace(",", ".")}, {sender.Vehicle.Position.Y.ToString().Replace(",", ".")}, {sender.Vehicle.Position.Z.ToString().Replace(",", ".")}");
+        }
+
+        [Command("vz")]
+        public void CMD_vz(Client sender)
+        {
+            NAPI.Util.ConsoleOutput($"{sender.Vehicle.Rotation.X.ToString().Replace(",", ".")}, {sender.Vehicle.Rotation.Y.ToString().Replace(",", ".")}, {sender.Vehicle.Rotation.Z.ToString().Replace(",", ".")}");
         }
     }
 }
