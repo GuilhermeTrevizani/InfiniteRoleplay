@@ -1,4 +1,5 @@
 ﻿using InfiniteRoleplay.Entities;
+using InfiniteRoleplay.Models;
 using System.Collections.Generic;
 
 namespace InfiniteRoleplay
@@ -15,6 +16,7 @@ namespace InfiniteRoleplay
         public static List<Preco> Precos { get; set; }
         public static List<Veiculo> Veiculos { get; set; }
         public static List<Ponto> Pontos { get; set; }
+        public static List<Skin> Skins { get; set; }
     }
 
     public class Constants

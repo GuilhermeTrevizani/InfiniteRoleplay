@@ -256,32 +256,6 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/colete {colete}", p, target);
         }
 
-        [Command("skin")]
-        public void CMD_skin(Client player, string idNome, string skin)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p?.UsuarioBD?.Staff < 2)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
-                return;
-            }
-
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
-            if (target == null)
-                return;
-
-            var pedHash = NAPI.Util.PedNameToModel(skin);
-            if (pedHash == 0)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Skin {skin} não existe!");
-                return;
-            }
-
-            target.Player.SetSkin(pedHash);
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou sua skin para {pedHash.ToString()}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou a skin de {target.Nome} para {pedHash.ToString()}.");
-        }
-
         [Command("skinc")]
         public void CMD_skinc(Client player, string idNome, int slot, int drawable, int texture)
         {
@@ -1593,6 +1567,28 @@ namespace InfiniteRoleplay.Commands
             Global.Pontos.Remove(ponto);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Ponto {ponto.Codigo} removido com sucesso!");
             Functions.GravarLog(TipoLog.Staff, $"/rponto {ponto.Codigo}", p, null);
+        }
+
+        [Command("irponto")]
+        public void CMD_irponto(Client player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var ponto = Global.Pontos.FirstOrDefault(x => x.Codigo == codigo);
+            if (ponto == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Ponto {codigo} não existe!");
+                return;
+            }
+
+            player.Dimension = 0;
+            player.Position = new Vector3(ponto.PosX, ponto.PosY, ponto.PosZ);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o ponto {ponto.Codigo}!");
         }
         #endregion Staff 1337
     }

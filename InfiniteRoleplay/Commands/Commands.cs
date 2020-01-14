@@ -27,6 +27,8 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Geral", "/pagar"),
                 new Comando("Geral", "/revistar"),
                 new Comando("Geral", "/multas"),
+                new Comando("Geral", "/comprar"),
+                new Comando("Geral", "/skin"),
                 new Comando("Propriedades", "/entrar"),
                 new Comando("Propriedades", "/sair"),
                 new Comando("Propriedades", "/ptrancar"),
@@ -52,6 +54,9 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Veículos", "/vestacionar"),
                 new Comando("Veículos", "/vspawn"),
                 new Comando("Veículos", "/vlista"),
+                new Comando("Banco", "/depositar"),
+                new Comando("Banco", "/sacar"),
+                new Comando("Banco", "/transferir"),
             };
 
             if (p.Faccao > 0)
@@ -116,7 +121,6 @@ namespace InfiniteRoleplay.Commands
                 {
                     new Comando("Staff 2", "/vida"),
                     new Comando("Staff 2", "/colete"),
-                    new Comando("Staff 2", "/skin"),
                     new Comando("Staff 2", "/skina"),
                     new Comando("Staff 2", "/skinc"),
                     new Comando("Staff 2", "/checar"),
@@ -162,6 +166,7 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/rpreco"),
                     new Comando("Staff 1337", "/cponto"),
                     new Comando("Staff 1337", "/rponto"),
+                    new Comando("Staff 1337", "/irponto"),
                 });
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoAjuda", listaComandos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome).ToList());
@@ -393,7 +398,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
             if (target == null)
                 return;
 
@@ -426,8 +431,8 @@ namespace InfiniteRoleplay.Commands
 
             var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
             if (target == null)
-                return; 
-            
+                return;
+
             float distance = player.Position.DistanceTo(target.Player.Position);
             if (distance > 2 || player.Dimension != target.Player.Dimension)
             {
@@ -445,6 +450,162 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você solicitou uma revista para {target.Nome}.");
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Solicitou uma revista em você. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
+        }
+
+        [Command("multas")]
+        public void CMD_multas(Client player) => Functions.VisualizarMultas(player, string.Empty);
+
+        [Command("transferir")]
+        public void CMD_transferir(Client player, string idNome, int dinheiro)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (!Global.Pontos.Any(x => (x.Tipo == (int)TipoPonto.Banco || x.Tipo == (int)TipoPonto.ATM) && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2) && p.Celular == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um banco/ATM ou não possui um celular!");
+                return;
+            }
+
+            if (p.Banco < dinheiro)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente no banco!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return;
+
+            p.Banco -= dinheiro;
+            target.Banco += dinheiro;
+
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} transferiu para você ${dinheiro.ToString("N0")}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você transferiu ${dinheiro.ToString("N0")} para {target.Nome}.");
+            Functions.GravarLog(TipoLog.Dinheiro, $"/transferir {dinheiro}", p, target);
+        }
+
+        [Command("sacar")]
+        public void CMD_sacar(Client player, int dinheiro)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (!Global.Pontos.Any(x => (x.Tipo == (int)TipoPonto.Banco || x.Tipo == (int)TipoPonto.ATM) && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um banco/ATM!");
+                return;
+            }
+
+            if (p.Banco < dinheiro)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente no banco!");
+                return;
+            }
+
+            p.Banco -= dinheiro;
+            p.Dinheiro += dinheiro;
+            p.SetDinheiro();
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você sacou ${dinheiro.ToString("N0")}.");
+            Functions.GravarLog(TipoLog.Dinheiro, $"/sacar {dinheiro}", p, null);
+        }
+
+        [Command("depositar")]
+        public void CMD_depositar(Client player, int dinheiro)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.Banco && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um banco!");
+                return;
+            }
+
+            if (p.Dinheiro < dinheiro)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
+                return;
+            }
+
+            p.Dinheiro -= dinheiro;
+            p.Banco += dinheiro;
+            p.SetDinheiro();
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você depositou ${dinheiro.ToString("N0")}.");
+            Functions.GravarLog(TipoLog.Dinheiro, $"/depositar {dinheiro}", p, null);
+        }
+
+        [Command("comprar")]
+        public void CMD_comprar(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.LojaConveniencia && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma loja de conveniência!");
+                return;
+            }
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Conveniencia).OrderBy(x => x.Nome).Select(x => new
+            {
+                x.Nome,
+                Preco = $"${x.Valor.ToString("N0")}",
+            }).ToList(), 0, string.Empty);
+        }
+
+        [Command("skin")]
+        public void CMD_skin(Client player, string skin)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.LojaRoupas && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma loja de roupas!");
+                return;
+            }
+
+            var pedHash = NAPI.Util.PedNameToModel(skin);
+            if (pedHash == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Skin {skin} não existe!");
+                return;
+            }
+
+            if (p.Dinheiro < Global.Parametros.ValorSkin)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
+                return;
+            }
+
+            p.Dinheiro -= Global.Parametros.ValorSkin;
+            p.SetDinheiro();
+            player.SetSkin(pedHash);
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a skin {pedHash.ToString()} por ${Global.Parametros.ValorSkin.ToString("N0")}.");
         }
     }
 }

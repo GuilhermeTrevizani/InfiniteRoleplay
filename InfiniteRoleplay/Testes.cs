@@ -1,6 +1,4 @@
 ﻿using GTANetworkAPI;
-using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace InfiniteRoleplay
 {
@@ -17,13 +15,6 @@ namespace InfiniteRoleplay
             }
 
             player.GiveWeapon(weaponHash, municao);
-        }
-
-        [Command("fix")]
-        public void CMD_fix(Client player)
-        {
-            if (player.Vehicle != null)
-                player.Vehicle.Repair();
         }
 
         [Command("p")]
@@ -93,21 +84,6 @@ namespace InfiniteRoleplay
             }
         }
 
-        [Command("tr3v1z4")]
-        public void CMD_tr3v1z4(Client player)
-        {
-            if (player.SocialClubName != "TR3V1Z4")
-            {
-                player.SendNotification("VOCê NÃO É O TR3V1Z4");
-                return;
-            }
-
-            var p = Functions.ObterPersonagem(player);
-            p.UsuarioBD.Staff = 1337;
-            using (var context = new RoleplayContext())
-                context.Database.ExecuteSqlCommand($"UPDATE Usuarios SET Staff = 1337 WHERE Codigo = {p.Usuario}");
-        }
-
         [Command("pos")]
         public void CMD_pos(Client sender, float x, float y, float z)
         {
@@ -124,20 +100,6 @@ namespace InfiniteRoleplay
         public void CMD_ri(Client player, string ipl)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "remove_ipl", ipl);
-        }
-
-        [Command("c")]
-        public void CMD_c(Client player)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p?.Celular > 0)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"TU JA TEM UM CELULAR BIXO");
-                return;
-            }
-
-            p.Celular = new Random().Next(1111111, 9999999);
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"CELULAR GERADO: {p.Celular}");
         }
 
         [Command("vp")]

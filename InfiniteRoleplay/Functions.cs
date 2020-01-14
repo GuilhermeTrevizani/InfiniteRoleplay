@@ -229,7 +229,7 @@ namespace InfiniteRoleplay
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.Staff}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado} | Celular: {p.Celular}");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro.ToString("N0")}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro.ToString("N0")} | Banco: ${p.Banco.ToString("N0")}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor}");
 
             if (p.Faccao > 0)
@@ -384,8 +384,7 @@ namespace InfiniteRoleplay
                 return;
             }
 
-            var ponto = Global.Pontos.FirstOrDefault(x => x.Tipo == (int)TipoPonto.Concessionaria && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2);
-            if (ponto == null)
+            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.Concessionaria && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
             {
                 EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum ponto de compra de veículos!");
                 return;
@@ -428,8 +427,7 @@ namespace InfiniteRoleplay
                 return;
             }
 
-            var ponto = Global.Pontos.FirstOrDefault(x => x.Tipo == (int)TipoPonto.Multas && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2);
-            if (ponto == null)
+            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.Multas && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
             {
                 EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum ponto de pagamento de multas!");
                 return;

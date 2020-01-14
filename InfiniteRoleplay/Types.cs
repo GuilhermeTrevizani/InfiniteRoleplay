@@ -76,11 +76,16 @@
     public enum TipoPreco
     {
         Veiculo = 1,
+        Conveniencia = 2,
     }
 
     public enum TipoPonto
     {
         Concessionaria = 1,
         Multas = 2,
+        Banco = 3,
+        ATM = 4,
+        LojaConveniencia = 5,
+        LojaRoupas = 6,
     }
 }

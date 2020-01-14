@@ -14,25 +14,26 @@ namespace InfiniteRoleplay.Entities
         public int Usuario { get; set; } = 0;
         public string SocialClubRegistro { get; set; } = string.Empty;
         public string SocialClubUltimoAcesso { get; set; } = string.Empty;
-        public DateTime DataRegistro { get; set; } = DateTime.MinValue;
+        public DateTime DataRegistro { get; set; } = DateTime.Now;
         public string IPRegistro { get; set; } = string.Empty;
-        public DateTime DataUltimoAcesso { get; set; } = DateTime.MinValue;
+        public DateTime DataUltimoAcesso { get; set; } = DateTime.Now;
         public string IPUltimoAcesso { get; set; } = string.Empty;
-        public long Skin { get; set; } = 0;
-        public float PosX { get; set; } = 0;
-        public float PosY { get; set; } = 0;
-        public float PosZ { get; set; } = 0;
-        public int Vida { get; set; } = 0;
+        public long Skin { get; set; } = 188012277;
+        public float PosX { get; set; } = 128.4853f;
+        public float PosY { get; set; } = -1737.086f;
+        public float PosZ { get; set; } = 30.11018f;
+        public int Vida { get; set; } = 100;
         public int Colete { get; set; } = 0;
         public long Dimensao { get; set; } = 0;
         public string Sexo { get; set; } = "M";
         public DateTime DataNascimento { get; set; } = DateTime.MinValue;
-        public bool Online { get; set; } = false;
+        public bool Online { get; set; } = true;
         public int TempoConectado { get; set; } = 0;
         public int Faccao { get; set; } = 0;
         public int Rank { get; set; } = 0;
         public int Dinheiro { get; set; } = 0;
         public int Celular { get; set; } = 0;
+        public int Banco { get; set; } = 0;
 
         [NotMapped]
         public int ID { get; set; }
@@ -88,7 +89,7 @@ namespace InfiniteRoleplay.Entities
         public string ObterNomeContato(int numero)
         {
             var contato = Contatos.FirstOrDefault(x => x.Celular == numero);
-            return contato == null ? numero.ToString() : contato.Nome;
+            return contato == null ? $"#{numero}" : $"{contato.Nome} #{numero}";
         }
 
         public void LimparLigacao(bool isApenasPararTimer = false)

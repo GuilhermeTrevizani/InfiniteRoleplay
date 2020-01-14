@@ -6,11 +6,11 @@ namespace InfiniteRoleplay.Entities
     public class Ponto
     {
         public int Codigo { get; set; }
-        public string Nome { get; set; }
-        public int Tipo { get; set; }
-        public float PosX { get; set; }
-        public float PosY { get; set; }
-        public float PosZ { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public int Tipo { get; set; } = 0;
+        public float PosX { get; set; } = 0;
+        public float PosY { get; set; } = 0;
+        public float PosZ { get; set; } = 0;
 
         [NotMapped]
         public TextLabel TextLabel { get; set; }

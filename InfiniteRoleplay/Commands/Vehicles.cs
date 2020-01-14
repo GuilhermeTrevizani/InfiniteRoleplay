@@ -46,7 +46,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             var veh = Global.Veiculos
-                .Where(x => x.Personagem == p.Codigo && player.Position.DistanceTo(new Vector3(x.Vehicle.Position.X, x.Vehicle.Position.Y, x.Vehicle.Position.Z)) <= 2)
+                .Where(x => x.Personagem == p.Codigo && player.Position.DistanceTo(new Vector3(x.Vehicle.Position.X, x.Vehicle.Position.Y, x.Vehicle.Position.Z)) <= 5)
                 .OrderBy(x => player.Position.DistanceTo(new Vector3(x.Vehicle.Position.X, x.Vehicle.Position.Y, x.Vehicle.Position.Z)))
                 .FirstOrDefault();
 
@@ -70,7 +70,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.Dinheiro < Global.Parametros.ValorComprarVagaVeiculo)
+            if (p.Dinheiro < Global.Parametros.ValorVagaVeiculo)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
                 return;
@@ -102,10 +102,10 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
             }
 
-            p.Dinheiro -= Global.Parametros.ValorComprarVagaVeiculo;
+            p.Dinheiro -= Global.Parametros.ValorVagaVeiculo;
             p.SetDinheiro();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou uma vaga por ${Global.Parametros.ValorComprarVagaVeiculo.ToString("N0")}!");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou uma vaga por ${Global.Parametros.ValorVagaVeiculo.ToString("N0")}!");
         }
 
         [Command("vestacionar")]
@@ -198,8 +198,5 @@ namespace InfiniteRoleplay.Commands
                     Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Código: {v.Codigo} | Modelo: {v.Modelo} | Placa: {v.Placa} | Spawnado: {(Global.Veiculos.Any(x => x.Codigo == v.Codigo) ? "SIM" : "NÃO")}");
             }
         }
-
-        [Command("multas")]
-        public void CMD_multas(Client player) => Functions.VisualizarMultas(player, string.Empty);
     }
 }

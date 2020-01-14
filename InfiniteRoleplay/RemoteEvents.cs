@@ -1,6 +1,6 @@
 ﻿using GTANetworkAPI;
-using InfiniteRoleplay.Commands;
 using InfiniteRoleplay.Entities;
+using InfiniteRoleplay.Models;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -81,15 +81,13 @@ namespace InfiniteRoleplay
                     SocialClubUltimoAcesso = player.SocialClubName,
                     Serial = player.Serial,
                     IPRegistro = player.Address,
-                    DataRegistro = DateTime.Now,
                     IPUltimoAcesso = player.Address,
-                    DataUltimoAcesso = DateTime.Now,
                 };
                 context.Usuarios.Add(user);
                 context.SaveChanges();
-
-                EVENT_entrarUsuario(player, usuario, senha);
             }
+
+            EVENT_entrarUsuario(player, usuario, senha);
         }
 
         [RemoteEvent("entrarUsuario")]
@@ -196,24 +194,9 @@ namespace InfiniteRoleplay
                     DataNascimento = dtNascimento,
                     SocialClubRegistro = player.SocialClubName,
                     SocialClubUltimoAcesso = player.SocialClubName,
-                    DataRegistro = DateTime.Now,
-                    DataUltimoAcesso = DateTime.Now,
                     IPRegistro = player.Address,
                     IPUltimoAcesso = player.Address,
-                    Skin = 188012277,
-                    Vida = 100,
-                    Colete = 0,
-                    PosX = 128.4853f,
-                    PosY = -1737.086f,
-                    PosZ = 30.11018f,
-                    Online = true,
                     ID = Functions.ObterNovoID(),
-                    Faccao = 0,
-                    Rank = 0,
-                    Dimensao = 0,
-                    TempoConectado = 0,
-                    Dinheiro = 0,
-                    Celular = 0,
                 };
                 context.Personagens.Add(personagem);
                 context.SaveChanges();
@@ -274,7 +257,7 @@ namespace InfiniteRoleplay
             using (var context = new RoleplayContext())
             {
                 var personagens = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo).OrderBy(x => x.Codigo).Select(x => new { id = x.Codigo, nome = x.Nome }).ToList();
-                NAPI.ClientEvent.TriggerClientEvent(player, "selecionarPersonagem", personagens, false);
+                NAPI.ClientEvent.TriggerClientEvent(player, "selecionarPersonagem", personagens);
             }
         }
 
@@ -285,9 +268,9 @@ namespace InfiniteRoleplay
             if (p == null)
                 return;
 
-            if (string.IsNullOrWhiteSpace(veiculo) || cor1 == 0 || cor2 == 0)
+            if (string.IsNullOrWhiteSpace(veiculo))
             {
-                Functions.ComprarVeiculo(player, "Verifique se os campos foram preenchidos corretamente!");
+                Functions.ComprarVeiculo(player, "Você não informou qual veículo deseja comprar!");
                 return;
             }
 
@@ -421,6 +404,58 @@ namespace InfiniteRoleplay
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você pagou a multa {codigo}!");
             NAPI.ClientEvent.TriggerClientEvent(player, "ativarChat");
+        }
+
+        [RemoteEvent("comprarConveniencia")]
+        public void EVENT_comprarConveniencia(Client player, string nome)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+                return;
+
+            var precos = Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Conveniencia).OrderBy(x => x.Nome).Select(x => new
+            {
+                x.Nome,
+                Preco = $"${x.Valor.ToString("N0")}",
+            }).ToList();
+
+            var preco = Global.Precos.FirstOrDefault(x => x.Nome == nome && x.Tipo == (int)TipoPreco.Conveniencia);
+
+            if (p.Dinheiro < preco.Valor)
+            {
+                NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", precos, 1, "Você não possui dinheiro suficiente!");
+                return;
+            }
+
+            string strMensagem = string.Empty;
+            switch (nome)
+            {
+                case "Celular":
+                    if (p?.Celular > 0)
+                    {
+                        NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", precos, 1, "Você já possui um celular!");
+                        return;
+                    }
+
+                    using (var context = new RoleplayContext())
+                    {
+                        do
+                        {
+                            p.Celular = new Random().Next(1111111, 9999999);
+                            if (context.Personagens.Any(x => x.Celular == p.Celular))
+                                p.Celular = 0;
+
+                        } while (p.Celular == 0);
+                    }
+
+                    p.Dinheiro -= preco.Valor;
+                    p.SetDinheiro();
+
+                    strMensagem = $"Você comprou um celular! Seu número é: {p.Celular}";
+                    break;
+            }
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", precos, 2, strMensagem);
         }
     }
 }

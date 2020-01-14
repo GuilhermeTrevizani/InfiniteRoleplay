@@ -11,9 +11,9 @@ namespace InfiniteRoleplay.Entities
         public string SocialClubRegistro { get; set; } = string.Empty;
         public string SocialClubUltimoAcesso { get; set; } = string.Empty;
         public string IPRegistro { get; set; } = string.Empty;
-        public DateTime DataRegistro { get; set; } = DateTime.MinValue;
+        public DateTime DataRegistro { get; set; } = DateTime.Now;
         public string IPUltimoAcesso { get; set; } = string.Empty;
-        public DateTime DataUltimoAcesso { get; set; } = DateTime.MinValue;
+        public DateTime DataUltimoAcesso { get; set; } = DateTime.Now;
         public string Serial { get; set; } = string.Empty;
         public int Staff { get; set; } = 0;
     }

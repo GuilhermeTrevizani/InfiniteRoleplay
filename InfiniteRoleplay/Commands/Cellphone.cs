@@ -7,7 +7,7 @@ namespace InfiniteRoleplay.Commands
     public class Cellphone : Script
     {
         [Command("sms", GreedyArg = true)]
-        public void CMD_sms(Client player, int numero, string mensagem)
+        public void CMD_sms(Client player, string numeroNomeContato, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if ((p?.Celular ?? 0) == 0)
@@ -16,11 +16,15 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.Dinheiro < 1)
+            if (p.Dinheiro < Global.Parametros.ValorSMS)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui $1 para enviar um SMS!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Você não possui ${Global.Parametros.ValorSMS.ToString("N0")} para enviar um SMS!");
                 return;
             }
+
+            int.TryParse(numeroNomeContato, out int numero);
+            if (numero == 0)
+                numero = p.Contatos.FirstOrDefault(x => x.Nome.ToLower().Contains(numeroNomeContato.ToLower()))?.Celular ?? 0;
 
             if (numero == p.Celular)
             {
@@ -35,7 +39,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            p.Dinheiro--;
+            p.Dinheiro -= Global.Parametros.ValorSMS;
             p.SetDinheiro();
 
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"[CELULAR] SMS para {p.ObterNomeContato(numero)}: {mensagem}");
@@ -45,7 +49,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("ligar")]
-        public void CMD_ligar(Client player, int numero)
+        public void CMD_ligar(Client player, string numeroNomeContato)
         {
             var p = Functions.ObterPersonagem(player);
             if ((p?.Celular ?? 0) == 0)
@@ -59,6 +63,10 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está em uma ligação!");
                 return;
             }
+
+            int.TryParse(numeroNomeContato, out int numero);
+            if (numero == 0)
+                numero = p.Contatos.FirstOrDefault(x => x.Nome.ToLower().Contains(numeroNomeContato.ToLower()))?.Celular ?? 0;
 
             if (numero == p.Celular)
             {
@@ -97,7 +105,7 @@ namespace InfiniteRoleplay.Commands
             p.TimerCelular.Elapsed += TimerCelular_Elapsed;
             p.TimerCelular.Start();
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#e6a250}" + $"[CELULAR] Você está ligando para {p.ObterNomeContato(numero)}.");
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#e6a250}" + $"[CELULAR] O seu celular está tocando ({target.ObterNomeContato(p.Celular)}).");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#e6a250}" + $"[CELULAR] O seu celular está tocando! Ligação de {target.ObterNomeContato(p.Celular)}. (digite /atender ou /desligar)");
             Functions.SendMessageToNearbyPlayers(target.Player, $"O celular de {target.NomeIC} está tocando.", TipoMensagemJogo.Do, 5, true);
         }
 
@@ -127,7 +135,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#e6a250}" + $"[CELULAR] O seu celular está tocando ({target.ObterNomeContato(p.Celular)}).");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#e6a250}" + $"[CELULAR] O seu celular está tocando! Ligação de {target.ObterNomeContato(p.Celular)}. (digite /atender ou /desligar)");
             Functions.SendMessageToNearbyPlayers(target.Player, $"O celular de {target.NomeIC} está tocando.", TipoMensagemJogo.Do, 5, true);
         }
 
