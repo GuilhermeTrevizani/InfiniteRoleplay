@@ -18,7 +18,7 @@ namespace InfiniteRoleplay.Entities
         public string IPRegistro { get; set; } = string.Empty;
         public DateTime DataUltimoAcesso { get; set; } = DateTime.Now;
         public string IPUltimoAcesso { get; set; } = string.Empty;
-        public long Skin { get; set; } = 188012277;
+        public string Skin { get; set; } = "FreeModeMale01";
         public float PosX { get; set; } = 128.4853f;
         public float PosY { get; set; } = -1737.086f;
         public float PosZ { get; set; } = 30.11018f;
@@ -34,6 +34,7 @@ namespace InfiniteRoleplay.Entities
         public int Dinheiro { get; set; } = 0;
         public int Celular { get; set; } = 0;
         public int Banco { get; set; } = 0;
+        public string IPL { get; set; } = "[]";
 
         [NotMapped]
         public int ID { get; set; }
@@ -80,6 +81,9 @@ namespace InfiniteRoleplay.Entities
         [NotMapped]
         public bool IsTrabalhoFaccao { get; set; } = false;
 
+        [NotMapped]
+        public List<string> IPLs { get; set; }
+
         public void SetDinheiro()
         {
             if (Player != null)
@@ -103,6 +107,20 @@ namespace InfiniteRoleplay.Entities
                 StatusLigacao = 0;
                 ExtraLigacao = string.Empty;
             }
+        }
+
+        public void SetarIPLs()
+        {
+            foreach (var ipl in IPLs)
+                NAPI.ClientEvent.TriggerClientEvent(Player, "setIPL", ipl);
+        }
+
+        public void LimparIPLs()
+        {
+            foreach (var ipl in IPLs)
+                NAPI.ClientEvent.TriggerClientEvent(Player, "removeIPL", ipl);
+
+            IPLs.Clear();
         }
     }
 }

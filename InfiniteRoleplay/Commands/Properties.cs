@@ -1,5 +1,6 @@
 ﻿using GTANetworkAPI;
 using InfiniteRoleplay.Models;
+using System;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -33,6 +34,8 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            p.IPLs = Functions.ObterIPLsPorInterior((TipoInterior)prox.Interior);
+            p.SetarIPLs();
             player.Dimension = (uint)prox.Codigo;
             player.Position = new Vector3(prox.SaidaPosX, prox.SaidaPosY, prox.SaidaPosZ);
         }
@@ -65,6 +68,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            p.LimparIPLs();
             player.Dimension = 0;
             player.Position = new Vector3(prox.EntradaPosX, prox.EntradaPosY, prox.EntradaPosZ);
         }
@@ -120,7 +124,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             var prox = Global.Propriedades
-                .Where(x => x.Personagem  == 0 && player.Position.DistanceTo(new Vector3(x.EntradaPosX, x.EntradaPosY, x.EntradaPosZ)) <= 2)
+                .Where(x => x.Personagem == 0 && player.Position.DistanceTo(new Vector3(x.EntradaPosX, x.EntradaPosY, x.EntradaPosZ)) <= 2)
                 .OrderBy(x => player.Position.DistanceTo(new Vector3(x.EntradaPosX, x.EntradaPosY, x.EntradaPosZ)))
                 .FirstOrDefault();
 

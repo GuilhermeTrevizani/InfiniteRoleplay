@@ -19,7 +19,6 @@ namespace InfiniteRoleplay.Commands
             {
                 new Comando("Teclas", "F2", "Jogadores online"),
                 new Comando("Teclas", "F3", "Mostrar/ocultar cursor"),
-                new Comando("Geral", "/stopanim /sa"),
                 new Comando("Geral", "/stats"),
                 new Comando("Geral", "/id"),
                 new Comando("Geral", "/aceitar /ac"),
@@ -47,6 +46,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Celular", "/ligar"),
                 new Comando("Celular", "/atender"),
                 new Comando("Celular", "/celular"),
+                new Comando("Celular", "/gps"),
                 new Comando("Veículos", "/vcomprar"),
                 new Comando("Veículos", "/motor"),
                 new Comando("Veículos", "/vtrancar"),
@@ -57,6 +57,42 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Banco", "/depositar"),
                 new Comando("Banco", "/sacar"),
                 new Comando("Banco", "/transferir"),
+                new Comando("Animações", "/stopanim /sa"),
+                new Comando("Animações", "/crossarms"),
+                new Comando("Animações", "/handsup /hs"),
+                new Comando("Animações", "/smoke"),
+                new Comando("Animações", "/lean"),
+                new Comando("Animações", "/police"),
+                new Comando("Animações", "/incar"),
+                new Comando("Animações", "/pushups"),
+                new Comando("Animações", "/situps"),
+                new Comando("Animações", "/blunt"),
+                new Comando("Animações", "/afishing"),
+                new Comando("Animações", "/acop"),
+                new Comando("Animações", "/idle"),
+                new Comando("Animações", "/barra"),
+                new Comando("Animações", "/kneel"),
+                new Comando("Animações", "/revistarc"),
+                new Comando("Animações", "/ajoelhar"),
+                new Comando("Animações", "/drink"),
+                new Comando("Animações", "/morto"),
+                new Comando("Animações", "/gsign"),
+                new Comando("Animações", "/hurry"),
+                new Comando("Animações", "/cair"),
+                new Comando("Animações", "/wsup"),
+                new Comando("Animações", "/render"),
+                new Comando("Animações", "/mirar"),
+                new Comando("Animações", "/sentar"),
+                new Comando("Animações", "/dormir"),
+                new Comando("Animações", "/pixar"),
+                new Comando("Animações", "/sexo"),
+                new Comando("Animações", "/jogado"),
+                new Comando("Animações", "/reparando"),
+                new Comando("Animações", "/luto"),
+                new Comando("Animações", "/bar"),
+                new Comando("Animações", "/necessidades"),
+                new Comando("Animações", "/meth"),
+                new Comando("Animações", "/mijar"),
             };
 
             if (p.Faccao > 0)
@@ -170,19 +206,6 @@ namespace InfiniteRoleplay.Commands
                 });
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoAjuda", listaComandos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome).ToList());
-        }
-
-        [Command("stopanim", Alias = "sa")]
-        public void CMD_stopanim(Client player)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p == null)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
-                return;
-            }
-
-            player.StopAnimation();
         }
 
         [Command("stats")]

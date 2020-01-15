@@ -1,6 +1,7 @@
 ﻿using GTANetworkAPI;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -22,6 +23,9 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
+            p.LimparIPLs();
+            p.IPLs = target.IPLs;
+            p.SetarIPLs();
             var pos = target.Player.Position;
             pos.X += 2;
             player.Position = pos;
@@ -42,6 +46,9 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
+            target.LimparIPLs();
+            target.IPLs = p.IPLs;
+            target.SetarIPLs();
             var pos = player.Position;
             pos.X += 2;
             target.Player.Position = pos;
@@ -66,6 +73,9 @@ namespace InfiniteRoleplay.Commands
             if (targetDest == null)
                 return;
 
+            target.LimparIPLs();
+            target.IPLs = targetDest.IPLs;
+            target.SetarIPLs();
             var pos = targetDest.Player.Position;
             pos.X += 2;
             target.Player.Position = pos;
@@ -173,6 +183,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            p.LimparIPLs();
             var pos = veh.Vehicle.Position;
             pos.X += 5;
             player.Position = pos;
@@ -186,6 +197,12 @@ namespace InfiniteRoleplay.Commands
             if (p?.UsuarioBD?.Staff < 1)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            if (p.Dimensao > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Não é possível usar esse comando em um interior!");
                 return;
             }
 
@@ -1195,11 +1212,11 @@ namespace InfiniteRoleplay.Commands
 
             var prop = new Entities.Propriedade()
             {
+                Interior = interior,
                 EntradaPosX = player.Position.X,
                 EntradaPosY = player.Position.Y,
                 EntradaPosZ = player.Position.Z,
                 Valor = valor,
-                Personagem = 0,
                 SaidaPosX = saida.X,
                 SaidaPosY = saida.Y,
                 SaidaPosZ = saida.Z,
@@ -1312,6 +1329,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             var pos = Functions.ObterPosicaoPorInterior((TipoInterior)interior);
+            Global.Propriedades[Global.Propriedades.IndexOf(prop)].Interior = interior;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosX = pos.X;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosY = pos.Y;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosZ = pos.Z;
@@ -1378,6 +1396,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            p.LimparIPLs();
             player.Dimension = 0;
             player.Position = new Vector3(prop.EntradaPosX, prop.EntradaPosY, prop.EntradaPosZ);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até a propriedade {prop.Codigo}!");
@@ -1400,6 +1419,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            p.LimparIPLs();
             player.Dimension = 0;
             player.Position = new Vector3(blip.PosX, blip.PosY, blip.PosZ);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o blip {blip.Codigo}!");
@@ -1499,8 +1519,8 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rpreco {tipo} {nome}", p, null);
         }
 
-        [Command("cponto", GreedyArg = true)]
-        public void CMD_cponto(Client player, int tipo, string nome)
+        [Command("cponto")]
+        public void CMD_cponto(Client player, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1515,19 +1535,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (nome.Length > 50)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Nome deve ter até 50 caracteres.");
-                return;
-            }
-
             var ponto = new Entities.Ponto()
             {
                 PosX = player.Position.X,
                 PosY = player.Position.Y,
                 PosZ = player.Position.Z,
                 Tipo = tipo,
-                Nome = nome,
             };
 
             using (var context = new RoleplayContext())
@@ -1586,6 +1599,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            p.LimparIPLs();
             player.Dimension = 0;
             player.Position = new Vector3(ponto.PosX, ponto.PosY, ponto.PosZ);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o ponto {ponto.Codigo}!");

@@ -192,5 +192,26 @@ namespace InfiniteRoleplay.Commands
 
         [Command("celular")]
         public void CMD_celular(Client player) => Functions.AbrirCelular(player, string.Empty, 0);
+
+        [Command("gps")]
+        public void CMD_gps(Client player, int propriedade)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if ((p?.Celular ?? 0) == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui um celular!");
+                return;
+            }
+
+            var prop = Global.Propriedades.FirstOrDefault(x => x.Codigo == propriedade);
+            if (prop == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Propriedade {propriedade} não existe!");
+                return;
+            }
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", prop.EntradaPosX, prop.EntradaPosY);
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"[CELULAR] Propriedade {propriedade} foi marcada no GPS.");
+        }
     }
 }

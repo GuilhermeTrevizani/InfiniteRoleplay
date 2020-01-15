@@ -170,6 +170,7 @@ namespace InfiniteRoleplay.Commands
                 }
 
                 veh.Spawnar();
+                NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", veh.PosX, veh.PosY);
                 Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você spawnou seu veículo!");
             }
         }

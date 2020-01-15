@@ -88,7 +88,7 @@ namespace InfiniteRoleplay.Commands
             target.Convites.Add(convite);
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você convidou {target.Nome} para a facção.");
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Convidou você para a facção {p.FaccaoBD.Nome}. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} convidou você para a facção {p.FaccaoBD.Nome}. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
 
             Functions.GravarLog(TipoLog.FaccaoGestor, "/convidar", p, target);
         }
