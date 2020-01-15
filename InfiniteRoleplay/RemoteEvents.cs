@@ -321,12 +321,10 @@ namespace InfiniteRoleplay
                 context.SaveChanges();
             }
 
-            veh.Spawnar();
-
             p.Dinheiro -= preco.Valor;
             p.SetDinheiro();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou {veh.Modelo} por ${preco.Valor:N0}! Nosso ajudante estacionou no lado de fora da concessionária.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou {veh.Modelo} por ${preco.Valor:N0}! Use /vspawn {veh.Codigo} para spawnar.");
             NAPI.ClientEvent.TriggerClientEvent(player, "ativarChat");
         }
 
