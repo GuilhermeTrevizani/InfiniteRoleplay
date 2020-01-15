@@ -35,6 +35,9 @@ namespace InfiniteRoleplay.Entities
         public int Celular { get; set; } = 0;
         public int Banco { get; set; } = 0;
         public string IPL { get; set; } = "[]";
+        public int CanalRadio { get; set; } = -1;
+        public int CanalRadio2 { get; set; } = 0;
+        public int CanalRadio3 { get; set; } = 0;
 
         [NotMapped]
         public int ID { get; set; }

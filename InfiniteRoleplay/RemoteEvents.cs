@@ -451,6 +451,19 @@ namespace InfiniteRoleplay
 
                     strMensagem = $"Você comprou um celular! Seu número é: {p.Celular}";
                     break;
+                case "Rádio Comunicador":
+                    if (p?.CanalRadio > -1)
+                    {
+                        NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", precos, 1, "Você já possui um rádio comunicador!");
+                        return;
+                    }
+
+                    p.CanalRadio = p.CanalRadio2 = p.CanalRadio3 = 0;
+                    p.Dinheiro -= preco.Valor;
+                    p.SetDinheiro();
+
+                    strMensagem = $"Você comprou um rádio comunicador!";
+                    break;
             }
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", precos, 2, strMensagem);

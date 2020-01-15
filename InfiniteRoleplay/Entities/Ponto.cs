@@ -28,7 +28,7 @@ namespace InfiniteRoleplay.Entities
                     nome = "[/vcomprar]";
                     break;
                 case TipoPonto.Multas:
-                    nome = "[/vcomprar]";
+                    nome = "[/multas]";
                     break;
                 case TipoPonto.Banco:
                     nome = "[Caixa Bancário]";

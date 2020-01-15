@@ -23,8 +23,8 @@ namespace InfiniteRoleplay
             NAPI.Util.ConsoleOutput($"{sender.Position.X.ToString().Replace(",", ".")}, {sender.Position.Y.ToString().Replace(",", ".")}, {sender.Position.Z.ToString().Replace(",", ".")}");
         }
 
-        [Command("r")]
-        public void CMD_r(Client sender)
+        [Command("rot")]
+        public void CMD_rot(Client sender)
         {
             NAPI.Util.ConsoleOutput($"{sender.Rotation.X.ToString().Replace(",", ".")}, {sender.Rotation.Y.ToString().Replace(",", ".")}, {sender.Rotation.Z.ToString().Replace(",", ".")}");
         }

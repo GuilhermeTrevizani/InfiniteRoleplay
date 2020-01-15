@@ -2,7 +2,7 @@
 
 namespace InfiniteRoleplay.Commands
 {
-    public class Chat : Script
+    public class ChatIC : Script
     {
         [Command("me", GreedyArg = true)]
         public void CMD_me(Client player, string mensagem)
@@ -40,20 +40,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.ChatICGrito, 35.0f);
-        }
-
-        [Command("b", GreedyArg = true)]
-        public void CMD_b(Client player, string mensagem)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p == null)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
-                return;
-            }
-
-            Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.ChatOOC, player.Dimension > 0 ? 5.0f : 10.0f);
+            Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.ChatICGrito, 30.0f);
         }
 
         [Command("baixo", GreedyArg = true)]
@@ -92,24 +79,7 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"{p.NomeIC} sussura: {mensagem}");
             Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"{p.NomeIC} sussura: {mensagem}");
-        }
-
-        [Command("pm", GreedyArg = true)]
-        public void CMD_pm(Client player, string idNome, string mensagem)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p == null)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
-                return;
-            }
-
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
-            if (target == null)
-                return;
-
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"(( PM para {target.Nome} [{target.ID}]: {mensagem} ))");
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"(( PM de {p.Nome} [{p.ID}]: {mensagem} ))");
+            Functions.SendMessageToNearbyPlayers(player, $"sussurra algo para {target.NomeIC}.", TipoMensagemJogo.Ame, 5, true);
         }
     }
 }

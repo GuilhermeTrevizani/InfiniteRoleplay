@@ -20,6 +20,7 @@
         Megafone,
         Celular,
         Ame,
+        Radio,
     }
 
     public enum TipoFaccao

@@ -183,7 +183,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.Megafone, 70.0f);
+            Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.Megafone, 55.0f);
         }
 
         [Command("duty")]

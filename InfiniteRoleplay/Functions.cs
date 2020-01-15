@@ -170,6 +170,9 @@ namespace InfiniteRoleplay
                 personagem.Celular = p.Celular;
                 personagem.Banco = p.Banco;
                 personagem.IPL = JsonConvert.SerializeObject(p.IPLs);
+                personagem.CanalRadio = p.CanalRadio;
+                personagem.CanalRadio2 = p.CanalRadio2;
+                personagem.CanalRadio3 = p.CanalRadio3;
                 context.Personagens.Update(personagem);
 
                 context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
@@ -205,25 +208,28 @@ namespace InfiniteRoleplay
                                 EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{p.NomeIC} grita: {message}");
                                 break;
                             case TipoMensagemJogo.Me:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{p.NomeIC} {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"* {p.NomeIC} {message}");
                                 break;
                             case TipoMensagemJogo.Do:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{message} (( {p.NomeIC} ))");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"* {message} (( {p.NomeIC} ))");
                                 break;
                             case TipoMensagemJogo.ChatOOC:
                                 EnviarMensagem(target, TipoMensagem.Nenhum, "!{#bababa}" + $"(( {p.NomeIC} [{p.ID}]: {message} ))");
                                 break;
                             case TipoMensagemJogo.ChatICBaixo:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"[BAIXO] {p.NomeIC} diz: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{p.NomeIC} diz [baixo]: {message}");
                                 break;
                             case TipoMensagemJogo.Megafone:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#F2FF43}" + $"[MEGAFONE] {p.NomeIC} diz: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#F2FF43}" + $"{p.NomeIC} diz [megafone]: {message}");
                                 break;
                             case TipoMensagemJogo.Celular:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"[CELULAR] {p.NomeIC} diz: {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{p.NomeIC} [celular]: {message}");
                                 break;
                             case TipoMensagemJogo.Ame:
-                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"{p.NomeIC} {message}");
+                                EnviarMensagem(target, TipoMensagem.Nenhum, "!{#C2A2DA}" + $"* {p.NomeIC} {message}");
+                                break;
+                            case TipoMensagemJogo.Radio:
+                                EnviarMensagem(target, TipoMensagem.Nenhum, chatMessageColor + $"{p.NomeIC} [rádio]: {message}");
                                 break;
                         }
                     }
@@ -254,6 +260,9 @@ namespace InfiniteRoleplay
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado} | Celular: {p.Celular}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro:N0} | Banco: ${p.Banco:N0}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor}");
+
+            if (p.CanalRadio > -1)
+                EnviarMensagem(player, TipoMensagem.Nenhum, $"Canal Rádio 1: {p.CanalRadio} | Canal Rádio 2: {p.CanalRadio2} | Canal Rádio 3: {p.CanalRadio3}");
 
             if (p.Faccao > 0)
                 EnviarMensagem(player, TipoMensagem.Nenhum, $"Facção: {p.FaccaoBD.Nome} [{p.Faccao}] | Rank: {p.RankBD.Nome} [{p.Rank}] | Salário: ${p.RankBD.Salario:N0}");
@@ -726,9 +735,117 @@ namespace InfiniteRoleplay
 
         public static bool ChecarAnimacoes(Client player)
         {
-            player.StopAnimation();
+            if (player.IsInVehicle)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não pode utilizar comandos de animação em um veículo!");
+                return false;
+            }
+
             // Verificar aqui status de ferido, impossibilitado de fazer alguma animação
+
+            player.StopAnimation();
             return true;
+        }
+
+        public static void EnviarMensagemChat(Personagem p, string message, TipoMensagemJogo tipoMensagemJogo)
+        {
+            if (string.IsNullOrWhiteSpace(message) || p == null)
+                return;
+
+            if (p.StatusLigacao > 0)
+            {
+                EnviarMensagemCelular(p, Global.PersonagensOnline.FirstOrDefault(x => x.Celular == p.NumeroLigacao), message);
+
+                if (p.NumeroLigacao == 911)
+                {
+                    if (p.StatusLigacao == 1)
+                    {
+                        if (message.ToUpper().Contains("LSPD"))
+                            p.ExtraLigacao = "LSPD";
+                        else if (message.ToUpper().Contains("LSFD"))
+                            p.ExtraLigacao = "LSFD";
+
+                        if (string.IsNullOrWhiteSpace(p.ExtraLigacao))
+                        {
+                            EnviarMensagem(p.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {p.ObterNomeContato(911)} diz: Não entendi sua mensagem. Deseja falar com LSPD ou LSFD?");
+                            return;
+                        }
+
+                        p.StatusLigacao = 2;
+                        EnviarMensagem(p.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {p.ObterNomeContato(911)} diz: {p.ExtraLigacao}, qual sua emergência?");
+                        return;
+                    }
+
+                    if (p.StatusLigacao == 2)
+                    {
+                        EnviarMensagem(p.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {p.ObterNomeContato(911)} diz: Nossas unidades foram alertadas!");
+
+                        var tipoFaccao = p.ExtraLigacao == "LSPD" ? TipoFaccao.Policial : TipoFaccao.Medica;
+                        EnviarMensagemTipoFaccao(tipoFaccao, "Ligação 911", true, true);
+                        EnviarMensagemTipoFaccao(tipoFaccao, $"De: ~w~{p.Celular}", true, true);
+                        EnviarMensagemTipoFaccao(tipoFaccao, $"Mensagem: ~w~{message}", true, true);
+
+                        p.LimparLigacao();
+                    }
+                }
+                return;
+            }
+
+            var targetLigacao = Global.PersonagensOnline.FirstOrDefault(x => x.StatusLigacao > 0 && x.NumeroLigacao == p.Celular);
+            if (targetLigacao != null)
+            {
+                EnviarMensagemCelular(p, targetLigacao, message);
+                return;
+            }
+
+            SendMessageToNearbyPlayers(p.Player, message, tipoMensagemJogo, p.Player.Dimension > 0 ? 7.5f : 10.0f);
+        }
+
+        public static void EnviarMensagemRadio(Personagem p, int slot, string mensagem)
+        {
+            if (p == null)
+            {
+                EnviarMensagem(p.Player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (p.CanalRadio == -1)
+            {
+                EnviarMensagem(p.Player, TipoMensagem.Erro, "Você não possui um rádio!");
+                return;
+            }
+
+            var canal = p.CanalRadio;
+            if (slot == 2)
+                canal = p.CanalRadio2;
+            else if (slot == 3)
+                canal = p.CanalRadio3;
+
+            if (canal == 0)
+            {
+                EnviarMensagem(p.Player, TipoMensagem.Erro, $"Seu slot {slot} do rádio não possui um canal configurado!");
+                return;
+            }
+
+            if ((canal == 911 || canal == 912) && !p.IsTrabalhoFaccao)
+            {
+                EnviarMensagem(p.Player, TipoMensagem.Erro, $"Você só pode falar no canal {canal} quando estiver em serviço!");
+                return;
+            }
+
+            var players = Global.PersonagensOnline.Where(x => x.CanalRadio == canal || x.CanalRadio2 == canal || x.CanalRadio3 == canal);
+            foreach (var pl in players)
+            {
+                var slotPl = 1;
+                if (pl.CanalRadio2 == canal)
+                    slotPl = 2;
+                else if (pl.CanalRadio3 == canal)
+                    slotPl = 3;
+
+                EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#FFFF9B}" + $"[S:{slotPl} C:{canal}] {p.Nome}: {mensagem}");
+            }
+
+            EnviarMensagemChat(p, mensagem, TipoMensagemJogo.Radio);
         }
     }
 }

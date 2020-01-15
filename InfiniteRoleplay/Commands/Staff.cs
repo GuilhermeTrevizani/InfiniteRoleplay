@@ -1432,8 +1432,8 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o blip {blip.Codigo}!");
         }
 
-        [Command("cpreco")]
-        public void CMD_cpreco(Client player, int tipo, string nome, int valor)
+        [Command("cpreco", GreedyArg = true)]
+        public void CMD_cpreco(Client player, int tipo, int valor, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1448,15 +1448,15 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (nome.Length > 25)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Nome deve ter até 25 caracteres.");
-                return;
-            }
-
             if (valor <= 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor deve ser maior que 0.");
+                return;
+            }
+
+            if (nome.Length > 25)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Nome deve ter até 25 caracteres.");
                 return;
             }
 

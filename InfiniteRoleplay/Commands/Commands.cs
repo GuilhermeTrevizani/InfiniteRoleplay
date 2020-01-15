@@ -93,6 +93,10 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Animações", "/necessidades"),
                 new Comando("Animações", "/meth"),
                 new Comando("Animações", "/mijar"),
+                new Comando("Rádio", "/canal"),
+                new Comando("Rádio", "/r"),
+                new Comando("Rádio", "/r2"),
+                new Comando("Rádio", "/r3"),
             };
 
             if (p.Faccao > 0)
@@ -350,7 +354,9 @@ namespace InfiniteRoleplay.Commands
 
                     Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você aceitou ser revistado.");
                     Functions.EnviarMensagem(target.Player, TipoMensagem.Titulo, $"Revista em {p.NomeIC}");
-                    Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"Celular: {p.Celular}  | Dinheiro: ${p.Dinheiro:N0}");
+                    Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"Celular: {p.Celular} | Dinheiro: ${p.Dinheiro:N0}");
+                    if (p.CanalRadio > -1)
+                        Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"Canal Rádio 1: {p.CanalRadio} | Canal Rádio 2: {p.CanalRadio2} | Canal Rádio 3: {p.CanalRadio3}");
                     break;
             }
 
