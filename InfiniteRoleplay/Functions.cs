@@ -122,6 +122,23 @@ namespace InfiniteRoleplay
             {
                 p.TempoConectado++;
                 p.DataUltimaVerificacao = DateTime.Now;
+
+                if (p.TempoConectado % 60 == 0)
+                {
+                    var salario = 0;
+                    if (p.Faccao > 0)
+                    {
+                        salario += p.RankBD.Salario;
+                    }
+                    else
+                    {
+                        salario += Global.Parametros.ValorSalarioDesemprego;
+                    }
+
+                    p.Banco += salario;
+                    if (salario > 0)
+                        EnviarMensagem(player, TipoMensagem.Sucesso, $"Seu salário de ${salario:N0} foi depositado no banco!");
+                }
             }
 
             if (!isOnline && p.Celular > 0)
@@ -235,17 +252,17 @@ namespace InfiniteRoleplay
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.Staff}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado} | Celular: {p.Celular}");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro.ToString("N0")} | Banco: ${p.Banco.ToString("N0")}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro:N0} | Banco: ${p.Banco:N0}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor}");
 
             if (p.Faccao > 0)
-                EnviarMensagem(player, TipoMensagem.Nenhum, $"Facção: {p.FaccaoBD?.Nome} [{p.Faccao}] | Rank: {p.RankBD?.Nome} [{p.Rank}]");
+                EnviarMensagem(player, TipoMensagem.Nenhum, $"Facção: {p.FaccaoBD.Nome} [{p.Faccao}] | Rank: {p.RankBD.Nome} [{p.Rank}] | Salário: ${p.RankBD.Salario:N0}");
 
             if (p.Propriedades.Count > 0)
             {
                 EnviarMensagem(player, TipoMensagem.Titulo, $"Propriedades de {p.Nome} [{p.Codigo}]");
                 foreach (var prop in p.Propriedades)
-                    EnviarMensagem(player, TipoMensagem.Nenhum, $"Código: {prop.Codigo} | Valor: ${prop.Valor.ToString("N0")}");
+                    EnviarMensagem(player, TipoMensagem.Nenhum, $"Código: {prop.Codigo} | Valor: ${prop.Valor:N0}");
             }
         }
 
@@ -519,7 +536,7 @@ namespace InfiniteRoleplay
             var veiculos = Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Veiculo).OrderBy(x => x.Nome).Select(x => new
             {
                 x.Nome,
-                Preco = $"${x.Valor.ToString("N0")}",
+                Preco = $"${x.Valor:N0}",
             }).ToList();
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoVComprar", veiculos, erro);
@@ -566,7 +583,7 @@ namespace InfiniteRoleplay
                     x.Codigo,
                     x.Motivo,
                     Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
-                    Valor = $"${x.Valor.ToString("N0")}",
+                    Valor = $"${x.Valor:N0}",
                 }).ToList();
                 if (multas.Count == 0)
                 {

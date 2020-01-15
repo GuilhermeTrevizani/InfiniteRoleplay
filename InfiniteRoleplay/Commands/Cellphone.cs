@@ -18,7 +18,7 @@ namespace InfiniteRoleplay.Commands
 
             if (p.Dinheiro < Global.Parametros.ValorSMS)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Você não possui ${Global.Parametros.ValorSMS.ToString("N0")} para enviar um SMS!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Você não possui ${Global.Parametros.ValorSMS:N0} para enviar um SMS!");
                 return;
             }
 

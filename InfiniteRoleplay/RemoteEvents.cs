@@ -326,7 +326,7 @@ namespace InfiniteRoleplay
             p.Dinheiro -= preco.Valor;
             p.SetDinheiro();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou {veh.Modelo} por ${preco.Valor.ToString("N0")}! Nosso ajudante estacionou no lado de fora da concessionária.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou {veh.Modelo} por ${preco.Valor:N0}! Nosso ajudante estacionou no lado de fora da concessionária.");
             NAPI.ClientEvent.TriggerClientEvent(player, "ativarChat");
         }
 
@@ -416,7 +416,7 @@ namespace InfiniteRoleplay
             var precos = Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Conveniencia).OrderBy(x => x.Nome).Select(x => new
             {
                 x.Nome,
-                Preco = $"${x.Valor.ToString("N0")}",
+                Preco = $"${x.Valor:N0}",
             }).ToList();
 
             var preco = Global.Precos.FirstOrDefault(x => x.Nome == nome && x.Tipo == (int)TipoPreco.Conveniencia);

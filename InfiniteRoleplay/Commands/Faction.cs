@@ -254,9 +254,9 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
             }
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {target.Nome} por ${valor.ToString("N0")}. Motivo: {motivo}");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {target.Nome} por ${valor:N0}. Motivo: {motivo}");
             if (target.Celular > 0)
-                Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] SMS de {target.ObterNomeContato(911)}: Você recebeu uma multa de ${valor.ToString("N0")}. Motivo: {motivo}");
+                Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] SMS de {target.ObterNomeContato(911)}: Você recebeu uma multa de ${valor:N0}. Motivo: {motivo}");
         }
 
         [Command("multaroff", GreedyArg = true)]
@@ -301,7 +301,7 @@ namespace InfiniteRoleplay.Commands
                 });
                 context.SaveChanges();
 
-                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {personagem.Nome} por ${valor.ToString("N0")}. Motivo: {motivo}");
+                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {personagem.Nome} por ${valor:N0}. Motivo: {motivo}");
             }
         }
     }

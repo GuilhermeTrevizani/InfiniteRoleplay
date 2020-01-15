@@ -152,7 +152,7 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
             }
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade por ${prox.Valor.ToString("N0")}!");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade por ${prox.Valor:N0}!");
         }
 
         [Command("pvender")]
@@ -187,7 +187,7 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
             }
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você vendeu a propriedade por ${propValor.ToString("N0")}!");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você vendeu a propriedade por ${propValor:N0}!");
         }
 
         [Command("pvenderpara")]
@@ -237,8 +237,8 @@ namespace InfiniteRoleplay.Commands
             target.Convites.RemoveAll(x => x.Tipo == (int)TipoConvite.VendaPropriedade);
             target.Convites.Add(convite);
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você ofereceu sua propriedade {prox.Codigo} para {target.NomeIC} por ${valor.ToString("N0")}.");
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} ofereceu para você a propriedade {prox.Codigo} ${valor.ToString("N0")}. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você ofereceu sua propriedade {prox.Codigo} para {target.NomeIC} por ${valor:N0}.");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} ofereceu para você a propriedade {prox.Codigo} ${valor:N0}. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
 
             Functions.GravarLog(TipoLog.Venda, $"/p venderpara {valor}", p, target);
         }

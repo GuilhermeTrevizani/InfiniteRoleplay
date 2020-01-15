@@ -29,7 +29,7 @@ namespace InfiniteRoleplay.Entities
         {
             DeletarIdentificador();
 
-            TextLabel = NAPI.TextLabel.CreateTextLabel($"Nº {Codigo} {(Personagem == 0 ? $"(${Valor.ToString("N0")})" : string.Empty)}", new Vector3(EntradaPosX, EntradaPosY, EntradaPosZ), 5, 2, 0, new Color(255, 255, 255));
+            TextLabel = NAPI.TextLabel.CreateTextLabel($"Nº {Codigo} {(Personagem == 0 ? $"(${Valor:N0})" : string.Empty)}", new Vector3(EntradaPosX, EntradaPosY, EntradaPosZ), 5, 2, 0, new Color(255, 255, 255));
 
             var corMarker = Personagem > 0 ? new Color(255, 106, 77) : new Color(110, 180, 105);
             Marker = NAPI.Marker.CreateMarker(MarkerType.UpsideDownCone, new Vector3(EntradaPosX, EntradaPosY, EntradaPosZ), new Vector3(), new Vector3(), 0.5f, corMarker);

@@ -105,7 +105,7 @@ namespace InfiniteRoleplay.Commands
             p.Dinheiro -= Global.Parametros.ValorVagaVeiculo;
             p.SetDinheiro();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou uma vaga por ${Global.Parametros.ValorVagaVeiculo.ToString("N0")}!");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou uma vaga por ${Global.Parametros.ValorVagaVeiculo:N0}!");
         }
 
         [Command("vestacionar")]

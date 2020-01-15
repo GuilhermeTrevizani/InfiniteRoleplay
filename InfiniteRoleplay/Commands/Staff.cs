@@ -952,12 +952,18 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("crank", GreedyArg = true)]
-        public void CMD_crank(Client player, int fac, string nome)
+        public void CMD_crank(Client player, int fac, int salario, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (!(p?.UsuarioBD?.Staff >= 1337 || (p.Faccao == fac && p.Rank >= p.FaccaoBD.RankLider)))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            if (salario <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Salário deve ser maior que 0!");
                 return;
             }
 
@@ -978,6 +984,7 @@ namespace InfiniteRoleplay.Commands
             {
                 Faccao = fac,
                 Nome = nome,
+                Salario = salario,
             };
 
             using (var context = new RoleplayContext())
@@ -1027,8 +1034,8 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rrank {fac} {rk.Codigo}", p, null);
         }
 
-        [Command("erank", GreedyArg = true)]
-        public void CMD_erank(Client player, int fac, int rank, string nome)
+        [Command("eranknome", GreedyArg = true)]
+        public void CMD_eranknome(Client player, int fac, int rank, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (!(p?.UsuarioBD?.Staff >= 1337 || (p.Faccao == fac && p.Rank >= p.FaccaoBD.RankLider)))
@@ -1059,7 +1066,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou o nome do rank {rank} da facção {fac} para {nome}!");
-            Functions.GravarLog(TipoLog.Staff, $"/erank {fac} {rank} {nome}", p, null);
+            Functions.GravarLog(TipoLog.Staff, $"/eranknome {fac} {rank} {nome}", p, null);
         }
 
         [Command("ranks")]
@@ -1088,7 +1095,7 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#" + faction.Cor + "}" + $"{faction.Nome} [{faction.Codigo}]");
             foreach (var r in ranks)
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{r.Nome} [{r.Codigo}]");
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{r.Nome} [{r.Codigo}] | Salário: ${r.Salario:N0}");
         }
 
         [Command("staff")]
@@ -1181,8 +1188,8 @@ namespace InfiniteRoleplay.Commands
             target.Dinheiro += dinheiro;
             target.SetDinheiro();
 
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} te deu ${dinheiro.ToString("N0")}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro.ToString("N0")} para {target.Nome}.");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} te deu ${dinheiro:N0}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro:N0} para {target.Nome}.");
             Functions.GravarLog(TipoLog.Staff, $"/dinheiro {dinheiro}", p, target);
         }
 
@@ -1603,6 +1610,41 @@ namespace InfiniteRoleplay.Commands
             player.Dimension = 0;
             player.Position = new Vector3(ponto.PosX, ponto.PosY, ponto.PosZ);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o ponto {ponto.Codigo}!");
+        }
+
+        [Command("eranksalario")]
+        public void CMD_eranksalario(Client player, int fac, int rank, int salario)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var rk = Global.Ranks.FirstOrDefault(x => x.Faccao == fac && x.Codigo == rank);
+            if (rk == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Rank {rank} da facção {fac} não existe!");
+                return;
+            }
+
+            if (salario <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Salário deve ser maior que 0!");
+                return;
+            }
+
+            Global.Ranks[Global.Ranks.IndexOf(rk)].Salario = salario;
+
+            using (var context = new RoleplayContext())
+            {
+                context.Ranks.Update(Global.Ranks[Global.Ranks.IndexOf(rk)]);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou o salário do rank {rank} da facção {fac} para ${salario:N0}!");
+            Functions.GravarLog(TipoLog.Staff, $"/eranksalario {fac} {rank} {salario}", p, null);
         }
         #endregion Staff 1337
     }

@@ -185,7 +185,7 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/rfac"),
                     new Comando("Staff 1337", "/faccoes"),
                     new Comando("Staff 1337", "/crank"),
-                    new Comando("Staff 1337", "/erank"),
+                    new Comando("Staff 1337", "/eranknome"),
                     new Comando("Staff 1337", "/rrank"),
                     new Comando("Staff 1337", "/ranks"),
                     new Comando("Staff 1337", "/lider"),
@@ -203,6 +203,7 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/cponto"),
                     new Comando("Staff 1337", "/rponto"),
                     new Comando("Staff 1337", "/irponto"),
+                    new Comando("Staff 1337", "/eranksalario"),
                 });
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoAjuda", listaComandos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome).ToList());
@@ -330,8 +331,8 @@ namespace InfiniteRoleplay.Commands
                         context.SaveChanges();
                     }
 
-                    Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade {prop.Codigo} de {target.NomeIC} por ${valor.ToString("N0")}.");
-                    Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Você vendeu a propriedade {prop.Codigo} para {p.NomeIC} por ${valor.ToString("N0")}.");
+                    Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade {prop.Codigo} de {target.NomeIC} por ${valor:N0}.");
+                    Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Você vendeu a propriedade {prop.Codigo} para {p.NomeIC} por ${valor:N0}.");
                     break;
                 case TipoConvite.Revista:
                     if (target == null)
@@ -349,7 +350,7 @@ namespace InfiniteRoleplay.Commands
 
                     Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você aceitou ser revistado.");
                     Functions.EnviarMensagem(target.Player, TipoMensagem.Titulo, $"Revista em {p.NomeIC}");
-                    Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"Celular: {p.Celular}  | Dinheiro: ${p.Dinheiro.ToString("N0")}");
+                    Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"Celular: {p.Celular}  | Dinheiro: ${p.Dinheiro:N0}");
                     break;
             }
 
@@ -437,8 +438,8 @@ namespace InfiniteRoleplay.Commands
             p.SetDinheiro();
             target.SetDinheiro();
 
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} te deu ${dinheiro.ToString("N0")}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro.ToString("N0")} para {target.NomeIC}.");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} te deu ${dinheiro:N0}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro:N0} para {target.NomeIC}.");
             Functions.GravarLog(TipoLog.Dinheiro, $"/pagar {dinheiro}", p, target);
         }
 
@@ -507,8 +508,8 @@ namespace InfiniteRoleplay.Commands
             p.Banco -= dinheiro;
             target.Banco += dinheiro;
 
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} transferiu para você ${dinheiro.ToString("N0")}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você transferiu ${dinheiro.ToString("N0")} para {target.Nome}.");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} transferiu para você ${dinheiro:N0}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você transferiu ${dinheiro:N0} para {target.Nome}.");
             Functions.GravarLog(TipoLog.Dinheiro, $"/transferir {dinheiro}", p, target);
         }
 
@@ -538,7 +539,7 @@ namespace InfiniteRoleplay.Commands
             p.Dinheiro += dinheiro;
             p.SetDinheiro();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você sacou ${dinheiro.ToString("N0")}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você sacou ${dinheiro:N0}.");
             Functions.GravarLog(TipoLog.Dinheiro, $"/sacar {dinheiro}", p, null);
         }
 
@@ -568,7 +569,7 @@ namespace InfiniteRoleplay.Commands
             p.Banco += dinheiro;
             p.SetDinheiro();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você depositou ${dinheiro.ToString("N0")}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você depositou ${dinheiro:N0}.");
             Functions.GravarLog(TipoLog.Dinheiro, $"/depositar {dinheiro}", p, null);
         }
 
@@ -591,7 +592,7 @@ namespace InfiniteRoleplay.Commands
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Conveniencia).OrderBy(x => x.Nome).Select(x => new
             {
                 x.Nome,
-                Preco = $"${x.Valor.ToString("N0")}",
+                Preco = $"${x.Valor:N0}",
             }).ToList(), 0, string.Empty);
         }
 
@@ -628,7 +629,7 @@ namespace InfiniteRoleplay.Commands
             p.SetDinheiro();
             player.SetSkin(pedHash);
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a skin {pedHash.ToString()} por ${Global.Parametros.ValorSkin.ToString("N0")}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a skin {pedHash.ToString()} por ${Global.Parametros.ValorSkin:N0}.");
         }
     }
 }
