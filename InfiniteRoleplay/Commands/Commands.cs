@@ -198,7 +198,7 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/cprop"),
                     new Comando("Staff 1337", "/rprop"),
                     new Comando("Staff 1337", "/epropvalor"),
-                    new Comando("Staff 1337", "/epropinterior"),
+                    new Comando("Staff 1337", "/epropint"),
                     new Comando("Staff 1337", "/eproppos"),
                     new Comando("Staff 1337", "/irblip"),
                     new Comando("Staff 1337", "/irprop"),
