@@ -133,7 +133,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("criarPersonagem")]
-        public void EVENT_criarPersonagem(Client player, string nome, string sobrenome, string sexo, string dataNascimento)
+        public void EVENT_criarPersonagem(Client player, string nome, string sobrenome, string sexo, string dataNascimento, string skin)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -142,9 +142,10 @@ namespace InfiniteRoleplay
             if (p.ID > 0)
                 return;
 
-            if (string.IsNullOrWhiteSpace(nome) || string.IsNullOrWhiteSpace(sobrenome) || string.IsNullOrWhiteSpace(sexo) || string.IsNullOrWhiteSpace(dataNascimento))
+            if (string.IsNullOrWhiteSpace(nome) || string.IsNullOrWhiteSpace(sobrenome) || string.IsNullOrWhiteSpace(sexo)
+                || string.IsNullOrWhiteSpace(dataNascimento) || string.IsNullOrWhiteSpace(skin))
             {
-                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, "Verifique se todos os campos foram preenchidos corretamente!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, "Verifique se todos os campos foram preenchidos corretamente!");
                 return;
             }
 
@@ -153,28 +154,41 @@ namespace InfiniteRoleplay
             var nomeCompleto = $"{nome} {sobrenome}";
             if (nomeCompleto.Length > 25)
             {
-                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, "Nome do personagem não pode possuir mais que 25 caracteres!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, "Nome do personagem não pode possuir mais que 25 caracteres!");
                 return;
             }
 
             sexo = sexo.ToUpper();
             if (sexo != "F" && sexo != "M")
             {
-                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, "Sexo deve ser M ou F!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, "Sexo deve ser M ou F!");
                 return;
             }
 
             DateTime.TryParse(dataNascimento, out DateTime dtNascimento);
             if (dtNascimento == DateTime.MinValue)
             {
-                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, "Data de Nascimento não foi informada corretamente!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, "Data de Nascimento não foi informada corretamente!");
                 return;
             }
 
             var dif = DateTime.Now.Date - dtNascimento;
             if (dif.Days / 365 < 18)
             {
-                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, "Personagem precisa ter 18 anos ou mais!");
+                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, "Personagem precisa ter 18 anos ou mais!");
+                return;
+            }
+
+            var pedHash = NAPI.Util.PedNameToModel(skin);
+            if (pedHash == 0)
+            {
+                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, "Skin não existe!");
+                return;
+            }
+
+            if (!Global.Skins.Any(x => x.Nome == pedHash.ToString() && !x.IsBloqueada && x.TipoFaccao == TipoFaccao.Nenhum && x.Sexo == sexo))
+            {
+                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, "Skin bloqueada ou indisponível para o sexo do seu personagem!");
                 return;
             }
 
@@ -182,7 +196,7 @@ namespace InfiniteRoleplay
             {
                 if (context.Personagens.Any(x => x.Nome == nomeCompleto))
                 {
-                    NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, $"Personagem {nomeCompleto} já existe!");
+                    NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, $"Personagem {nomeCompleto} já existe!");
                     return;
                 }
 
@@ -197,6 +211,7 @@ namespace InfiniteRoleplay
                     IPRegistro = player.Address,
                     IPUltimoAcesso = player.Address,
                     ID = Functions.ObterNovoID(),
+                    Skin = pedHash.ToString(),
                 };
                 context.Personagens.Add(personagem);
                 context.SaveChanges();

@@ -25,6 +25,7 @@
 
     public enum TipoFaccao
     {
+        Nenhum = 0,
         Policial = 1,
         Medica = 2,
         Criminosa = 3,

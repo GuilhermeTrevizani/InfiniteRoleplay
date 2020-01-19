@@ -67,6 +67,9 @@ namespace InfiniteRoleplay
                 foreach (var p in Global.Pontos)
                     p.CriarIdentificador();
                 NAPI.Util.ConsoleOutput($"Pontos: {Global.Pontos.Count}");
+
+                Functions.CarregarSkins();
+                NAPI.Util.ConsoleOutput($"Skins: {Global.Skins.Count}");
             }
 
             Global.PersonagensOnline = new List<Personagem>();

@@ -649,6 +649,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            if (!Global.Skins.Any(x => x.Nome == pedHash.ToString() && !x.IsBloqueada && x.TipoFaccao == TipoFaccao.Nenhum && x.Sexo == p.Sexo))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Skin bloqueada ou indisponível para o sexo do seu personagem!");
+                return;
+            }
+
             if (p.Dinheiro < Global.Parametros.ValorSkin)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
