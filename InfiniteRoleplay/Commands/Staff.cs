@@ -1,7 +1,6 @@
 ﻿using GTANetworkAPI;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -1172,7 +1171,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("dinheiro")]
-        public void CMD_dinheiro(Client player, string idNome, int dinheiro)
+        public void CMD_dinheiro(Client player, string idNome, int dinheiro) 
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)

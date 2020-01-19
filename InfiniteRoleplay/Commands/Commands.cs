@@ -413,7 +413,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("pagar")]
-        public void CMD_pagar(Client player, string idNome, int dinheiro)
+        public void CMD_pagar(Client player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -422,7 +422,13 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.Dinheiro < dinheiro)
+            if (valor <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor inválido!");
+                return;
+            }
+
+            if (p.Dinheiro < valor)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
                 return;
@@ -439,14 +445,14 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            p.Dinheiro -= dinheiro;
-            target.Dinheiro += dinheiro;
+            p.Dinheiro -= valor;
+            target.Dinheiro += valor;
             p.SetDinheiro();
             target.SetDinheiro();
 
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} te deu ${dinheiro:N0}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro:N0} para {target.NomeIC}.");
-            Functions.GravarLog(TipoLog.Dinheiro, $"/pagar {dinheiro}", p, target);
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} te deu ${valor:N0}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${valor:N0} para {target.NomeIC}.");
+            Functions.GravarLog(TipoLog.Dinheiro, $"/pagar {valor}", p, target);
         }
 
         [Command("revistar")]
@@ -486,12 +492,18 @@ namespace InfiniteRoleplay.Commands
         public void CMD_multas(Client player) => Functions.VisualizarMultas(player, string.Empty);
 
         [Command("transferir")]
-        public void CMD_transferir(Client player, string idNome, int dinheiro)
+        public void CMD_transferir(Client player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (valor <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor inválido!");
                 return;
             }
 
@@ -501,7 +513,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.Banco < dinheiro)
+            if (p.Banco < valor)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente no banco!");
                 return;
@@ -511,21 +523,27 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
-            p.Banco -= dinheiro;
-            target.Banco += dinheiro;
+            p.Banco -= valor;
+            target.Banco += valor;
 
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} transferiu para você ${dinheiro:N0}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você transferiu ${dinheiro:N0} para {target.Nome}.");
-            Functions.GravarLog(TipoLog.Dinheiro, $"/transferir {dinheiro}", p, target);
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.Nome} transferiu para você ${valor:N0}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você transferiu ${valor:N0} para {target.Nome}.");
+            Functions.GravarLog(TipoLog.Dinheiro, $"/transferir {valor}", p, target);
         }
 
         [Command("sacar")]
-        public void CMD_sacar(Client player, int dinheiro)
+        public void CMD_sacar(Client player, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (valor <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor inválido!");
                 return;
             }
 
@@ -535,27 +553,33 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.Banco < dinheiro)
+            if (p.Banco < valor)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente no banco!");
                 return;
             }
 
-            p.Banco -= dinheiro;
-            p.Dinheiro += dinheiro;
+            p.Banco -= valor;
+            p.Dinheiro += valor;
             p.SetDinheiro();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você sacou ${dinheiro:N0}.");
-            Functions.GravarLog(TipoLog.Dinheiro, $"/sacar {dinheiro}", p, null);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você sacou ${valor:N0}.");
+            Functions.GravarLog(TipoLog.Dinheiro, $"/sacar {valor}", p, null);
         }
 
         [Command("depositar")]
-        public void CMD_depositar(Client player, int dinheiro)
+        public void CMD_depositar(Client player, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (valor <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor inválido!");
                 return;
             }
 
@@ -565,18 +589,18 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.Dinheiro < dinheiro)
+            if (p.Dinheiro < valor)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
                 return;
             }
 
-            p.Dinheiro -= dinheiro;
-            p.Banco += dinheiro;
+            p.Dinheiro -= valor;
+            p.Banco += valor;
             p.SetDinheiro();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você depositou ${dinheiro:N0}.");
-            Functions.GravarLog(TipoLog.Dinheiro, $"/depositar {dinheiro}", p, null);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você depositou ${valor:N0}.");
+            Functions.GravarLog(TipoLog.Dinheiro, $"/depositar {valor}", p, null);
         }
 
         [Command("comprar")]
