@@ -186,7 +186,7 @@ namespace InfiniteRoleplay
                 return;
             }
 
-            if (!Global.Skins.Any(x => x.Nome == pedHash.ToString() && !x.IsBloqueada && x.TipoFaccao == TipoFaccao.Nenhum && x.Sexo == sexo))
+            if (!Global.Skins.Any(x => x.Nome == pedHash.ToString() && !x.IsBloqueada && x.TipoFaccao == null && x.Sexo == sexo))
             {
                 NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, "Skin bloqueada ou indisponível para o sexo do seu personagem!");
                 return;

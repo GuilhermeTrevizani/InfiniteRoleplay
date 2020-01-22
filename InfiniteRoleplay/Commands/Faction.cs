@@ -1,6 +1,5 @@
 ﻿using GTANetworkAPI;
 using InfiniteRoleplay.Models;
-using System;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -244,7 +243,7 @@ namespace InfiniteRoleplay.Commands
 
             using (var context = new RoleplayContext())
             {
-                context.Multas.Update(new Entities.Multa()
+                context.Multas.Add(new Entities.Multa()
                 {
                     Motivo = motivo,
                     PersonagemMultado = target.Codigo,
@@ -292,7 +291,7 @@ namespace InfiniteRoleplay.Commands
                     return;
                 }
 
-                context.Multas.Update(new Entities.Multa()
+                context.Multas.Add(new Entities.Multa()
                 {
                     Motivo = motivo,
                     PersonagemMultado = personagem.Codigo,
@@ -303,6 +302,80 @@ namespace InfiniteRoleplay.Commands
 
                 Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {personagem.Nome} por ${valor:N0}. Motivo: {motivo}");
             }
+        }
+
+        [Command("prender")]
+        public void CMD_prender(Client player, string idNome, int cela, int minutos)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsTrabalhoFaccao)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
+                return;
+            }
+
+            if (player.Position.DistanceTo(Global.PosicaoPrisao) > 2)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está no local que as prisões são efetuadas!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return;
+
+            if (target.TempoPrisao > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador já está preso!");
+                return;
+            }
+
+            float distance = player.Position.DistanceTo(target.Player.Position);
+            if (distance > 2 || player.Dimension != target.Player.Dimension)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
+                return;
+            }
+
+            if (minutos <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Minutos inválidos!");
+                return;
+            }
+
+            var pos = new Vector3();
+            switch (cela)
+            {
+                case 1:
+                    pos = new Vector3(460.4085, -994.0992, 25); 
+                    break;
+                case 2:
+                    pos = new Vector3(460.4085, -997.7994, 25);
+                    break;
+                case 3:
+                    pos = new Vector3(460.4085, -1001.342, 25);
+                    break;
+                default:
+                    Functions.EnviarMensagem(player, TipoMensagem.Erro, "Cela deve ser entre 1 e 3!");
+                    break;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                context.Prisoes.Add(new Entities.Prisao()
+                {
+                    Preso = target.Codigo,
+                    Policial = p.Codigo,
+                    Tempo = minutos,
+                    Cela = cela,
+                });
+                context.SaveChanges();
+            }
+
+            target.Player.Position = pos;
+            target.TempoPrisao = minutos;
+            Functions.EnviarMensagemTipoFaccao(TipoFaccao.Policial, $"{p.RankBD.Nome} {p.Nome} prendeu {target.Nome} na cela {cela} por {minutos} minuto{(minutos > 1 ? "s" : string.Empty)}.", true, true);
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"{p.Nome} prendeu você na cela {cela} por {minutos} minuto{(minutos > 1 ? "s" : string.Empty)}.");
         }
     }
 }

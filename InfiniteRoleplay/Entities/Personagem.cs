@@ -38,6 +38,10 @@ namespace InfiniteRoleplay.Entities
         public int CanalRadio { get; set; } = -1;
         public int CanalRadio2 { get; set; } = 0;
         public int CanalRadio3 { get; set; } = 0;
+        public int TempoPrisao { get; set; } = 0;
+        public float RotX { get; set; } = 0;
+        public float RotY { get; set; } = 0;
+        public float RotZ { get; set; } = 149.1595f;
 
         [NotMapped]
         public int ID { get; set; }

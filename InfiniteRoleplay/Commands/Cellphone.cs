@@ -16,6 +16,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            if (p.TempoPrisao > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
+                return;
+            }
+
             if (p.Dinheiro < Global.Parametros.ValorSMS)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Você não possui ${Global.Parametros.ValorSMS:N0} para enviar um SMS!");
@@ -55,6 +61,12 @@ namespace InfiniteRoleplay.Commands
             if ((p?.Celular ?? 0) == 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui um celular!");
+                return;
+            }
+
+            if (p.TempoPrisao > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
                 return;
             }
 
@@ -200,6 +212,12 @@ namespace InfiniteRoleplay.Commands
             if ((p?.Celular ?? 0) == 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui um celular!");
+                return;
+            }
+
+            if (p.TempoPrisao > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
                 return;
             }
 

@@ -18,6 +18,7 @@ namespace InfiniteRoleplay
         public DbSet<PersonagemRoupa> PersonagensRoupas { get; set; }
         public DbSet<Ponto> Pontos { get; set; }
         public DbSet<Preco> Precos { get; set; }
+        public DbSet<Prisao> Prisoes { get; set; }
         public DbSet<Propriedade> Propriedades { get; set; }
         public DbSet<Punicao> Punicoes { get; set; }
         public DbSet<Rank> Ranks { get; set; }
@@ -45,6 +46,7 @@ namespace InfiniteRoleplay
             modelBuilder.Entity<PersonagemRoupa>().HasKey(x => new { x.Codigo, x.Slot, x.Drawable, x.Texture });
             modelBuilder.Entity<Ponto>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Preco>().HasKey(x => new { x.Tipo, x.Nome });
+            modelBuilder.Entity<Prisao>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Propriedade>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Punicao>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Rank>().HasKey(x => new { x.Faccao, x.Codigo });

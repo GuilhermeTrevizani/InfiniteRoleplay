@@ -20,6 +20,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            if (p.TempoPrisao > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
+                return;
+            }
+
             if (slot < 1 || slot > 3)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Slot deve ser entre 1 e 3!");

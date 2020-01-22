@@ -49,6 +49,7 @@ namespace InfiniteRoleplay
             foreach (var ipl in p.IPLs)
                 NAPI.ClientEvent.TriggerClientEvent(player, "setIPL", ipl);
             player.Position = new Vector3(p.PosX, p.PosY, p.PosZ);
+            player.Rotation = new Vector3(p.RotX, p.RotY, p.RotZ);
             player.Health = p.Vida;
             player.Armor = p.Colete;
             player.SetSkin(NAPI.Util.PedNameToModel(p.Skin));
@@ -124,6 +125,17 @@ namespace InfiniteRoleplay
                 p.TempoConectado++;
                 p.DataUltimaVerificacao = DateTime.Now;
 
+                if (p.TempoPrisao > 0)
+                {
+                    p.TempoPrisao--;
+                    if (p.TempoPrisao == 0)
+                    {
+                        player.Position = new Vector3(432.8367, -981.7594, 30.71048);
+                        player.Rotation = new Vector3(0, 0, 86.37479);
+                        EnviarMensagem(player, TipoMensagem.Sucesso, $"Seu tempo de prisão acabou e você foi libertado!");
+                    }
+                }
+
                 if (p.TempoConectado % 60 == 0)
                 {
                     var salario = 0;
@@ -174,6 +186,10 @@ namespace InfiniteRoleplay
                 personagem.CanalRadio = p.CanalRadio;
                 personagem.CanalRadio2 = p.CanalRadio2;
                 personagem.CanalRadio3 = p.CanalRadio3;
+                personagem.TempoPrisao = p.TempoPrisao;
+                personagem.RotX = player.Rotation.X;
+                personagem.RotY = player.Rotation.Y;
+                personagem.RotZ = player.Rotation.Z;
                 context.Personagens.Update(personagem);
 
                 context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
@@ -260,7 +276,7 @@ namespace InfiniteRoleplay
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.Staff}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado} | Celular: {p.Celular}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro:N0} | Banco: ${p.Banco:N0}");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor} | Tempo de Prisão: {p.TempoPrisao}");
 
             if (p.CanalRadio > -1)
                 EnviarMensagem(player, TipoMensagem.Nenhum, $"Canal Rádio 1: {p.CanalRadio} | Canal Rádio 2: {p.CanalRadio2} | Canal Rádio 3: {p.CanalRadio3}");
@@ -568,6 +584,12 @@ namespace InfiniteRoleplay
                 return;
             }
 
+            if (p.TempoPrisao > 0)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
+                return;
+            }
+
             NAPI.ClientEvent.TriggerClientEvent(player, "abrirCelular", p.Contatos.OrderBy(x => x.Nome).ToList(), msg, tipoMsg);
         }
 
@@ -813,6 +835,12 @@ namespace InfiniteRoleplay
             if (p.CanalRadio == -1)
             {
                 EnviarMensagem(p.Player, TipoMensagem.Erro, "Você não possui um rádio!");
+                return;
+            }
+
+            if (p.TempoPrisao > 0)
+            {
+                EnviarMensagem(p.Player, TipoMensagem.Erro, "Você está preso!");
                 return;
             }
 

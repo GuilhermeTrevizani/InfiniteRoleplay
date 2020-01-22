@@ -75,6 +75,9 @@ namespace InfiniteRoleplay
             Global.PersonagensOnline = new List<Personagem>();
             Global.Veiculos = new List<Veiculo>();
 
+            NAPI.TextLabel.CreateTextLabel("[/prender]", Global.PosicaoPrisao, 5, 2, 0, new Color(255, 255, 255));
+            NAPI.Marker.CreateMarker(MarkerType.ThickChevronUp, Global.PosicaoPrisao, new Vector3(), new Vector3(), 0.5f, new Color(255, 255, 255));
+
             timerPrincipal = new Timer(60000);
             timerPrincipal.Elapsed += TimerPrincipal_Elapsed;
             timerPrincipal.Start();

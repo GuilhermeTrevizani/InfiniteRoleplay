@@ -115,6 +115,7 @@ namespace InfiniteRoleplay.Commands
                         new Comando("Facção Policial", "/duty"),
                         new Comando("Facção Policial", "/multar"),
                         new Comando("Facção Policial", "/multaroff"),
+                        new Comando("Facção Policial", "/prender"),
                     });
                 else if (p.FaccaoBD.Tipo == (int)TipoFaccao.Medica)
 
@@ -501,6 +502,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            if (p.TempoPrisao > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
+                return;
+            }
+
             if (valor <= 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor inválido!");
@@ -649,7 +656,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (!Global.Skins.Any(x => x.Nome == pedHash.ToString() && !x.IsBloqueada && x.TipoFaccao == TipoFaccao.Nenhum && x.Sexo == p.Sexo))
+            if (!Global.Skins.Any(x => x.Nome == pedHash.ToString() && !x.IsBloqueada && x.TipoFaccao == null && x.Sexo == p.Sexo))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Skin bloqueada ou indisponível para o sexo do seu personagem!");
                 return;

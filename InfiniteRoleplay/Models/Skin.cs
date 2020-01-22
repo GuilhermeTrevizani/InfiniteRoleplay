@@ -24,6 +24,6 @@
         public string Nome { get; set; }
         public string Sexo { get; set; }
         public bool IsBloqueada { get; set; } = false;
-        public TipoFaccao TipoFaccao { get; set; } = TipoFaccao.Nenhum;
+        public TipoFaccao? TipoFaccao { get; set; } = null;
     }
 }
