@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using Newtonsoft.Json;
 
 namespace InfiniteRoleplay
 {
@@ -45,6 +46,18 @@ namespace InfiniteRoleplay
         public void CMD_vz(Client sender)
         {
             NAPI.Util.ConsoleOutput($"{sender.Vehicle.Rotation.X.ToString().Replace(",", ".")}, {sender.Vehicle.Rotation.Y.ToString().Replace(",", ".")}, {sender.Vehicle.Rotation.Z.ToString().Replace(",", ".")}");
+        }
+
+        [Command("teta")]
+        public void CMD_rottata(Client player)
+        {
+            NAPI.ClientEvent.TriggerClientEvent(player, "teta");
+        }
+
+        [RemoteEvent("teta2")]
+        public void CMD_rottateta2ta(Client player, object a)
+        {
+            NAPI.Util.ConsoleOutput(JsonConvert.SerializeObject(a));
         }
     }
 }

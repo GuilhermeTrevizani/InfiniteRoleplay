@@ -18,6 +18,8 @@ namespace InfiniteRoleplay
         public static List<Ponto> Pontos { get; set; }
         public static List<Skin> Skins { get; set; }
         public static GTANetworkAPI.Vector3 PosicaoPrisao { get; set; } = new GTANetworkAPI.Vector3(461.7921, -989.0697, 24.91488);
+        public static List<Armario> Armarios { get; set; }
+        public static List<ArmarioItem> ArmariosItens { get; set; }
     }
 
     public class Constants

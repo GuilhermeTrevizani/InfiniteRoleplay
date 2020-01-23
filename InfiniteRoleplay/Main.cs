@@ -70,6 +70,14 @@ namespace InfiniteRoleplay
 
                 Functions.CarregarSkins();
                 NAPI.Util.ConsoleOutput($"Skins: {Global.Skins.Count}");
+
+                Global.Armarios = context.Armarios.ToList();
+                foreach (var a in Global.Armarios)
+                    a.CriarIdentificador();
+                NAPI.Util.ConsoleOutput($"Armarios: {Global.Armarios.Count}");
+
+                Global.ArmariosItens = context.ArmariosItens.ToList();
+                NAPI.Util.ConsoleOutput($"ArmariosItens: {Global.ArmariosItens.Count}");
             }
 
             Global.PersonagensOnline = new List<Personagem>();

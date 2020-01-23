@@ -209,6 +209,17 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/rponto"),
                     new Comando("Staff 1337", "/irponto"),
                     new Comando("Staff 1337", "/eranksalario"),
+                    new Comando("Staff 1337", "/carm"),
+                    new Comando("Staff 1337", "/earmpos"),
+                    new Comando("Staff 1337", "/earmfac"),
+                    new Comando("Staff 1337", "/rarm"),
+                    new Comando("Staff 1337", "/irarm"),
+                    new Comando("Staff 1337", "/carmi"),
+                    new Comando("Staff 1337", "/rarmi"),
+                    new Comando("Staff 1337", "/earmimun"),
+                    new Comando("Staff 1337", "/earminrank"),
+                    new Comando("Staff 1337", "/earminest"),
+                    new Comando("Staff 1337", "/irarm"),
                 });
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoAjuda", listaComandos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome).ToList());

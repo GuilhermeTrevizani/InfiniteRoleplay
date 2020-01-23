@@ -164,7 +164,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você kickou {target.Nome}. Motivo: {motivo}");
             target.Player.Kick();
         }
-        
+
         [Command("irveh")]
         public void CMD_irveh(Client player, int codigo)
         {
@@ -533,6 +533,16 @@ namespace InfiniteRoleplay.Commands
                 if (distance <= distanceVer)
                 {
                     Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Ponto {ponto.Codigo}");
+                    isTemAlgoProximo = true;
+                }
+            }
+
+            foreach (var armario in Global.Armarios)
+            {
+                float distance = player.Position.DistanceTo(new Vector3(armario.PosX, armario.PosY, armario.PosZ));
+                if (distance <= distanceVer)
+                {
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Armário {armario.Codigo}");
                     isTemAlgoProximo = true;
                 }
             }
@@ -1171,7 +1181,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("dinheiro")]
-        public void CMD_dinheiro(Client player, string idNome, int dinheiro) 
+        public void CMD_dinheiro(Client player, string idNome, int dinheiro)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1226,6 +1236,7 @@ namespace InfiniteRoleplay.Commands
                 SaidaPosX = saida.X,
                 SaidaPosY = saida.Y,
                 SaidaPosZ = saida.Z,
+                Dimensao = player.Dimension,
             };
 
             using (var context = new RoleplayContext())
@@ -1371,7 +1382,8 @@ namespace InfiniteRoleplay.Commands
 
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosX = player.Position.X;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosY = player.Position.Y;
-            Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosZ = player.Position.Z;
+            Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosZ = player.Position.Z; 
+            Global.Propriedades[Global.Propriedades.IndexOf(prop)].Dimensao = player.Dimension;
 
             using (var context = new RoleplayContext())
             {
@@ -1381,8 +1393,8 @@ namespace InfiniteRoleplay.Commands
 
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].CriarIdentificador();
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou a posição da propriedade {prop.Codigo} para sua posição atual (X: {player.Position.X} Y: {player.Position.Y} Z: {player.Position.Z})!");
-            Functions.GravarLog(TipoLog.Staff, $"/eproppos {prop.Codigo} X: {player.Position.X} Y: {player.Position.Y} Z: {player.Position.Z}", p, null);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou a posição da propriedade {prop.Codigo} para sua posição atual (X: {player.Position.X} Y: {player.Position.Y} Z: {player.Position.Z} D: {player.Dimension})!");
+            Functions.GravarLog(TipoLog.Staff, $"/eproppos {prop.Codigo} X: {player.Position.X} Y: {player.Position.Y} Z: {player.Position.Z} D: {player.Dimension}", p, null);
         }
 
         [Command("irprop")]
@@ -1644,6 +1656,384 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou o salário do rank {rank} da facção {fac} para ${salario:N0}!");
             Functions.GravarLog(TipoLog.Staff, $"/eranksalario {fac} {rank} {salario}", p, null);
+        }
+
+        [Command("carm")]
+        public void CMD_carm(Client player, int faccao)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var faction = Global.Faccoes.FirstOrDefault(x => x.Codigo == faccao);
+            if (faction == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Facção {faccao} não existe!");
+                return;
+            }
+
+            var armario = new Entities.Armario()
+            {
+                PosX = player.Position.X,
+                PosY = player.Position.Y,
+                PosZ = player.Position.Z,
+                Faccao = faccao,
+                Dimensao = player.Dimension,
+            };
+
+            using (var context = new RoleplayContext())
+            {
+                context.Armarios.Add(armario);
+                context.SaveChanges();
+            }
+
+            armario.CriarIdentificador();
+
+            Global.Armarios.Add(armario);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Armário {armario.Codigo} criado com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/carm {armario.Codigo} {faccao}", p, null);
+        }
+
+        [Command("rarm")]
+        public void CMD_rarm(Client player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var armario = Global.Armarios.FirstOrDefault(x => x.Codigo == codigo);
+            if (armario == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Armário {codigo} não existe!");
+                return;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                context.Database.ExecuteSqlCommand($"DELETE FROM Armarios WHERE Codigo = {codigo}");
+                context.Database.ExecuteSqlCommand($"DELETE FROM ArmariosItens WHERE Codigo = {codigo}");
+            }
+
+            armario.DeletarIdentificador();
+
+            Global.Armarios.Remove(armario);
+            Global.ArmariosItens.RemoveAll(x => x.Codigo == armario.Codigo);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Armário {armario.Codigo} removido com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/rarm {armario.Codigo}", p, null);
+        }
+
+        [Command("earmariofac")]
+        public void CMD_earmariofac(Client player, int codigo, int faccao)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var armario = Global.Armarios.FirstOrDefault(x => x.Codigo == codigo);
+            if (armario == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Armário {codigo} não existe!");
+                return;
+            }
+
+            var faction = Global.Faccoes.FirstOrDefault(x => x.Codigo == faccao);
+            if (faction == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Facção {faccao} não existe!");
+                return;
+            }
+
+            Global.Armarios[Global.Armarios.IndexOf(armario)].Faccao = faccao;
+
+            using (var context = new RoleplayContext())
+            {
+                context.Armarios.Update(Global.Armarios[Global.Armarios.IndexOf(armario)]);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou a facção do armário {armario.Codigo} para {faccao}!");
+            Functions.GravarLog(TipoLog.Staff, $"/earmariofac {armario.Codigo} {faccao}", p, null);
+        }
+
+        [Command("earmpos")]
+        public void CMD_earmpos(Client player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var armario = Global.Armarios.FirstOrDefault(x => x.Codigo == codigo);
+            if (armario == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Armário {codigo} não existe!");
+                return;
+            }
+
+            Global.Armarios[Global.Armarios.IndexOf(armario)].PosX = player.Position.X;
+            Global.Armarios[Global.Armarios.IndexOf(armario)].PosY = player.Position.Y;
+            Global.Armarios[Global.Armarios.IndexOf(armario)].PosX = player.Position.X;
+            Global.Armarios[Global.Armarios.IndexOf(armario)].Dimensao = player.Dimension;
+
+            using (var context = new RoleplayContext())
+            {
+                context.Armarios.Update(Global.Armarios[Global.Armarios.IndexOf(armario)]);
+                context.SaveChanges();
+            }
+
+            Global.Armarios[Global.Armarios.IndexOf(armario)].CriarIdentificador();
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou a posição do armário {armario.Codigo} para sua posição atual (X: {player.Position.X} Y: {player.Position.Y} Z: {player.Position.Z} D: {player.Dimension})!");
+            Functions.GravarLog(TipoLog.Staff, $"/earmpos {armario.Codigo} X: {player.Position.X} Y: {player.Position.Y} Z: {player.Position.Z} D: {player.Dimension}", p, null);
+        }
+
+        [Command("irarm")]
+        public void CMD_irarm(Client player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var armario = Global.Armarios.FirstOrDefault(x => x.Codigo == codigo);
+            if (armario == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Armário {codigo} não existe!");
+                return;
+            }
+
+            p.LimparIPLs();
+            player.Dimension = 0;
+            player.Position = new Vector3(armario.PosX, armario.PosY, armario.PosZ);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o armário {armario.Codigo}!");
+        }
+
+        [Command("carmi")]
+        public void CMD_carmi(Client player, int armario, string arma)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var arm = Global.Armarios.FirstOrDefault(x => x.Codigo == armario);
+            if (arm == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Armário {armario} não existe!");
+                return;
+            }
+
+            var wep = NAPI.Util.WeaponNameToModel(arma);
+            if (wep == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe!");
+                return;
+            }
+
+            if (Global.ArmariosItens.Any(x => x.Codigo == armario && x.Arma == wep.ToString()))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {wep.ToString()} já existe no armário {armario}!");
+                return;
+            }
+
+            var item = new Entities.ArmarioItem()
+            {
+                Codigo = armario,
+                Arma = wep.ToString(),
+            };
+
+            using (var context = new RoleplayContext())
+            {
+                context.ArmariosItens.Add(item);
+                context.SaveChanges();
+            }
+
+            Global.ArmariosItens.Add(item);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Arma {item.Arma} criada no armário {armario} com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/carmi {armario} {item.Arma}", p, null);
+        }
+
+        [Command("rarmi")]
+        public void CMD_rarmi(Client player, int armario, string arma)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var arm = Global.Armarios.FirstOrDefault(x => x.Codigo == armario);
+            if (arm == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Armário {armario} não existe!");
+                return;
+            }
+
+            var wep = NAPI.Util.WeaponNameToModel(arma);
+            if (wep == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe!");
+                return;
+            }
+
+            var item = Global.ArmariosItens.FirstOrDefault(x => x.Codigo == armario && x.Arma == wep.ToString());
+            if (item == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {wep.ToString()} não existe no armário {armario}!");
+                return;
+            }
+            using (var context = new RoleplayContext())
+            {
+                context.ArmariosItens.Remove(item);
+                context.SaveChanges();
+            }
+
+            Global.ArmariosItens.Remove(item);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Arma {item.Arma} removida do armário {armario} com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/rarmi {armario} {item.Arma}", p, null);
+        }
+
+        [Command("earmimun")]
+        public void CMD_earmimun(Client player, int armario, string arma, int municao)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var wep = NAPI.Util.WeaponNameToModel(arma);
+            if (wep == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe!");
+                return;
+            }
+
+            var item = Global.ArmariosItens.FirstOrDefault(x => x.Codigo == armario && x.Arma == wep.ToString());
+            if (item == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe no armário {armario}!");
+                return;
+            }
+            
+            if (municao <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Munição inválida!");
+                return;
+            }
+
+            Global.ArmariosItens[Global.ArmariosItens.IndexOf(item)].Municao = municao;
+
+            using (var context = new RoleplayContext())
+            {
+                context.ArmariosItens.Update(Global.ArmariosItens[Global.ArmariosItens.IndexOf(item)]);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Munição da arma {item.Arma} no armário {armario} alterada para {municao}!");
+            Functions.GravarLog(TipoLog.Staff, $"/earmimun {armario} {item.Arma} {municao}", p, null);
+        }
+
+        [Command("earmirank")]
+        public void CMD_earmirank(Client player, int armario, string arma, int rank)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var wep = NAPI.Util.WeaponNameToModel(arma);
+            if (wep == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe!");
+                return;
+            }
+
+            var item = Global.ArmariosItens.FirstOrDefault(x => x.Codigo == armario && x.Arma == wep.ToString());
+            if (item == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe no armário {armario}!");
+                return;
+            }
+
+            var arm = Global.Armarios.FirstOrDefault(x => x.Codigo == armario);
+            if (!Global.Ranks.Any(x => x.Faccao == arm.Faccao && x.Codigo == rank))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Rank {rank} não existe na facção {arm.Faccao}!");
+                return;
+            }
+
+            Global.ArmariosItens[Global.ArmariosItens.IndexOf(item)].Rank = rank;
+
+            using (var context = new RoleplayContext())
+            {
+                context.ArmariosItens.Update(Global.ArmariosItens[Global.ArmariosItens.IndexOf(item)]);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Rank da arma {item.Arma} no armário {armario} alterado para {rank}!");
+            Functions.GravarLog(TipoLog.Staff, $"/earmirank {armario} {item.Arma} {rank}", p, null);
+        }
+
+        [Command("earmiest")]
+        public void CMD_earmiest(Client player, int armario, string arma, int estoque)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var wep = NAPI.Util.WeaponNameToModel(arma);
+            if (wep == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe!");
+                return;
+            }
+
+            var item = Global.ArmariosItens.FirstOrDefault(x => x.Codigo == armario && x.Arma == wep.ToString());
+            if (item == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe no armário {armario}!");
+                return;
+            }
+
+            if (estoque < 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Estoque inválido!");
+                return;
+            }
+
+            Global.ArmariosItens[Global.ArmariosItens.IndexOf(item)].Estoque = estoque;
+
+            using (var context = new RoleplayContext())
+            {
+                context.ArmariosItens.Update(Global.ArmariosItens[Global.ArmariosItens.IndexOf(item)]);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Estoque da arma {item.Arma} no armário {armario} alterado para {estoque}!");
+            Functions.GravarLog(TipoLog.Staff, $"/earmiest {armario} {item.Arma} {estoque}", p, null);
         }
         #endregion Staff 1337
     }

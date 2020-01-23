@@ -5,6 +5,8 @@ namespace InfiniteRoleplay
 {
     public class RoleplayContext : DbContext
     {
+        public DbSet<Armario> Armarios { get; set; }
+        public DbSet<ArmarioItem> ArmariosItens { get; set; }
         public DbSet<Banimento> Banimentos { get; set; }
         public DbSet<Blip> Blips { get; set; }
         public DbSet<Faccao> Faccoes { get; set; }
@@ -33,6 +35,8 @@ namespace InfiniteRoleplay
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Armario>().HasKey(x => x.Codigo);
+            modelBuilder.Entity<ArmarioItem>().HasKey(x => new { x.Codigo, x.Arma });
             modelBuilder.Entity<Banimento>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Blip>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Faccao>().HasKey(x => x.Codigo);
