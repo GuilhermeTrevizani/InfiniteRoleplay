@@ -160,6 +160,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            if (Global.Veiculos.Any(x => x.Codigo == codigo))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Veículo já está spawnado!");
+                return;
+            }
+
             using (var context = new RoleplayContext())
             {
                 var veh = context.Veiculos.FirstOrDefault(x => x.Codigo == codigo);
