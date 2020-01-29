@@ -457,6 +457,38 @@ namespace InfiniteRoleplay.Commands
         }
         #endregion Staff 2
 
+        #region Staff 3
+        [Command("ck", GreedyArg = true)]
+        public void CMD_ck(Client player, string idNome, string motivo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 3)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return;
+
+            if (motivo.Length > 255)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Nome deve ter até 255 caracteres.");
+                return;
+            }
+
+            target.DataMorte = DateTime.Now;
+            target.MotivoMorte = motivo;
+            Functions.SalvarPersonagem(target.Player, false);
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} aplicou CK no seu personagem.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você aplicou CK no personagem {target.Nome}. Motivo: {motivo}");
+            target.Player.Kick();
+            
+            Functions.GravarLog(TipoLog.Staff, $"/ck {motivo}", p, target);
+        }
+        #endregion
+
         #region Staff 1337
         [Command("gmx")]
         public void CMD_gmx(Client player)
@@ -1178,28 +1210,6 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Parâmetros do Servidor");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Recorde Online: {Global.Parametros.RecordeOnline}");
-        }
-
-        [Command("dinheiro")]
-        public void CMD_dinheiro(Client player, string idNome, int dinheiro)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p?.UsuarioBD?.Staff < 1337)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
-                return;
-            }
-
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
-            if (target == null)
-                return;
-
-            target.Dinheiro += dinheiro;
-            target.SetDinheiro();
-
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} te deu ${dinheiro:N0}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você deu ${dinheiro:N0} para {target.Nome}.");
-            Functions.GravarLog(TipoLog.Staff, $"/dinheiro {dinheiro}", p, target);
         }
 
         [Command("cprop")]

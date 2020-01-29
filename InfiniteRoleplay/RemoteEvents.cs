@@ -1,6 +1,5 @@
 ﻿using GTANetworkAPI;
 using InfiniteRoleplay.Entities;
-using InfiniteRoleplay.Models;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -213,7 +212,38 @@ namespace InfiniteRoleplay
                     ID = Functions.ObterNovoID(),
                     Skin = pedHash.ToString(),
                 };
+
+                var per = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo).OrderByDescending(x => x.Codigo).ToList();
+                if (per.Count > 0)
+                {
+                    var ultimoPersonagem = per.FirstOrDefault();
+
+                    personagem.Banco += ultimoPersonagem.Dinheiro + ultimoPersonagem.Banco;
+
+                    foreach (var prop in ultimoPersonagem.Propriedades)
+                    {
+                        prop.Personagem = 0;
+                        personagem.Banco += prop.Valor;
+                        prop.CriarIdentificador();
+                        context.Propriedades.Update(prop);
+                    }
+
+                    var veiculos = context.Veiculos.Where(x => x.Personagem == ultimoPersonagem.Codigo).ToList();
+                    foreach(var veh in veiculos)
+                    {
+                        var preco = Global.Precos.FirstOrDefault(x => x.Tipo == (int)TipoPreco.Veiculo && x.Nome == veh.Modelo);
+                        personagem.Banco += preco?.Valor ?? 0; 
+                        context.Veiculos.Remove(veh);
+                    }
+
+                    personagem.Banco = Convert.ToInt32(personagem.Banco * (p.UsuarioBD.PossuiNamechange ? 0.75 : 0.25));
+                }
+
                 context.Personagens.Add(personagem);
+
+                p.UsuarioBD.PossuiNamechange = false;
+                context.Usuarios.Update(p.UsuarioBD);
+
                 context.SaveChanges();
 
                 var user = p.UsuarioBD;
@@ -228,15 +258,12 @@ namespace InfiniteRoleplay
         public void EVENT_selecionarPersonagem(Client player, int id)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p == null)
-                return;
-
-            if (p.ID > 0)
+            if (p == null || p?.ID > 0)
                 return;
 
             using (var context = new RoleplayContext())
             {
-                var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == id && x.Usuario == p.UsuarioBD.Codigo);
+                var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == id && x.Usuario == p.UsuarioBD.Codigo && x.DataMorte == null);
                 if (personagem == null)
                 {
                     EVENT_voltarSelecionarPersonagem(player);
@@ -260,18 +287,21 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("voltarSelecionarPersonagem")]
-        public static void EVENT_voltarSelecionarPersonagem(Client player)
+        public void EVENT_voltarSelecionarPersonagem(Client player)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p == null)
-                return;
-
-            if (p.ID > 0)
+            if (p == null || p?.ID > 0)
                 return;
 
             using (var context = new RoleplayContext())
             {
-                var personagens = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo).OrderBy(x => x.Codigo).Select(x => new { id = x.Codigo, nome = x.Nome }).ToList();
+                var personagens = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo && x.DataMorte == null).OrderBy(x => x.Codigo).Select(x => new { id = x.Codigo, nome = x.Nome }).ToList();
+                if (personagens.Count == 1)
+                {
+                    EVENT_selecionarPersonagem(player, personagens.FirstOrDefault().id);
+                    return;
+                }
+
                 NAPI.ClientEvent.TriggerClientEvent(player, "selecionarPersonagem", personagens);
             }
         }

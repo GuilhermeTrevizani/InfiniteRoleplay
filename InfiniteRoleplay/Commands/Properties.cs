@@ -1,6 +1,5 @@
 ﻿using GTANetworkAPI;
 using InfiniteRoleplay.Models;
-using System;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -153,41 +152,6 @@ namespace InfiniteRoleplay.Commands
             }
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade por ${prox.Valor:N0}!");
-        }
-
-        [Command("pvender")]
-        public void CMD_pvender(Client player)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p == null)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
-                return;
-            }
-
-            var prox = Global.Propriedades
-                .Where(x => x.Personagem == p.Codigo && player.Position.DistanceTo(new Vector3(x.EntradaPosX, x.EntradaPosY, x.EntradaPosZ)) <= 2)
-                .OrderBy(x => player.Position.DistanceTo(new Vector3(x.EntradaPosX, x.EntradaPosY, x.EntradaPosZ)))
-                .FirstOrDefault();
-
-            if (prox == null)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhuma propriedade sua!");
-                return;
-            }
-
-            var propValor = prox.Valor / 2;
-            p.Dinheiro += propValor;
-            Global.Propriedades[Global.Propriedades.IndexOf(prox)].Personagem = 0;
-            p.SetDinheiro();
-
-            using (var context = new RoleplayContext())
-            {
-                context.Propriedades.Update(Global.Propriedades[Global.Propriedades.IndexOf(prox)]);
-                context.SaveChanges();
-            }
-
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você vendeu a propriedade por ${propValor:N0}!");
         }
 
         [Command("pvenderpara")]

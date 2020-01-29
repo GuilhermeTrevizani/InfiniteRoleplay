@@ -22,12 +22,6 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.Dinheiro < Global.Parametros.ValorSMS)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Você não possui ${Global.Parametros.ValorSMS:N0} para enviar um SMS!");
-                return;
-            }
-
             int.TryParse(numeroNomeContato, out int numero);
             if (numero == 0)
                 numero = p.Contatos.FirstOrDefault(x => x.Nome.ToLower().Contains(numeroNomeContato.ToLower()))?.Celular ?? 0;
@@ -44,9 +38,6 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Número indisponível!");
                 return;
             }
-
-            p.Dinheiro -= Global.Parametros.ValorSMS;
-            p.SetDinheiro();
 
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F2FF43}" + $"[CELULAR] SMS para {p.ObterNomeContato(numero)}: {mensagem}");
             Functions.SendMessageToNearbyPlayers(player, "envia uma mensagem de texto.", TipoMensagemJogo.Ame, 5, true);

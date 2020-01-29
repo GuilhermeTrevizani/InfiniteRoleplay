@@ -145,7 +145,7 @@ namespace InfiniteRoleplay
                     }
                     else
                     {
-                        salario += Global.Parametros.ValorSalarioDesemprego;
+                        salario += Global.Parametros.ValorIncentivoGovernamental;
                     }
 
                     p.Banco += salario;
@@ -190,6 +190,8 @@ namespace InfiniteRoleplay
                 personagem.RotX = player.Rotation.X;
                 personagem.RotY = player.Rotation.Y;
                 personagem.RotZ = player.Rotation.Z;
+                personagem.DataMorte = p.DataMorte;
+                personagem.MotivoMorte = p.MotivoMorte;
                 context.Personagens.Update(personagem);
 
                 context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");

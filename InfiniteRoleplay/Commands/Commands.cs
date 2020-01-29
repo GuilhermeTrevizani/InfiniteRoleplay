@@ -32,7 +32,6 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Propriedades", "/sair"),
                 new Comando("Propriedades", "/ptrancar"),
                 new Comando("Propriedades", "/pcomprar"),
-                new Comando("Propriedades", "/pvender"),
                 new Comando("Propriedades", "/pvenderpara"),
                 new Comando("Chat IC", "/me"),
                 new Comando("Chat IC", "/do"),
@@ -170,6 +169,12 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 2", "/banoff"),
                 });
 
+            if (p.UsuarioBD.Staff >= 3)
+                listaComandos.AddRange(new List<Comando>()
+                {
+                    new Comando("Staff 3", "/ck"),
+                });
+
             if (p.UsuarioBD.Staff >= 1337)
                 listaComandos.AddRange(new List<Comando>()
                 {
@@ -195,7 +200,6 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/ranks"),
                     new Comando("Staff 1337", "/lider"),
                     new Comando("Staff 1337", "/parametros"),
-                    new Comando("Staff 1337", "/dinheiro"),
                     new Comando("Staff 1337", "/cprop"),
                     new Comando("Staff 1337", "/rprop"),
                     new Comando("Staff 1337", "/epropvalor"),

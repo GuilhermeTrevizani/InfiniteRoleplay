@@ -31,7 +31,7 @@ namespace InfiniteRoleplay.Entities
         public int TempoConectado { get; set; } = 0;
         public int Faccao { get; set; } = 0;
         public int Rank { get; set; } = 0;
-        public int Dinheiro { get; set; } = 0;
+        public int Dinheiro { get; set; } = 500;
         public int Celular { get; set; } = 0;
         public int Banco { get; set; } = 0;
         public string IPL { get; set; } = "[]";
@@ -42,6 +42,8 @@ namespace InfiniteRoleplay.Entities
         public float RotX { get; set; } = 0;
         public float RotY { get; set; } = 0;
         public float RotZ { get; set; } = 149.1595f;
+        public DateTime? DataMorte { get; set; } = null;
+        public string MotivoMorte { get; set; } = string.Empty;
 
         [NotMapped]
         public int ID { get; set; }
