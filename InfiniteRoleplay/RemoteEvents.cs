@@ -213,11 +213,9 @@ namespace InfiniteRoleplay
                     Skin = pedHash.ToString(),
                 };
 
-                var per = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo).OrderByDescending(x => x.Codigo).ToList();
-                if (per.Count > 0)
+                var ultimoPersonagem = context.Personagens.LastOrDefault(x => x.Usuario == p.UsuarioBD.Codigo);
+                if (ultimoPersonagem != null)
                 {
-                    var ultimoPersonagem = per.FirstOrDefault();
-
                     personagem.Banco += ultimoPersonagem.Dinheiro + ultimoPersonagem.Banco;
 
                     foreach (var prop in ultimoPersonagem.Propriedades)

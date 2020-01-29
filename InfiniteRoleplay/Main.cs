@@ -145,7 +145,23 @@ namespace InfiniteRoleplay
             {
                 player.RemoveAllWeapons();
                 player.Dimension = 0;
-                NAPI.Player.SpawnPlayer(player, new Vector3(343.8652, -1399.016, 32.50928));
+
+                var pos = new Vector3(343.8652, -1399.016, 32.50928);
+                if (p.TempoPrisao > 0)
+                {
+                    using (var context = new RoleplayContext())
+                    {
+                        var prisao = context.Prisoes.LastOrDefault(x => x.Preso == p.Codigo);
+                        if (prisao.Cela == 1)
+                            pos = new Vector3(460.4085, -994.0992, 25);
+                        else if (prisao.Cela == 2)
+                            pos = new Vector3(460.4085, -997.7994, 25);
+                        else if (prisao.Cela == 3)
+                            pos = new Vector3(460.4085, -1001.342, 25);
+                    }
+                }
+
+                NAPI.Player.SpawnPlayer(player, pos);
             }, delayTime: 5000);
         }
 
