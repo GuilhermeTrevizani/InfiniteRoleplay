@@ -140,13 +140,12 @@ namespace InfiniteRoleplay
                 {
                     var salario = 0;
                     if (p.Faccao > 0)
-                    {
                         salario += p.RankBD.Salario;
-                    }
-                    else
-                    {
+                    else if (p.Emprego > 0)
                         salario += Global.Parametros.ValorIncentivoGovernamental;
-                    }
+
+                    if (Convert.ToInt32(p.TempoConectado / 60) <= Global.Parametros.HorasIncentivoInicial)
+                        salario += Global.Parametros.ValorIncentivoInicial;
 
                     p.Banco += salario;
                     if (salario > 0)
@@ -192,6 +191,7 @@ namespace InfiniteRoleplay
                 personagem.RotZ = player.Rotation.Z;
                 personagem.DataMorte = p.DataMorte;
                 personagem.MotivoMorte = p.MotivoMorte;
+                personagem.Emprego = p.Emprego;
                 context.Personagens.Update(personagem);
 
                 context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
