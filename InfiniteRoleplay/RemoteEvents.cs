@@ -229,7 +229,7 @@ namespace InfiniteRoleplay
                     var veiculos = context.Veiculos.Where(x => x.Personagem == ultimoPersonagem.Codigo).ToList();
                     foreach(var veh in veiculos)
                     {
-                        var preco = Global.Precos.FirstOrDefault(x => x.Tipo == (int)TipoPreco.Veiculo && x.Nome == veh.Modelo);
+                        var preco = Global.Precos.FirstOrDefault(x => x.Tipo == (int)TipoPreco.CarrosMotos && x.Nome == veh.Modelo);
                         personagem.Banco += preco?.Valor ?? 0; 
                         context.Veiculos.Remove(veh);
                     }
@@ -305,7 +305,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("comprarVeiculo")]
-        public void EVENT_comprarVeiculo(Client player, string veiculo, int cor1, int cor2)
+        public void EVENT_comprarVeiculo(Client player, int tipo, string veiculo, int r1, int g1, int b1, int r2, int g2, int b2)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -313,49 +313,43 @@ namespace InfiniteRoleplay
 
             if (string.IsNullOrWhiteSpace(veiculo))
             {
-                Functions.ComprarVeiculo(player, "Você não informou qual veículo deseja comprar!");
+                Functions.ComprarVeiculo(player, tipo, "Verifique se todos os campos foram preenchidos corretamente!");
                 return;
             }
 
-            var preco = Global.Precos.FirstOrDefault(x => x.Tipo == (int)TipoPreco.Veiculo && x.Nome.ToLower() == veiculo.ToLower());
+            var preco = Global.Precos.FirstOrDefault(x => x.Tipo == tipo && x.Nome.ToLower() == veiculo.ToLower());
             if (preco == null)
             {
-                Functions.ComprarVeiculo(player, "Veículo não está disponível para compra!");
-                return;
-            }
-
-            if (cor1 < 0 || cor1 > 159)
-            {
-                Functions.ComprarVeiculo(player, "Cor 1 deve ser entre 0 e 159!");
-                return;
-            }
-
-            if (cor2 < 0 || cor2 > 159)
-            {
-                Functions.ComprarVeiculo(player, "Cor 2 deve ser entre 0 e 159!");
+                Functions.ComprarVeiculo(player, tipo, "Veículo não está disponível para compra!");
                 return;
             }
 
             if (p.Dinheiro < preco.Valor)
             {
-                Functions.ComprarVeiculo(player, "Você não possui dinheiro suficiente!");
+                Functions.ComprarVeiculo(player, tipo, "Você não possui dinheiro suficiente!");
                 return;
             }
+
+            var concessionaria = Global.Concessionarias.FirstOrDefault(x => x.Tipo == (TipoPreco)tipo);
 
             var veh = new Veiculo()
             {
                 Personagem = p.Codigo,
-                Cor1 = cor1,
-                Cor2 = cor2,
+                Cor1R = r1,
+                Cor1G = g1,
+                Cor1B = b1,
+                Cor2R = r2,
+                Cor2G = g2,
+                Cor2B = b2,
                 Modelo = NAPI.Util.VehicleNameToModel(veiculo).ToString(),
                 Placa = Functions.GerarPlacaVeiculo(),
                 Vida = 1000,
-                PosX = -59.85905f,
-                PosY = -1106.017f,
-                PosZ = 26.01114f,
-                RotX = 0.6498904f,
-                RotY = 0.5028602f,
-                RotZ = 73.53305f,
+                PosX = concessionaria.PosicaoSpawn.X,
+                PosY = concessionaria.PosicaoSpawn.Y,
+                PosZ = concessionaria.PosicaoSpawn.Z,
+                RotX = concessionaria.RotacaoSpawn.X,
+                RotY = concessionaria.RotacaoSpawn.Y,
+                RotZ = concessionaria.RotacaoSpawn.Z,
             };
 
             using (var context = new RoleplayContext())

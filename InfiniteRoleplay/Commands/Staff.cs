@@ -1481,7 +1481,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if ((TipoPreco)tipo == TipoPreco.Veiculo)
+            if ((TipoPreco)tipo == TipoPreco.CarrosMotos)
             {
                 var veh = NAPI.Util.VehicleNameToModel(nome);
                 if ((int)veh == 0)

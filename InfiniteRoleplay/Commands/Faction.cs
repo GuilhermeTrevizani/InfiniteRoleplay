@@ -314,7 +314,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (player.Position.DistanceTo(Global.PosicaoPrisao) > 2)
+            if (player.Position.DistanceTo(Constants.PosicaoPrisao) > 2)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está no local que as prisões são efetuadas!");
                 return;

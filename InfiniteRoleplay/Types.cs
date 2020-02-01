@@ -136,17 +136,20 @@
 
     public enum TipoPreco
     {
-        Veiculo = 1,
+        CarrosMotos = 1,
         Conveniencia = 2,
+        Barcos = 3,
+        Helicopteros = 4,
+        Industrial = 5,
+        Avioes = 6,
     }
 
     public enum TipoPonto
     {
-        Concessionaria = 1,
-        Multas = 2,
-        Banco = 3,
-        ATM = 4,
-        LojaConveniencia = 5,
-        LojaRoupas = 6,
+        Multas = 1,
+        Banco = 2,
+        ATM = 3,
+        LojaConveniencia = 4,
+        LojaRoupas = 5,
     }
 }

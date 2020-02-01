@@ -29,12 +29,12 @@ namespace InfiniteRoleplay
 
             NAPI.Server.SetCommandErrorMessage("!{#FF6A4D}<!>~w~ O comando informado não existe!");
 
-            string host = NAPI.Resource.GetSetting<string>(this, "db_host");
-            string db = NAPI.Resource.GetSetting<string>(this, "db_database");
-            string user = NAPI.Resource.GetSetting<string>(this, "db_username");
-            string pass = NAPI.Resource.GetSetting<string>(this, "db_password");
+            var host = NAPI.Resource.GetSetting<string>(this, "db_host");
+            var db = NAPI.Resource.GetSetting<string>(this, "db_database");
+            var user = NAPI.Resource.GetSetting<string>(this, "db_username");
+            var pass = NAPI.Resource.GetSetting<string>(this, "db_password");
 
-            Global.ConnectionString = $"Server={host};Database={db};Uid={user};Pwd={pass}";
+            Global.ConnectionString = $"Server={host};Database={db};User ID={user};Password={pass}";
 
             using (var context = new RoleplayContext())
             {
@@ -68,9 +68,6 @@ namespace InfiniteRoleplay
                     p.CriarIdentificador();
                 NAPI.Util.ConsoleOutput($"Pontos: {Global.Pontos.Count}");
 
-                Functions.CarregarSkins();
-                NAPI.Util.ConsoleOutput($"Skins: {Global.Skins.Count}");
-
                 Global.Armarios = context.Armarios.ToList();
                 foreach (var a in Global.Armarios)
                     a.CriarIdentificador();
@@ -79,12 +76,18 @@ namespace InfiniteRoleplay
                 Global.ArmariosItens = context.ArmariosItens.ToList();
                 NAPI.Util.ConsoleOutput($"ArmariosItens: {Global.ArmariosItens.Count}");
             }
+            
+            Functions.CarregarSkins();
+            NAPI.Util.ConsoleOutput($"Skins: {Global.Skins.Count}");
+
+            Functions.CarregarConcessionarias();
+            NAPI.Util.ConsoleOutput($"Concessionarias: {Global.Concessionarias.Count}");
 
             Global.PersonagensOnline = new List<Personagem>();
             Global.Veiculos = new List<Veiculo>();
 
-            NAPI.TextLabel.CreateTextLabel("[/prender]", Global.PosicaoPrisao, 5, 2, 0, new Color(255, 255, 255));
-            NAPI.Marker.CreateMarker(MarkerType.ThickChevronUp, Global.PosicaoPrisao, new Vector3(), new Vector3(), 0.5f, new Color(255, 255, 255));
+            NAPI.TextLabel.CreateTextLabel("[/prender]", Constants.PosicaoPrisao, 5, 2, 0, new Color(255, 255, 255));
+            NAPI.Marker.CreateMarker(MarkerType.ThickChevronUp, Constants.PosicaoPrisao, new Vector3(), new Vector3(), 0.5f, new Color(255, 255, 255));
 
             timerPrincipal = new Timer(60000);
             timerPrincipal.Elapsed += TimerPrincipal_Elapsed;

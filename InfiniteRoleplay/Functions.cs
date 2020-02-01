@@ -258,18 +258,16 @@ namespace InfiniteRoleplay
 
         private static string GetChatMessageColor(float distance, float distanceGap)
         {
-            string color = null;
             if (distance < distanceGap)
-                color = Constants.COLOR_CHAT_CLOSE;
+                return "!{#E6E6E6}";
             else if (distance < distanceGap * 2)
-                color = Constants.COLOR_CHAT_NEAR;
+                return "!{#C8C8C8}";
             else if (distance < distanceGap * 3)
-                color = Constants.COLOR_CHAT_MEDIUM;
+                return "!{#AAAAAA}";
             else if (distance < distanceGap * 4)
-                color = Constants.COLOR_CHAT_FAR;
-            else
-                color = Constants.COLOR_CHAT_LIMIT;
-            return color;
+                return "!{#8C8C8C}";
+
+            return "!{#6E6E6E}";
         }
 
         public static void MostrarStats(Client player, Personagem p)
@@ -546,28 +544,30 @@ namespace InfiniteRoleplay
                 EnviarMensagem(pl.Player, TipoMensagem.Nenhum, (isCorFaccao ? "!{#" + pl.FaccaoBD.Cor + "}" : string.Empty) + mensagem);
         }
 
-        public static void ComprarVeiculo(Client player, string erro)
+        public static void ComprarVeiculo(Client player, int tipo, string erro)
         {
-            var p = ObterPersonagem(player);
-            if (p == null)
+            if (tipo == 0)
             {
-                EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
-                return;
+                foreach (var c in Global.Concessionarias)
+                {
+                    if (tipo == 0 && player.Position.DistanceTo(c.PosicaoCompra) <= 2)
+                        tipo = (int)c.Tipo;
+                }
+
+                if (tipo == 0)
+                {
+                    EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhuma concessionária!");
+                    return;
+                }
             }
 
-            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.Concessionaria && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
-            {
-                EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum ponto de compra de veículos!");
-                return;
-            }
-
-            var veiculos = Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Veiculo).OrderBy(x => x.Nome).Select(x => new
+            var veiculos = Global.Precos.Where(x => x.Tipo == tipo).OrderBy(x => x.Nome).Select(x => new
             {
                 x.Nome,
                 Preco = $"${x.Valor:N0}",
             }).ToList();
 
-            NAPI.ClientEvent.TriggerClientEvent(player, "comandoVComprar", veiculos, erro);
+            NAPI.ClientEvent.TriggerClientEvent(player, "comandoVComprar", tipo, veiculos, erro);
         }
 
         public static string GerarPlacaVeiculo()
@@ -1435,6 +1435,59 @@ namespace InfiniteRoleplay
                 new Skin("UPS02SMM", "M", TipoFaccao.Policial),
                 new Skin("USCG01SMY", "M", TipoFaccao.Policial),
             };
+        }
+
+        public static void CarregarConcessionarias()
+        {
+            Global.Concessionarias = new List<Concessionaria>()
+            {
+                new Concessionaria()
+                {
+                    Nome = "Concessionária de Carros e Motos",
+                    Tipo = TipoPreco.CarrosMotos,
+                    PosicaoCompra = new Vector3(-38.63479, -1109.706, 26.43781),
+                    PosicaoSpawn = new Vector3(-59.85905, -1106.017, 26.01114),
+                    RotacaoSpawn = new Vector3(0.6498904, 0.5028602, 73.53305),
+                },
+                new Concessionaria()
+                {
+                    Nome = "Concessionária de Barcos",
+                    Tipo = TipoPreco.Barcos,
+                    PosicaoCompra = new Vector3(-787.1262, -1354.725, 5.150271),
+                    PosicaoSpawn = new Vector3(-805.9193, -1418.638, 0.3696117),
+                    RotacaoSpawn = new Vector3(0, 0, 209.8481),
+                },
+                new Concessionaria()
+                {
+                    Nome = "Concessionária de Helicópteros",
+                    Tipo = TipoPreco.Helicopteros,
+                    PosicaoCompra = new Vector3(-753.5287, -1512.43, 5.020952),
+                    PosicaoSpawn = new Vector3(- 745.4902, -1468.695, 5.099712),
+                    RotacaoSpawn = new Vector3(0, 0, 328.6675),
+                },
+                new Concessionaria()
+                {
+                    Nome = "Concessionária Industrial",
+                    Tipo = TipoPreco.Industrial,
+                    PosicaoCompra = new Vector3(473.9496, -1951.891, 24.6132),
+                    PosicaoSpawn = new Vector3(468.1417, -1957.425, 24.72257),
+                    RotacaoSpawn = new Vector3(0, 0, 208.0628),
+                },
+                new Concessionaria()
+                {
+                    Nome = "Concessionária de Aviões",
+                    Tipo = TipoPreco.Avioes,
+                    PosicaoCompra = new Vector3(1725.616, 3291.571, 41.19078),
+                    PosicaoSpawn = new Vector3(1712.708, 3252.634, 41.67871),
+                    RotacaoSpawn = new Vector3(0, 0, 122.1655),
+                },
+            };
+
+            foreach (var c in Global.Concessionarias)
+            {
+                NAPI.TextLabel.CreateTextLabel(c.Nome, c.PosicaoCompra, 5, 2, 0, new Color(255, 255, 255));
+                NAPI.Marker.CreateMarker(MarkerType.ThickChevronUp, c.PosicaoCompra, new Vector3(), new Vector3(), 0.5f, new Color(255, 255, 255));
+            }
         }
     }
 }

@@ -9,12 +9,12 @@ namespace InfiniteRoleplay.Entities
         public int Interior { get; set; } = 0;
         public int Valor { get; set; } = 0;
         public int Personagem { get; set; } = 0;
-        public float EntradaPosX { get; set; } = 0;
-        public float EntradaPosY { get; set; } = 0;
-        public float EntradaPosZ { get; set; } = 0;
-        public float SaidaPosX { get; set; } = 0;
-        public float SaidaPosY { get; set; } = 0;
-        public float SaidaPosZ { get; set; } = 0;
+        public double EntradaPosX { get; set; } = 0;
+        public double EntradaPosY { get; set; } = 0;
+        public double EntradaPosZ { get; set; } = 0;
+        public double SaidaPosX { get; set; } = 0;
+        public double SaidaPosY { get; set; } = 0;
+        public double SaidaPosZ { get; set; } = 0;
         public long Dimensao { get; set; } = 0;
 
         [NotMapped]

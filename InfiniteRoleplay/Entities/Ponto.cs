@@ -7,9 +7,9 @@ namespace InfiniteRoleplay.Entities
     {
         public int Codigo { get; set; }
         public int Tipo { get; set; } = 0;
-        public float PosX { get; set; } = 0;
-        public float PosY { get; set; } = 0;
-        public float PosZ { get; set; } = 0;
+        public double PosX { get; set; } = 0;
+        public double PosY { get; set; } = 0;
+        public double PosZ { get; set; } = 0;
 
         [NotMapped]
         public TextLabel TextLabel { get; set; }
@@ -24,11 +24,8 @@ namespace InfiniteRoleplay.Entities
             string nome = string.Empty;
             switch((TipoPonto)Tipo)
             {
-                case TipoPonto.Concessionaria:
-                    nome = "[/vcomprar]";
-                    break;
                 case TipoPonto.Multas:
-                    nome = "[/multas]";
+                    nome = "[Pagamento de Multas]";
                     break;
                 case TipoPonto.Banco:
                     nome = "[Caixa Bancário]";
@@ -37,10 +34,10 @@ namespace InfiniteRoleplay.Entities
                     nome = "[ATM]";
                     break;
                 case TipoPonto.LojaConveniencia:
-                    nome = "[/comprar]";
+                    nome = "[Loja de Conveniência]";
                     break;
                 case TipoPonto.LojaRoupas:
-                    nome = "[/skin]";
+                    nome = "[Loja de Roupas]";
                     break;
             }
 

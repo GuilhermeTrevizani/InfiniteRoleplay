@@ -7,9 +7,9 @@ namespace InfiniteRoleplay.Entities
     {
         public int Codigo { get; set; }
         public string Nome { get; set; } = string.Empty;
-        public float PosX { get; set; } = 0;
-        public float PosY { get; set; } = 0;
-        public float PosZ { get; set; } = 0;
+        public double PosX { get; set; } = 0;
+        public double PosY { get; set; } = 0;
+        public double PosZ { get; set; } = 0;
         public int Tipo { get; set; } = 0;
         public int Cor { get; set; } = 0;
 
@@ -18,10 +18,8 @@ namespace InfiniteRoleplay.Entities
 
         public void CriarIdentificador()
         {
-            BlipGTA = NAPI.Blip.CreateBlip(new Vector3(PosX, PosY, PosZ));
-            BlipGTA.Sprite = (uint)Tipo;
-            BlipGTA.Color = Cor;
-            BlipGTA.Name = Nome;
+            BlipGTA = NAPI.Blip.CreateBlip((uint)Tipo, new Vector3(PosX, PosY, PosZ), 1, (byte)Cor, Nome);
+            BlipGTA.ShortRange = true;
         }
 
         public void DeletarIdentificador()

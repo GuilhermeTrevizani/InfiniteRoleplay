@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using System;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -6,7 +7,7 @@ namespace InfiniteRoleplay.Commands
     public class Vehicles : Script
     {
         [Command("vcomprar")]
-        public void CMD_vcomprar(Client player) => Functions.ComprarVeiculo(player, string.Empty);
+        public void CMD_vcomprar(Client player) => Functions.ComprarVeiculo(player, 0, string.Empty);
 
         [Command("motor")]
         public void CMD_motor(Client player)
@@ -20,7 +21,7 @@ namespace InfiniteRoleplay.Commands
 
             if (!player.IsInVehicle || player.VehicleSeat != (int)VehicleSeat.Driver)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está no banco de motorista de um veículo!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não é o motorista de um veículo!");
                 return;
             }
 
@@ -176,7 +177,7 @@ namespace InfiniteRoleplay.Commands
                 }
 
                 veh.Spawnar();
-                NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", veh.PosX, veh.PosY);
+                NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", Convert.ToSingle(veh.PosX), Convert.ToSingle(veh.PosY));
                 Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você spawnou seu veículo!");
             }
         }
