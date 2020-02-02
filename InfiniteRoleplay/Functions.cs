@@ -65,12 +65,14 @@ namespace InfiniteRoleplay
                 GravarParametros();
             }
 
+            Functions.GravarLog(TipoLog.Entrada, string.Empty, p, null);
+
             NAPI.ClientEvent.TriggerClientEvent(player, "logarPersonagem");
         }
 
         public static Personagem ObterPersonagem(Client player)
         {
-            return Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
+            return Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player?.SocialClubName);
         }
 
         public static Personagem ObterPersonagemPorIdNome(Client player, string idNome, bool isPodeProprioPlayer = true)
@@ -114,12 +116,8 @@ namespace InfiniteRoleplay
             return null;
         }
 
-        public static void SalvarPersonagem(Client player, bool isOnline = true)
+        public static void SalvarPersonagem(Personagem p, bool isOnline = true)
         {
-            var p = ObterPersonagem(player);
-            if ((p?.Codigo ?? 0) == 0)
-                return;
-
             var dif = DateTime.Now - p.DataUltimaVerificacao;
             if (dif.TotalMinutes >= 1)
             {
@@ -131,9 +129,9 @@ namespace InfiniteRoleplay
                     p.TempoPrisao--;
                     if (p.TempoPrisao == 0)
                     {
-                        player.Position = new Vector3(432.8367, -981.7594, 30.71048);
-                        player.Rotation = new Vector3(0, 0, 86.37479);
-                        EnviarMensagem(player, TipoMensagem.Sucesso, $"Seu tempo de prisão acabou e você foi libertado!");
+                        p.Player.Position = new Vector3(432.8367, -981.7594, 30.71048);
+                        p.Player.Rotation = new Vector3(0, 0, 86.37479);
+                        EnviarMensagem(p.Player, TipoMensagem.Sucesso, $"Seu tempo de prisão acabou e você foi libertado!");
                     }
                 }
 
@@ -150,7 +148,7 @@ namespace InfiniteRoleplay
 
                     p.Banco += salario;
                     if (salario > 0)
-                        EnviarMensagem(player, TipoMensagem.Sucesso, $"Seu salário de ${salario:N0} foi depositado no banco!");
+                        EnviarMensagem(p.Player, TipoMensagem.Sucesso, $"Seu salário de ${salario:N0} foi depositado no banco!");
                 }
             }
 
@@ -169,13 +167,13 @@ namespace InfiniteRoleplay
             {
                 var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == p.Codigo);
                 personagem.Online = isOnline;
-                personagem.Skin = ((PedHash)player.Model).ToString();
-                personagem.PosX = player.Position.X;
-                personagem.PosY = player.Position.Y;
-                personagem.PosZ = player.Position.Z;
-                personagem.Vida = player.Health;
-                personagem.Colete = player.Armor;
-                personagem.Dimensao = player.Dimension;
+                personagem.Skin = ((PedHash)p.Player.Model).ToString();
+                personagem.PosX = p.Player.Position.X;
+                personagem.PosY = p.Player.Position.Y;
+                personagem.PosZ = p.Player.Position.Z;
+                personagem.Vida = p.Player.Health;
+                personagem.Colete = p.Player.Armor;
+                personagem.Dimensao = p.Player.Dimension;
                 personagem.TempoConectado = p.TempoConectado;
                 personagem.Faccao = p.Faccao;
                 personagem.Rank = p.Rank;
@@ -187,9 +185,9 @@ namespace InfiniteRoleplay
                 personagem.CanalRadio2 = p.CanalRadio2;
                 personagem.CanalRadio3 = p.CanalRadio3;
                 personagem.TempoPrisao = p.TempoPrisao;
-                personagem.RotX = player.Rotation.X;
-                personagem.RotY = player.Rotation.Y;
-                personagem.RotZ = player.Rotation.Z;
+                personagem.RotX = p.Player.Rotation.X;
+                personagem.RotY = p.Player.Rotation.Y;
+                personagem.RotZ = p.Player.Rotation.Z;
                 personagem.DataMorte = p.DataMorte;
                 personagem.MotivoMorte = p.MotivoMorte;
                 personagem.Emprego = p.Emprego;
@@ -1505,6 +1503,25 @@ namespace InfiniteRoleplay
             if (attributes?.Length > 0)
                 return attributes.FirstOrDefault().Name;
             return valor.ToString();
+        }
+
+        public static void CarregarEmpregos()
+        {
+            Global.Empregos = new List<Emprego>()
+            {
+                new Emprego()
+                {
+                    Tipo = TipoEmprego.Taxista,
+                    Posicao = new Vector3(895.0308, -179.1359, 74.70036),
+                },
+            };
+
+            foreach (var c in Global.Empregos)
+            {
+                var nome = ObterDisplayEnum(c.Tipo);
+                NAPI.TextLabel.CreateTextLabel($"Emprego de {nome}", c.Posicao, 5, 2, 0, new Color(254, 189, 12));
+                NAPI.TextLabel.CreateTextLabel($"Use /emprego para se tornar um {nome.ToLower()}", new Vector3(c.Posicao.X, c.Posicao.Y, c.Posicao.Z - 0.1), 5, 1, 0, new Color(255, 255, 255));
+            }
         }
     }
 }

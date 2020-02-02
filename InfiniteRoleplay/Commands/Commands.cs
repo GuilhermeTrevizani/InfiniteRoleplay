@@ -29,6 +29,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Geral", "/comprar"),
                 new Comando("Geral", "/skin"),
                 new Comando("Geral", "/emtrabalho"),
+                new Comando("Geral", "/emprego"),
                 new Comando("Geral", "/sairemprego"),
                 new Comando("Propriedades", "/entrar"),
                 new Comando("Propriedades", "/sair"),
@@ -711,7 +712,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_sairemprego(Client player)
         {
             var p = Functions.ObterPersonagem(player);
-            if ((p?.Emprego ?? 0) == 0)
+            if (p.Emprego == 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não tem um emprego!");
                 return;
@@ -719,6 +720,39 @@ namespace InfiniteRoleplay.Commands
 
             p.Emprego = 0;
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, "Você saiu do seu emprego!");
+        }
+
+        [Command("emprego")]
+        public void CMD_emprego(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p.Emprego > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você já tem um emprego!");
+                return;
+            }
+
+            if (p.FaccaoBD?.Tipo == (int)TipoFaccao.Policial || p.FaccaoBD?.Tipo == (int)TipoFaccao.Medica)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não pode pegar um emprego pois está em uma facção governamental!");
+                return;
+            }
+
+            var emprego = TipoEmprego.Nenhum;
+            foreach (var c in Global.Empregos)
+            {
+                if (emprego == TipoEmprego.Nenhum && player.Position.DistanceTo(c.Posicao) <= 2)
+                    emprego = c.Tipo;
+            }
+
+            if (emprego == TipoEmprego.Nenhum)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum local de emprego!");
+                return;
+            }
+
+            p.Emprego = (int)emprego;
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você pegou o emprego {Functions.ObterDisplayEnum(emprego)}!");
         }
     }
 }

@@ -83,6 +83,9 @@ namespace InfiniteRoleplay
             Functions.CarregarConcessionarias();
             NAPI.Util.ConsoleOutput($"Concessionarias: {Global.Concessionarias.Count}");
 
+            Functions.CarregarEmpregos();
+            NAPI.Util.ConsoleOutput($"Empregos: {Global.Empregos.Count}");
+
             Global.PersonagensOnline = new List<Personagem>();
             Global.Veiculos = new List<Veiculo>();
 
@@ -98,7 +101,7 @@ namespace InfiniteRoleplay
         {
             NAPI.World.SetTime(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
 
-            foreach (var p in NAPI.Pools.GetAllPlayers())
+            foreach (var p in Global.PersonagensOnline.Where(x => x.Codigo > 0))
                 Functions.SalvarPersonagem(p);
         }
 
@@ -106,6 +109,8 @@ namespace InfiniteRoleplay
         public void ResourceStop()
         {
             timerPrincipal?.Stop();
+            foreach (var p in Global.PersonagensOnline.Where(x => x.Codigo > 0))
+                Functions.SalvarPersonagem(p);
         }
 
         [ServerEvent(Event.PlayerConnected)]
@@ -133,7 +138,13 @@ namespace InfiniteRoleplay
         [ServerEvent(Event.PlayerDisconnected)]
         public void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
-            Functions.SalvarPersonagem(player, false);
+            var p = Functions.ObterPersonagem(player);
+            if (p?.Codigo > 0)
+            {
+                Functions.GravarLog(TipoLog.Saida, $"Tipo: {(int)type} | Razão: {reason}", p, null);
+                Functions.SalvarPersonagem(p, false);
+            }
+
             Global.PersonagensOnline.RemoveAll(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
         }
 
@@ -143,6 +154,8 @@ namespace InfiniteRoleplay
             var p = Functions.ObterPersonagem(player);
             if (p == null)
                 return;
+
+            Functions.GravarLog(TipoLog.Morte, reason.ToString(), p, Functions.ObterPersonagem(killer));
 
             NAPI.Task.Run(() =>
             {

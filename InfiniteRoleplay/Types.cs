@@ -43,6 +43,9 @@
         FaccaoGestor = 3,
         Dinheiro = 4,
         Venda = 5,
+        Entrada = 6,
+        Saida = 7,
+        Morte = 8,
     }
 
     public enum TipoConvite

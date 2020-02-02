@@ -372,8 +372,7 @@ namespace InfiniteRoleplay.Commands
 
             var strBan = dias == 0 ? "permanentemente" : $"por {dias} dia{(dias > 1 ? "s" : string.Empty)}";
             Functions.EnviarMensagem(target.Player, TipoMensagem.Punicao, $"{p.UsuarioBD.Nome} baniu você {strBan}. Motivo: {motivo}");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você baniu {target.Nome} {strBan}. Motivo: {motivo}");
-
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você baniu {target.UsuarioBD.Nome} ({target.Nome}) {strBan}. Motivo: {motivo}");
             target.Player.Kick();
         }
 
@@ -425,7 +424,7 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
 
                 var strBan = dias == 0 ? "permanentemente" : $"por {dias} dia{(dias > 1 ? "s" : string.Empty)}";
-                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você baniu {per.Nome} {strBan}. Motivo: {motivo}");
+                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você baniu {user.Nome} ({per.Nome}) {strBan}. Motivo: {motivo}");
             }
         }
 
@@ -452,7 +451,7 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
             }
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você desbaniu o usuário {usuario}!");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você desbaniu {usuario}!");
             Functions.GravarLog(TipoLog.Staff, $"/unban {usuario}", p, null);
         }
         #endregion Staff 2
@@ -480,7 +479,6 @@ namespace InfiniteRoleplay.Commands
 
             target.DataMorte = DateTime.Now;
             target.MotivoMorte = motivo;
-            Functions.SalvarPersonagem(target.Player, false);
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} aplicou CK no seu personagem.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você aplicou CK no personagem {target.Nome}. Motivo: {motivo}");
             target.Player.Kick();
@@ -500,9 +498,9 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            foreach (var pl in NAPI.Pools.GetAllPlayers())
+            foreach (var pl in Global.PersonagensOnline.Where(x => x.Codigo > 0))
             {
-                Functions.EnviarMensagem(pl, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} reiniciará o servidor.");
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} reiniciará o servidor.");
                 Functions.SalvarPersonagem(pl);
             }
         }
@@ -536,13 +534,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            bool isTemAlgoProximo = false;
-            float distanceVer = 5f;
+            var isTemAlgoProximo = false;
+            var distanceVer = 5f;
 
             foreach (var b in Global.Blips)
             {
-                float distance = player.Position.DistanceTo(new Vector3(b.PosX, b.PosY, b.PosZ));
-                if (distance <= distanceVer)
+                if (player.Position.DistanceTo(new Vector3(b.PosX, b.PosY, b.PosZ)) <= distanceVer)
                 {
                     Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Blip {b.Codigo}");
                     isTemAlgoProximo = true;
@@ -551,8 +548,7 @@ namespace InfiniteRoleplay.Commands
 
             foreach (var prop in Global.Propriedades)
             {
-                float distance = player.Position.DistanceTo(new Vector3(prop.EntradaPosX, prop.EntradaPosY, prop.EntradaPosZ));
-                if (distance <= distanceVer)
+                if (player.Position.DistanceTo(new Vector3(prop.EntradaPosX, prop.EntradaPosY, prop.EntradaPosZ)) <= distanceVer)
                 {
                     Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Propriedade {prop.Codigo}");
                     isTemAlgoProximo = true;
@@ -561,8 +557,7 @@ namespace InfiniteRoleplay.Commands
 
             foreach (var ponto in Global.Pontos)
             {
-                float distance = player.Position.DistanceTo(new Vector3(ponto.PosX, ponto.PosY, ponto.PosZ));
-                if (distance <= distanceVer)
+                if (player.Position.DistanceTo(new Vector3(ponto.PosX, ponto.PosY, ponto.PosZ)) <= distanceVer)
                 {
                     Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Ponto {ponto.Codigo}");
                     isTemAlgoProximo = true;
@@ -571,8 +566,7 @@ namespace InfiniteRoleplay.Commands
 
             foreach (var armario in Global.Armarios)
             {
-                float distance = player.Position.DistanceTo(new Vector3(armario.PosX, armario.PosY, armario.PosZ));
-                if (distance <= distanceVer)
+                if (player.Position.DistanceTo(new Vector3(armario.PosX, armario.PosY, armario.PosZ)) <= distanceVer)
                 {
                     Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Armário {armario.Codigo}");
                     isTemAlgoProximo = true;
