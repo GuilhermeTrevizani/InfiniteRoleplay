@@ -196,9 +196,9 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            p.IsTrabalhoFaccao = !p.IsTrabalhoFaccao;
+            p.IsEmTrabalho = !p.IsEmTrabalho;
             foreach (var pl in Global.PersonagensOnline.Where(x => x.Faccao == p.Faccao))
-                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"{p.RankBD.Nome} {p.Nome} {(p.IsTrabalhoFaccao ? "entrou em" : "saiu de")} serviço!");
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"{p.RankBD.Nome} {p.Nome} {(p.IsEmTrabalho ? "entrou em" : "saiu de")} serviço!");
         }
 
         [Command("sairfaccao")]
@@ -212,7 +212,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             p.Faccao = p.Rank = 0;
-            p.IsTrabalhoFaccao = false;
+            p.IsEmTrabalho = false;
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, "Você saiu da facção.");
         }
 
@@ -220,7 +220,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_multar(Client player, string idNome, int valor, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsTrabalhoFaccao)
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -263,7 +263,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_multaroff(Client player, string nomeCompleto, int valor, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsTrabalhoFaccao)
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -309,7 +309,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_prender(Client player, string idNome, int cela, int minutos)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsTrabalhoFaccao)
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -383,7 +383,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_algemar(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsTrabalhoFaccao)
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -403,8 +403,6 @@ namespace InfiniteRoleplay.Commands
 
             if (p.Algemado)
             {
-                p.AlgemaObjeto = NAPI.Object.CreateObject(-1281059971, new Vector3(), new Vector3());
-                NAPI.ClientEvent.TriggerClientEvent(player, "attachEntityToEntity", p.AlgemaObjeto, target.Player, 57005, new Vector3(), new Vector3());
                 target.Player.PlayAnimation("mp_arresting", "idle", (int)(AnimationFlags.Loop | AnimationFlags.OnlyAnimateUpperBody | AnimationFlags.AllowPlayerControl));
 
                 Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você algemou {target.NomeIC}.");
@@ -412,8 +410,6 @@ namespace InfiniteRoleplay.Commands
             }
             else
             {
-                p.AlgemaObjeto.Delete();
-                p.AlgemaObjeto = null;
                 target.Player.StopAnimation();
 
                 Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você desalgemou {target.NomeIC}.");

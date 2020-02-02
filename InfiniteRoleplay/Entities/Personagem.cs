@@ -89,13 +89,10 @@ namespace InfiniteRoleplay.Entities
         public TagTimer TimerCelular { get; set; }
 
         [NotMapped]
-        public bool IsTrabalhoFaccao { get; set; } = false;
+        public bool IsEmTrabalho { get; set; } = false;
 
         [NotMapped]
         public List<string> IPLs { get; set; }
-
-        [NotMapped]
-        public GTANetworkAPI.Object AlgemaObjeto { get; set; } = null;
 
         [NotMapped]
         public bool Algemado { get; set; } = false;

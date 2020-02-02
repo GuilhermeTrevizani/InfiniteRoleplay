@@ -28,6 +28,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Geral", "/multas"),
                 new Comando("Geral", "/comprar"),
                 new Comando("Geral", "/skin"),
+                new Comando("Geral", "/emtrabalho"),
                 new Comando("Propriedades", "/entrar"),
                 new Comando("Propriedades", "/sair"),
                 new Comando("Propriedades", "/ptrancar"),
@@ -689,6 +690,20 @@ namespace InfiniteRoleplay.Commands
             player.SetSkin(pedHash);
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a skin {pedHash.ToString()} por ${Global.Parametros.ValorSkin:N0}.");
+        }
+
+        [Command("emtrabalho")]
+        public void CMD_emtrabalho(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Jogadores trabalhando");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Policiais: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == (int)TipoFaccao.Policial && x.IsEmTrabalho)} | Médicos: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == (int)TipoFaccao.Medica && x.IsEmTrabalho)} | Taxistas: {Global.PersonagensOnline.Count(x => x.Emprego == (int)TipoEmprego.Taxista && x.IsEmTrabalho)}");
         }
     }
 }

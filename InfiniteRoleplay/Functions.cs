@@ -539,7 +539,7 @@ namespace InfiniteRoleplay
             var players = Global.PersonagensOnline.Where(x => x.FaccaoBD?.Tipo == (int)tipo);
 
             if (isSomenteParaTrabalho)
-                players = players.Where(x => x.IsTrabalhoFaccao);
+                players = players.Where(x => x.IsEmTrabalho);
 
             foreach (var pl in players)
                 EnviarMensagem(pl.Player, TipoMensagem.Nenhum, (isCorFaccao ? "!{#" + pl.FaccaoBD.Cor + "}" : string.Empty) + mensagem);
@@ -866,7 +866,7 @@ namespace InfiniteRoleplay
                 return;
             }
 
-            if ((canal == 911 || canal == 912) && !p.IsTrabalhoFaccao)
+            if ((canal == 911 || canal == 912) && !p.IsEmTrabalho)
             {
                 EnviarMensagem(p.Player, TipoMensagem.Erro, $"Você só pode falar no canal {canal} quando estiver em serviço!");
                 return;
