@@ -29,6 +29,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Geral", "/comprar"),
                 new Comando("Geral", "/skin"),
                 new Comando("Geral", "/emtrabalho"),
+                new Comando("Geral", "/sairemprego"),
                 new Comando("Propriedades", "/entrar"),
                 new Comando("Propriedades", "/sair"),
                 new Comando("Propriedades", "/ptrancar"),
@@ -704,6 +705,20 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Jogadores trabalhando");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Policiais: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == (int)TipoFaccao.Policial && x.IsEmTrabalho)} | Médicos: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == (int)TipoFaccao.Medica && x.IsEmTrabalho)} | Taxistas: {Global.PersonagensOnline.Count(x => x.Emprego == (int)TipoEmprego.Taxista && x.IsEmTrabalho)}");
+        }
+
+        [Command("sairemprego")]
+        public void CMD_sairemprego(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if ((p?.Emprego ?? 0) == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não tem um emprego!");
+                return;
+            }
+
+            p.Emprego = 0;
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, "Você saiu do seu emprego!");
         }
     }
 }
