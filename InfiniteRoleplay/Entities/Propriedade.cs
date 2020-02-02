@@ -21,7 +21,7 @@ namespace InfiniteRoleplay.Entities
         public TextLabel TextLabel { get; set; }
 
         [NotMapped]
-        public Marker Marker { get; set; }
+        public TextLabel TextLabel2 { get; set; }
 
         [NotMapped]
         public bool IsAberta { get; set; } = false;
@@ -30,16 +30,16 @@ namespace InfiniteRoleplay.Entities
         {
             DeletarIdentificador();
 
-            TextLabel = NAPI.TextLabel.CreateTextLabel($"Nº {Codigo} {(Personagem == 0 ? $"(${Valor:N0})" : string.Empty)}", new Vector3(EntradaPosX, EntradaPosY, EntradaPosZ), 5, 2, 0, new Color(255, 255, 255), false, (uint)Dimensao);
+            TextLabel = NAPI.TextLabel.CreateTextLabel($"Propriedade Nº {Codigo}", new Vector3(EntradaPosX, EntradaPosY, EntradaPosZ), 5, 2, 0, new Color(254, 189, 12), false, (uint)Dimensao);
 
-            var corMarker = Personagem > 0 ? new Color(255, 106, 77) : new Color(110, 180, 105);
-            Marker = NAPI.Marker.CreateMarker(MarkerType.UpsideDownCone, new Vector3(EntradaPosX, EntradaPosY, EntradaPosZ), new Vector3(), new Vector3(), 0.5f, corMarker, false, (uint)Dimensao);
+            if (Personagem == 0)
+                TextLabel2 = NAPI.TextLabel.CreateTextLabel($"Use /pcomprar para comprar a propriedade por ${Valor:N0}", new Vector3(EntradaPosX, EntradaPosY, EntradaPosZ - 0.1), 5, 1, 0, new Color(255, 255, 255), false, (uint)Dimensao);
         }
 
         public void DeletarIdentificador()
         {
             TextLabel?.Delete();
-            Marker?.Delete();
+            TextLabel2?.Delete();
         }
     }
 }

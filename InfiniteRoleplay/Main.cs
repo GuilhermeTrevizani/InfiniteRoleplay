@@ -76,7 +76,7 @@ namespace InfiniteRoleplay
                 Global.ArmariosItens = context.ArmariosItens.ToList();
                 NAPI.Util.ConsoleOutput($"ArmariosItens: {Global.ArmariosItens.Count}");
             }
-            
+
             Functions.CarregarSkins();
             NAPI.Util.ConsoleOutput($"Skins: {Global.Skins.Count}");
 
@@ -86,8 +86,8 @@ namespace InfiniteRoleplay
             Global.PersonagensOnline = new List<Personagem>();
             Global.Veiculos = new List<Veiculo>();
 
-            NAPI.TextLabel.CreateTextLabel("[/prender]", Constants.PosicaoPrisao, 5, 2, 0, new Color(255, 255, 255));
-            NAPI.Marker.CreateMarker(MarkerType.ThickChevronUp, Constants.PosicaoPrisao, new Vector3(), new Vector3(), 0.5f, new Color(255, 255, 255));
+            NAPI.TextLabel.CreateTextLabel("Prisão", Constants.PosicaoPrisao, 5, 2, 0, new Color(254, 189, 12));
+            NAPI.TextLabel.CreateTextLabel("Use /prender", new Vector3(Constants.PosicaoPrisao.X, Constants.PosicaoPrisao.Y, Constants.PosicaoPrisao.Z - 0.1), 5, 1, 0, new Color(255, 255, 255));
 
             timerPrincipal = new Timer(60000);
             timerPrincipal.Elapsed += TimerPrincipal_Elapsed;

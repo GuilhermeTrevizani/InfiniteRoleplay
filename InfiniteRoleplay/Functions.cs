@@ -1493,8 +1493,8 @@ namespace InfiniteRoleplay
 
             foreach (var c in Global.Concessionarias)
             {
-                NAPI.TextLabel.CreateTextLabel(c.Nome, c.PosicaoCompra, 5, 2, 0, new Color(255, 255, 255));
-                NAPI.Marker.CreateMarker(MarkerType.ThickChevronUp, c.PosicaoCompra, new Vector3(), new Vector3(), 0.5f, new Color(255, 255, 255));
+                NAPI.TextLabel.CreateTextLabel(c.Nome, c.PosicaoCompra, 5, 2, 0, new Color(254, 189, 12));
+                NAPI.TextLabel.CreateTextLabel("Use /vcomprar", new Vector3(c.PosicaoCompra.X, c.PosicaoCompra.Y, c.PosicaoCompra.Z - 0.1), 5, 1, 0, new Color(255, 255, 255));
             }
         }
 
