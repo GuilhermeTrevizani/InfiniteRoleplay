@@ -97,6 +97,9 @@ namespace InfiniteRoleplay.Entities
         [NotMapped]
         public bool Algemado { get; set; } = false;
 
+        [NotMapped]
+        public int AguardandoTipoServico { get; set; } = 0;
+
         public void SetDinheiro()
         {
             if (Player != null)
@@ -105,6 +108,12 @@ namespace InfiniteRoleplay.Entities
 
         public string ObterNomeContato(int numero)
         {
+            if (numero == 911)
+                return "Central de Emergência";
+
+            if (numero == 5555555)
+                return "Downtown Cab Company";
+
             var contato = Contatos.FirstOrDefault(x => x.Celular == numero);
             return contato == null ? $"#{numero}" : $"{contato.Nome} #{numero}";
         }

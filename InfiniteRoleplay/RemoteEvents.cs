@@ -477,7 +477,7 @@ namespace InfiniteRoleplay
                         do
                         {
                             p.Celular = new Random().Next(1111111, 9999999);
-                            if (context.Personagens.Any(x => x.Celular == p.Celular))
+                            if (p.Celular == 5555555 || context.Personagens.Any(x => x.Celular == p.Celular))
                                 p.Celular = 0;
 
                         } while (p.Celular == 0);

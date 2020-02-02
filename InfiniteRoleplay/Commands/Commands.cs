@@ -30,7 +30,6 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Geral", "/skin"),
                 new Comando("Geral", "/emtrabalho"),
                 new Comando("Geral", "/emprego"),
-                new Comando("Geral", "/sairemprego"),
                 new Comando("Propriedades", "/entrar"),
                 new Comando("Propriedades", "/sair"),
                 new Comando("Propriedades", "/ptrancar"),
@@ -100,6 +99,22 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Rádio", "/r2"),
                 new Comando("Rádio", "/r3"),
             };
+
+            if (p.Emprego > 0)
+            {
+                listaComandos.AddRange(new List<Comando>()
+                {
+                    new Comando("Emprego", "/sairemprego", "Sai do emprego"),
+                });
+
+                if (p.Emprego == (int)TipoEmprego.Taxista)
+                    listaComandos.AddRange(new List<Comando>()
+                    {
+                        new Comando("Emprego", "/taxiduty", "Entra ou sai de serviço como taxista"),
+                        new Comando("Emprego", "/taxicha", "Exibe as chamadas aguardando taxistas"),
+                        new Comando("Emprego", "/taxiac", "Atende uma chamada de taxista"),
+                    });
+            }
 
             if (p.Faccao > 0)
             {

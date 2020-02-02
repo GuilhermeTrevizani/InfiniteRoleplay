@@ -86,6 +86,21 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            if (numero == 5555555)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#e6a250}" + $"[CELULAR] Você está ligando para {p.ObterNomeContato(numero)}.");
+                if (Global.PersonagensOnline.Count(x => x.Emprego == (int)TipoEmprego.Taxista && x.IsEmTrabalho) == 0)
+                {
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {p.ObterNomeContato(numero)} diz: Desculpe, não temos nenhum taxista em serviço no momento.");
+                    return;
+                }
+
+                p.NumeroLigacao = numero;
+                p.StatusLigacao = 1;
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {p.ObterNomeContato(numero)} diz: Downtown Cab Company, para onde deseja ir?");
+                return;
+            }
+
             var target = Global.PersonagensOnline.FirstOrDefault(x => x.Celular == numero);
             if (target == null)
             {

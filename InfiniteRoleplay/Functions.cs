@@ -812,13 +812,27 @@ namespace InfiniteRoleplay
                         EnviarMensagem(p.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {p.ObterNomeContato(911)} diz: Nossas unidades foram alertadas!");
 
                         var tipoFaccao = p.ExtraLigacao == "LSPD" ? TipoFaccao.Policial : TipoFaccao.Medica;
-                        EnviarMensagemTipoFaccao(tipoFaccao, "Ligação 911", true, true);
+                        EnviarMensagemTipoFaccao(tipoFaccao, $"Central de Emergência | Ligação 911", true, true);
                         EnviarMensagemTipoFaccao(tipoFaccao, $"De: ~w~{p.Celular}", true, true);
                         EnviarMensagemTipoFaccao(tipoFaccao, $"Mensagem: ~w~{message}", true, true);
 
                         p.LimparLigacao();
                     }
                 }
+                else if(p.NumeroLigacao == 5555555)
+                {
+                    EnviarMensagem(p.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {p.ObterNomeContato(5555555)} diz: Nossos taxistas em serviço foram alertados e você receberá um SMS de confirmação!");
+
+                    p.AguardandoTipoServico = (int)TipoEmprego.Taxista;
+
+                    EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}Downtown Cab Company | Solicitação de Táxi");
+                    EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}" + $"Código: ~w~{p.Codigo}");
+                    EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}" + $"De: ~w~{p.Celular}");
+                    EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}" + $"Destino: ~w~{message}");
+
+                    p.LimparLigacao();
+                }
+
                 return;
             }
 
@@ -1522,6 +1536,12 @@ namespace InfiniteRoleplay
                 NAPI.TextLabel.CreateTextLabel($"Emprego de {nome}", c.Posicao, 5, 2, 0, new Color(254, 189, 12));
                 NAPI.TextLabel.CreateTextLabel($"Use /emprego para se tornar um {nome.ToLower()}", new Vector3(c.Posicao.X, c.Posicao.Y, c.Posicao.Z - 0.1), 5, 1, 0, new Color(255, 255, 255));
             }
+        }
+
+        public static void EnviarMensagemEmprego(TipoEmprego tipo, string mensagem)
+        {
+            foreach (var pl in Global.PersonagensOnline.Where(x => x.Emprego == (int)tipo && x.IsEmTrabalho))
+                EnviarMensagem(pl.Player, TipoMensagem.Nenhum, mensagem);
         }
     }
 }

@@ -132,8 +132,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var distance = player.Vehicle.Position.DistanceTo(new Vector3(veh.PosX, veh.PosY, veh.PosZ));
-            if (distance > 2)
+            if (player.Vehicle.Position.DistanceTo(new Vector3(veh.PosX, veh.PosY, veh.PosZ)) > 2)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de sua vaga!");
                 return;
