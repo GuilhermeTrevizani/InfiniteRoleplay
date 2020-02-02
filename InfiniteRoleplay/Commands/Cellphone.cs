@@ -16,9 +16,9 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.TempoPrisao > 0)
+            if (p.TempoPrisao > 0 || p.Algemado)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não pode usar o celular agora!");
                 return;
             }
 
@@ -55,9 +55,9 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.TempoPrisao > 0)
+            if (p.TempoPrisao > 0 || p.Algemado)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não pode usar o celular agora!");
                 return;
             }
 
@@ -179,6 +179,12 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
+            if (p.TempoPrisao > 0 || p.Algemado)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não pode usar o celular agora!");
+                return;
+            }
+
             var target = Global.PersonagensOnline.FirstOrDefault(x => x.NumeroLigacao == p.Celular);
             if (target == null)
             {
@@ -206,9 +212,9 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.TempoPrisao > 0)
+            if (p.TempoPrisao > 0 || p.Algemado)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você está preso!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não pode usar o celular agora!");
                 return;
             }
 

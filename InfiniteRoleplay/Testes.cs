@@ -5,6 +5,36 @@ namespace InfiniteRoleplay
 {
     public class Testes : Script
     {
+        #region Not Implemented Yet
+        /*
+        [Command("ame", GreedyArg = true)]
+        public void CMD_ame(Client player, string mensagem = "")
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            if (p.TextLabel != null)
+                p.TextLabel.Delete();
+
+            p.TextLabel = NAPI.TextLabel.CreateTextLabel($"{p.NomeIC} {mensagem}", new Vector3(0.0f, 0.0f, 0.0f), 50.0f, 0.5f, 4, new Color(201, 90, 0, 255));
+            NAPI.ClientEvent.TriggerClientEvent(player, "attachEntityToEntity", p.TextLabel, player, 31086, new Vector3(0.0f, 0.0f, 1.0f), new Vector3(0.0f, 0.0f, 0.0f));
+
+            NAPI.Task.Run(() =>
+            {
+                if (p.TextLabel != null)
+                {
+                    p.TextLabel.Delete();
+                    p.TextLabel = null;
+                }
+            }, delayTime: 5000);
+        }
+        */
+        #endregion
+
         [Command("w")]
         public void CMD_w(Client player, string arma, int municao)
         {
@@ -366,7 +396,6 @@ namespace InfiniteRoleplay
                 case 157:
                     player.PlayScenario("EAR_TO_TEXT_FAT"); break;
             }
-
         }
     }
 }

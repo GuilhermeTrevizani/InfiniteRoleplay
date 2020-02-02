@@ -152,4 +152,10 @@
         LojaConveniencia = 4,
         LojaRoupas = 5,
     }
+
+    public enum TipoEmprego
+    {
+        Nenhum = 0,
+        Taxista = 1,
+    }
 }

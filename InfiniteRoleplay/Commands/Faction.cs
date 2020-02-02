@@ -1,6 +1,7 @@
 ﻿using GTANetworkAPI;
 using InfiniteRoleplay.Models;
 using System.Linq;
+using static InfiniteRoleplay.Constants;
 
 namespace InfiniteRoleplay.Commands
 {
@@ -376,6 +377,48 @@ namespace InfiniteRoleplay.Commands
             target.TempoPrisao = minutos;
             Functions.EnviarMensagemTipoFaccao(TipoFaccao.Policial, $"{p.RankBD.Nome} {p.Nome} prendeu {target.Nome} na cela {cela} por {minutos} minuto{(minutos > 1 ? "s" : string.Empty)}.", true, true);
             Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"{p.Nome} prendeu você na cela {cela} por {minutos} minuto{(minutos > 1 ? "s" : string.Empty)}.");
+        }
+
+        [Command("algemar")]
+        public void CMD_algemar(Client player, string idNome)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsTrabalhoFaccao)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
+            if (target == null)
+                return;
+
+            if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
+                return;
+            }
+
+            p.Algemado = !p.Algemado;
+
+            if (p.Algemado)
+            {
+                p.AlgemaObjeto = NAPI.Object.CreateObject(-1281059971, new Vector3(), new Vector3());
+                NAPI.ClientEvent.TriggerClientEvent(player, "attachEntityToEntity", p.AlgemaObjeto, target.Player, 57005, new Vector3(), new Vector3());
+                target.Player.PlayAnimation("mp_arresting", "idle", (int)(AnimationFlags.Loop | AnimationFlags.OnlyAnimateUpperBody | AnimationFlags.AllowPlayerControl));
+
+                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você algemou {target.NomeIC}.");
+                Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} algemou você.");
+            }
+            else
+            {
+                p.AlgemaObjeto.Delete();
+                p.AlgemaObjeto = null;
+                target.Player.StopAnimation();
+
+                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você desalgemou {target.NomeIC}.");
+                Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} desalgemou você.");
+            }
         }
     }
 }

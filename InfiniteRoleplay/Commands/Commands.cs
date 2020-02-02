@@ -115,6 +115,7 @@ namespace InfiniteRoleplay.Commands
                         new Comando("Facção Policial", "/multar"),
                         new Comando("Facção Policial", "/multaroff"),
                         new Comando("Facção Policial", "/prender"),
+                        new Comando("Facção Policial", "/algemar"),
                     });
                 else if (p.FaccaoBD.Tipo == (int)TipoFaccao.Medica)
 

@@ -94,6 +94,12 @@ namespace InfiniteRoleplay.Entities
         [NotMapped]
         public List<string> IPLs { get; set; }
 
+        [NotMapped]
+        public GTANetworkAPI.Object AlgemaObjeto { get; set; } = null;
+
+        [NotMapped]
+        public bool Algemado { get; set; } = false;
+
         public void SetDinheiro()
         {
             if (Player != null)
