@@ -48,20 +48,6 @@ namespace InfiniteRoleplay
             player.GiveWeapon(weaponHash, municao);
         }
 
-        [Command("v")]
-        public void CMD_v(Client player, string veh)
-        {
-            var weaponHash = NAPI.Util.VehicleNameToModel(veh);
-            if (weaponHash == 0)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Veh {veh} não existe!");
-                return;
-            }
-
-            var v = NAPI.Vehicle.CreateVehicle(weaponHash, player.Position, player.Rotation, 78, 78);
-            player.SetIntoVehicle(v, (int)VehicleSeat.Driver);
-        }
-
         [Command("p")]
         public void CMD_p(Client sender)
         {

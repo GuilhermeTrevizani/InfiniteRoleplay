@@ -24,9 +24,15 @@ namespace InfiniteRoleplay.Commands
         public void CMD_taxicha(Client player)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.Emprego != (int)TipoEmprego.Taxista)
+            if (p?.Emprego != (int)TipoEmprego.Taxista || !p.IsEmTrabalho)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não é um taxista!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em serviço como taxista!");
+                return;
+            }
+
+            if (player.Vehicle?.Model != (uint)VehicleHash.Taxi)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um taxi!");
                 return;
             }
 
@@ -39,19 +45,25 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Chamadas Aguardando Taxistas");
             foreach (var c in chamadas)
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Chamada #{p.Codigo}");
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Chamada #{c.Codigo}");
         }
 
         [Command("taxiac")]
         public void CMD_taxiac(Client player, int chamada)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.Emprego != (int)TipoEmprego.Taxista)
+            if (p?.Emprego != (int)TipoEmprego.Taxista || !p.IsEmTrabalho)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não é um taxista!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em serviço como taxista!");
                 return;
             }
 
+            if (player.Vehicle?.Model != (uint)VehicleHash.Taxi)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um taxi!");
+                return;
+            }
+            
             var target = Global.PersonagensOnline.FirstOrDefault(x => x.Codigo == chamada && x.AguardandoTipoServico == (int)TipoEmprego.Taxista);
             if (target == null)
             {
@@ -61,7 +73,7 @@ namespace InfiniteRoleplay.Commands
 
             NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", Convert.ToSingle(target.Player.Position.X), Convert.ToSingle(target.Player.Position.Y));
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você está atendendo a chamada {chamada} e a localização do solicitante foi marcada em seu GPS!");
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] SMS de {p.ObterNomeContato(5555555)}: Nosso taxista {p.Nome} está atendendo sua chamada!");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] SMS de {p.ObterNomeContato(5555555)}: Nosso taxista {p.Nome} está atendendo sua chamada! Placa: {player.Vehicle.NumberPlate}");
         }
     }
 }
