@@ -30,6 +30,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Geral", "/skin"),
                 new Comando("Geral", "/emtrabalho"),
                 new Comando("Geral", "/emprego"),
+                new Comando("Geral", "/staff", "Lista os membros da staff que estão online"),
                 new Comando("Propriedades", "/entrar"),
                 new Comando("Propriedades", "/sair"),
                 new Comando("Propriedades", "/ptrancar"),
@@ -204,7 +205,7 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Staff 1337", "/rblip"),
                     new Comando("Staff 1337", "/addwhite"),
                     new Comando("Staff 1337", "/delwhite"),
-                    new Comando("Staff 1337", "/staff"),
+                    new Comando("Staff 1337", "/setstaff"),
                     new Comando("Staff 1337", "/cfac"),
                     new Comando("Staff 1337", "/efacnome"),
                     new Comando("Staff 1337", "/efactipo"),
@@ -768,6 +769,28 @@ namespace InfiniteRoleplay.Commands
 
             p.Emprego = (int)emprego;
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você pegou o emprego {Functions.ObterDisplayEnum(emprego)}!");
+        }
+
+        [Command("staff")]
+        public void CMD_staff(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            var players = Global.PersonagensOnline.Where(x => x.UsuarioBD?.Staff > 0).OrderByDescending(x => x.UsuarioBD.Staff).ThenBy(x => x.UsuarioBD.Nome).ToList();
+            if (players.Count == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Não há nenhum membro da staff online!");
+                return;
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Infinite Roleplay | Staff Online");
+            foreach (var pl in players)
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{pl.UsuarioBD.NomeStaff} {pl.UsuarioBD.Nome}");
         }
     }
 }

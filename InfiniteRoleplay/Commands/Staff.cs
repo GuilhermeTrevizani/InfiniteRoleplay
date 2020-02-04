@@ -115,7 +115,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             foreach (var pl in Global.PersonagensOnline.Where(x => x.UsuarioBD.Staff >= 1))
-                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#33EE33}" + $"(( [STAFF {p.UsuarioBD.Staff}] {p.UsuarioBD.Nome}: {mensagem} ))");
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#33EE33}" + $"(( {p.UsuarioBD.NomeStaff} {p.UsuarioBD.Nome}: {mensagem} ))");
         }
 
         [Command("o", GreedyArg = true)]
@@ -1133,8 +1133,8 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{r.Nome} [{r.Codigo}] | Salário: ${r.Salario:N0}");
         }
 
-        [Command("staff")]
-        public void CMD_staff(Client player, string idNome, int staff)
+        [Command("setstaff")]
+        public void CMD_setstaff(Client player, string idNome, int staff)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)

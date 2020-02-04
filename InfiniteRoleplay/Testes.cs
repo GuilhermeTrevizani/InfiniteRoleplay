@@ -383,5 +383,11 @@ namespace InfiniteRoleplay
                     player.PlayScenario("EAR_TO_TEXT_FAT"); break;
             }
         }
+
+        [Command("i")]
+        public void CMD_i(Client player, string ipl) => NAPI.ClientEvent.TriggerClientEvent(player, "setIPL", ipl);
+
+        [Command("ri")]
+        public void CMD_ri(Client player, string ipl) => NAPI.ClientEvent.TriggerClientEvent(player, "removeIPL", ipl);
     }
 }
