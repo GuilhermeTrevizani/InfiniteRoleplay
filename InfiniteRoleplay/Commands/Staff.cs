@@ -541,7 +541,7 @@ namespace InfiniteRoleplay.Commands
             {
                 if (player.Position.DistanceTo(new Vector3(b.PosX, b.PosY, b.PosZ)) <= distanceVer)
                 {
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Blip {b.Codigo}");
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Blip {b.Codigo} | Inativo: {(b.Inativo ? "SIM" : "NÃO")}");
                     isTemAlgoProximo = true;
                 }
             }
@@ -644,6 +644,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Blip {codigo} não existe!");
                 return;
             }
+
             using (var context = new RoleplayContext())
                 context.Database.ExecuteSqlCommand($"DELETE FROM Blips WHERE Codigo = {codigo}");
 
@@ -1660,6 +1661,37 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você editou o salário do rank {rank} da facção {fac} para ${salario:N0}!");
             Functions.GravarLog(TipoLog.Staff, $"/eranksalario {fac} {rank} {salario}", p, null);
+        }
+
+        [Command("eblipinativo")]
+        public void CMD_eblipinativo(Client player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var blip = Global.Blips.FirstOrDefault(x => x.Codigo == codigo);
+            if (blip == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Blip {codigo} não existe!");
+                return;
+            }
+
+            blip.Inativo = !blip.Inativo;
+
+            using (var context = new RoleplayContext())
+            {
+                context.Blips.Update(blip);
+                context.SaveChanges();
+            }
+
+            blip.CriarIdentificador();
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(blip.Inativo ? "in" : string.Empty)}ativou o blip {blip.Codigo}!");
+            Functions.GravarLog(TipoLog.Staff, $"/eblipinativo {blip.Codigo}", p, null);
         }
 
         [Command("carm")]

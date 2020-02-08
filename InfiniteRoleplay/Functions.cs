@@ -273,7 +273,7 @@ namespace InfiniteRoleplay
         {
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.NomeStaff} [{p.UsuarioBD.Staff}]");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado: {p.TempoConectado} | Celular: {p.Celular} | Emprego: {ObterDisplayEnum((TipoEmprego)p.Emprego)}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado (minutos): {p.TempoConectado} | Celular: {p.Celular} | Emprego: {ObterDisplayEnum((TipoEmprego)p.Emprego)}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro:N0} | Banco: ${p.Banco:N0}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor} | Tempo de Prisão: {p.TempoPrisao}");
 

@@ -7,19 +7,19 @@ namespace InfiniteRoleplay.Entities
     {
         public int Codigo { get; set; }
         public string Modelo { get; set; } = string.Empty;
-        public double PosX { get; set; } = 0;
-        public double PosY { get; set; } = 0;
-        public double PosZ { get; set; } = 0;
-        public double RotX { get; set; } = 0;
-        public double RotY { get; set; } = 0;
-        public double RotZ { get; set; } = 0;
+        public float PosX { get; set; } = 0;
+        public float PosY { get; set; } = 0;
+        public float PosZ { get; set; } = 0;
+        public float RotX { get; set; } = 0;
+        public float RotY { get; set; } = 0;
+        public float RotZ { get; set; } = 0;
         public int Cor1R { get; set; } = 0;
         public int Cor1G { get; set; } = 0;
         public int Cor1B { get; set; } = 0;
         public int Cor2R { get; set; } = 0;
         public int Cor2G { get; set; } = 0;
         public int Cor2B { get; set; } = 0;
-        public double Vida { get; set; } = 0;
+        public float Vida { get; set; } = 0;
         public int Personagem { get; set; } = 0;
         public string Placa { get; set; } = string.Empty;
 

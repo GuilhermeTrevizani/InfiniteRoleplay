@@ -48,6 +48,20 @@ namespace InfiniteRoleplay
             player.GiveWeapon(weaponHash, municao);
         }
 
+        [Command("c")]
+        public void CMD_c(Client player, string veh)
+        {
+            var weaponHash = NAPI.Util.VehicleNameToModel(veh);
+            if (weaponHash == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"VEH não existe!");
+                return;
+            }
+
+            var v = NAPI.Vehicle.CreateVehicle(weaponHash, player.Position, player.Rotation, -1, -1, "TR3V1Z4");
+            player.SetIntoVehicle(v, (int)VehicleSeat.Driver);
+        }
+
         [Command("p")]
         public void CMD_p(Client sender)
         {
@@ -389,5 +403,16 @@ namespace InfiniteRoleplay
 
         [Command("ri")]
         public void CMD_ri(Client player, string ipl) => NAPI.ClientEvent.TriggerClientEvent(player, "removeIPL", ipl);
+
+        [Command("vh")]
+        public void CMD_vh(Client player)
+        {
+            if (!player.IsInVehicle)
+                return;
+
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Motor: {player.Vehicle.EngineStatus}");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Motor Health: {NAPI.Vehicle.GetVehicleEngineHealth(player.Vehicle)}");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Body Health: {NAPI.Vehicle.GetVehicleBodyHealth(player.Vehicle)}");
+        }
     }
 }

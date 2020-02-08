@@ -34,7 +34,7 @@ namespace InfiniteRoleplay
             var user = NAPI.Resource.GetSetting<string>(this, "db_username");
             var pass = NAPI.Resource.GetSetting<string>(this, "db_password");
 
-            Global.ConnectionString = $"Server={host};Database={db};User ID={user};Password={pass}";
+            Global.ConnectionString = $"Server={host};Database={db};Uid={user};Password={pass}";
 
             using (var context = new RoleplayContext())
             {

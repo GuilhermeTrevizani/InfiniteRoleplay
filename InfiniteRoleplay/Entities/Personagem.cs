@@ -19,9 +19,9 @@ namespace InfiniteRoleplay.Entities
         public DateTime DataUltimoAcesso { get; set; } = DateTime.Now;
         public string IPUltimoAcesso { get; set; } = string.Empty;
         public string Skin { get; set; } = "FreeModeMale01";
-        public double PosX { get; set; } = 128.4853f;
-        public double PosY { get; set; } = -1737.086f;
-        public double PosZ { get; set; } = 30.11018f;
+        public float PosX { get; set; } = 128.4853f;
+        public float PosY { get; set; } = -1737.086f;
+        public float PosZ { get; set; } = 30.11018f;
         public int Vida { get; set; } = 100;
         public int Colete { get; set; } = 0;
         public long Dimensao { get; set; } = 0;
@@ -39,9 +39,9 @@ namespace InfiniteRoleplay.Entities
         public int CanalRadio2 { get; set; } = 0;
         public int CanalRadio3 { get; set; } = 0;
         public int TempoPrisao { get; set; } = 0;
-        public double RotX { get; set; } = 0;
-        public double RotY { get; set; } = 0;
-        public double RotZ { get; set; } = 149.1595f;
+        public float RotX { get; set; } = 0;
+        public float RotY { get; set; } = 0;
+        public float RotZ { get; set; } = 149.1595f;
         public DateTime? DataMorte { get; set; } = null;
         public string MotivoMorte { get; set; } = string.Empty;
         public int Emprego { get; set; } = 0;

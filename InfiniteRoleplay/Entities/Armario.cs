@@ -8,9 +8,9 @@ namespace InfiniteRoleplay.Entities
     public class Armario
     {
         public int Codigo { get; set; }
-        public double PosX { get; set; } = 0;
-        public double PosY { get; set; } = 0;
-        public double PosZ { get; set; } = 0;
+        public float PosX { get; set; } = 0;
+        public float PosY { get; set; } = 0;
+        public float PosZ { get; set; } = 0;
         public long Dimensao { get; set; } = 0;
         public int Faccao { get; set; } = 0;
 

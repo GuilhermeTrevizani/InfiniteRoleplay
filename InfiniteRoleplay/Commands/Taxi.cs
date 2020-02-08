@@ -71,7 +71,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", Convert.ToSingle(target.Player.Position.X), Convert.ToSingle(target.Player.Position.Y));
+            NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", target.Player.Position.X, target.Player.Position.Y);
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você está atendendo a chamada {chamada} e a localização do solicitante foi marcada em seu GPS!");
             Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] SMS de {p.ObterNomeContato(5555555)}: Nosso taxista {p.Nome} está atendendo sua chamada! Placa: {player.Vehicle.NumberPlate}");
         }

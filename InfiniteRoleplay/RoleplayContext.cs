@@ -30,7 +30,7 @@ namespace InfiniteRoleplay
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(Global.ConnectionString);
+            optionsBuilder.UseMySql(Global.ConnectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
