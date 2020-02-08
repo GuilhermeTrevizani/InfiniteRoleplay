@@ -183,5 +183,19 @@ namespace InfiniteRoleplay
 
         [ServerEvent(Event.ChatMessage)]
         public void OnChatMessage(Client player, string message) => Functions.EnviarMensagemChat(Functions.ObterPersonagem(player), message, TipoMensagemJogo.ChatICNormal);
+
+        [ServerEvent(Event.PlayerEnterVehicle)]
+        public void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seatID)
+        {
+            var veh = Global.Veiculos.FirstOrDefault(x => x.Vehicle == vehicle);
+            vehicle.EngineStatus = veh.Motor;
+        }
+
+        [ServerEvent(Event.PlayerExitVehicle)]
+        public void OnPlayerExitVehicle(Client player, Vehicle vehicle)
+        {
+            var veh = Global.Veiculos.FirstOrDefault(x => x.Vehicle == vehicle);
+            vehicle.EngineStatus = veh.Motor;
+        }
     }
 }

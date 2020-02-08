@@ -26,6 +26,9 @@ namespace InfiniteRoleplay.Entities
         [NotMapped]
         public Vehicle Vehicle { get; set; }
 
+        [NotMapped]
+        public bool Motor { get; set; } = false;
+
         public void Spawnar()
         {
             Vehicle = NAPI.Vehicle.CreateVehicle(NAPI.Util.VehicleNameToModel(Modelo), new Vector3(PosX, PosY, PosZ), new Vector3(RotX, RotY, RotZ), Cor1R, Cor2R);

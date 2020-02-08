@@ -1,5 +1,4 @@
 ﻿using GTANetworkAPI;
-using System;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -33,6 +32,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             player.Vehicle.EngineStatus = !player.Vehicle.EngineStatus;
+            veh.Motor = player.Vehicle.EngineStatus;
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(!player.Vehicle.EngineStatus ? "des" : string.Empty)}ligou o motor do veículo!");
         }
 
