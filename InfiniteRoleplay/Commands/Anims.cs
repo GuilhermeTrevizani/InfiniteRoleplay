@@ -5,7 +5,7 @@ namespace InfiniteRoleplay.Commands
     public class Anims : Script
     {
         [Command("stopanim", Alias = "sa")]
-        public void CMD_stopanim(Client player) => Functions.ChecarAnimacoes(player);
+        public void CMD_stopanim(Client player) => Functions.ChecarAnimacoes(player, true);
 
         [Command("handsup", Alias = "hs")]
         public void CMD_hs(Client player, int tipo)

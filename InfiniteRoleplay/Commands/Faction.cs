@@ -400,6 +400,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             p.Algemado = !p.Algemado;
+            target.Player.SetSharedData("IsAnimacao", p.Algemado);
 
             if (p.Algemado)
             {

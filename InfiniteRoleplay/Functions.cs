@@ -757,7 +757,7 @@ namespace InfiniteRoleplay
             return new List<string>();
         }
 
-        public static bool ChecarAnimacoes(Client player)
+        public static bool ChecarAnimacoes(Client player, bool isPararAnim = false)
         {
             if (player.IsInVehicle)
             {
@@ -775,6 +775,7 @@ namespace InfiniteRoleplay
             // Verificar aqui status de ferido, impossibilitado de fazer alguma animação
 
             player.StopAnimation();
+            player.SetSharedData("IsAnimacao", !isPararAnim);
             return true;
         }
 
@@ -819,7 +820,7 @@ namespace InfiniteRoleplay
                         p.LimparLigacao();
                     }
                 }
-                else if(p.NumeroLigacao == 5555555)
+                else if (p.NumeroLigacao == 5555555)
                 {
                     EnviarMensagem(p.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] {p.ObterNomeContato(5555555)} diz: Nossos taxistas em serviço foram alertados e você receberá um SMS de confirmação!");
 
