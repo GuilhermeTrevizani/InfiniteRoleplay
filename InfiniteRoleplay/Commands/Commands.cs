@@ -35,7 +35,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Propriedades", "/sair"),
                 new Comando("Propriedades", "/ptrancar"),
                 new Comando("Propriedades", "/pcomprar"),
-                new Comando("Propriedades", "/pvenderpara"),
+                new Comando("Propriedades", "/pvender"),
                 new Comando("Chat IC", "/me"),
                 new Comando("Chat IC", "/do"),
                 new Comando("Chat IC", "/g"),
@@ -56,6 +56,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Veículos", "/vestacionar"),
                 new Comando("Veículos", "/vspawn"),
                 new Comando("Veículos", "/vlista"),
+                new Comando("Veículos", "/vvender"),
                 new Comando("Banco", "/depositar"),
                 new Comando("Banco", "/sacar"),
                 new Comando("Banco", "/transferir"),
@@ -330,8 +331,7 @@ namespace InfiniteRoleplay.Commands
                         break;
                     }
 
-                    var distance = player.Position.DistanceTo(target.Player.Position);
-                    if (distance > 2 || player.Dimension != target.Player.Dimension)
+                    if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
                     {
                         Functions.EnviarMensagem(player, TipoMensagem.Erro, "Dono da propriedade não está próximo de você!");
                         return;
@@ -352,8 +352,7 @@ namespace InfiniteRoleplay.Commands
                         break;
                     }
 
-                    distance = player.Position.DistanceTo(new Vector3(prop.EntradaPosX, prop.EntradaPosY, prop.EntradaPosZ));
-                    if (distance > 2)
+                    if (player.Position.DistanceTo(new Vector3(prop.EntradaPosX, prop.EntradaPosY, prop.EntradaPosZ)) > 2)
                     {
                         Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo da propriedade!");
                         return;
@@ -364,11 +363,11 @@ namespace InfiniteRoleplay.Commands
                     target.Dinheiro += valor;
                     target.SetDinheiro();
 
-                    Global.Propriedades[Global.Propriedades.IndexOf(prop)].Personagem = p.Codigo;
+                    prop.Personagem = p.Codigo;
 
                     using (var context = new RoleplayContext())
                     {
-                        context.Propriedades.Update(Global.Propriedades[Global.Propriedades.IndexOf(prop)]);
+                        context.Propriedades.Update(prop);
                         context.SaveChanges();
                     }
 
@@ -382,8 +381,7 @@ namespace InfiniteRoleplay.Commands
                         break;
                     }
 
-                    float dist = player.Position.DistanceTo(target.Player.Position);
-                    if (dist > 2 || player.Dimension != target.Player.Dimension)
+                    if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
                     {
                         Functions.EnviarMensagem(player, TipoMensagem.Erro, "Solicitante da revista não está próximo de você!");
                         return;
@@ -394,6 +392,57 @@ namespace InfiniteRoleplay.Commands
                     Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"Celular: {p.Celular} | Dinheiro: ${p.Dinheiro:N0}");
                     if (p.CanalRadio > -1)
                         Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"Canal Rádio 1: {p.CanalRadio} | Canal Rádio 2: {p.CanalRadio2} | Canal Rádio 3: {p.CanalRadio3}");
+                    break;
+                case TipoConvite.VendaVeiculo:
+                    if (target == null)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Dono do veículo não está online!");
+                        break;
+                    }
+
+                    if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Dono do veículo não está próximo de você!");
+                        return;
+                    }
+
+                    int.TryParse(convite.Valor[0], out int veiculo);
+                    int.TryParse(convite.Valor[1], out int valorVeh);
+
+                    if (p.Dinheiro < valorVeh)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui dinheiro suficiente!");
+                        break;
+                    }
+
+                    var veh = Global.Veiculos.FirstOrDefault(x => x.Codigo == veiculo);
+                    if (veh == null)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Propriedade inválida!");
+                        break;
+                    }
+
+                    if (player.Position.DistanceTo(veh.Vehicle.Position) > 2)
+                    {
+                        Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo do veículo!");
+                        return;
+                    }
+
+                    p.Dinheiro -= valorVeh;
+                    p.SetDinheiro();
+                    target.Dinheiro += valorVeh;
+                    target.SetDinheiro();
+
+                    veh.Personagem = p.Codigo;
+
+                    using (var context = new RoleplayContext())
+                    {
+                        context.Veiculos.Update(veh);
+                        context.SaveChanges();
+                    }
+
+                    Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou o veículo {veh.Codigo} de {target.NomeIC} por ${valorVeh:N0}.");
+                    Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Você vendeu o veículo {veh.Codigo} para {p.NomeIC} por ${valorVeh:N0}.");
                     break;
             }
 
@@ -436,6 +485,10 @@ namespace InfiniteRoleplay.Commands
                     strPlayer = "compra da propriedade";
                     strTarget = "venda da propriedade";
                     break;
+                case TipoConvite.VendaVeiculo:
+                    strPlayer = "compra de veículo";
+                    strTarget = "venda de veículo";
+                    break;
                 case TipoConvite.Revista:
                     strPlayer = strTarget = "revista";
                     break;
@@ -475,8 +528,7 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
-            float distance = player.Position.DistanceTo(target.Player.Position);
-            if (distance > 2 || player.Dimension != target.Player.Dimension)
+            if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
                 return;
@@ -506,8 +558,7 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
-            float distance = player.Position.DistanceTo(target.Player.Position);
-            if (distance > 2 || player.Dimension != target.Player.Dimension)
+            if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
                 return;

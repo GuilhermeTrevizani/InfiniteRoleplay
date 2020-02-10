@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using InfiniteRoleplay.Models;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
@@ -204,6 +205,58 @@ namespace InfiniteRoleplay.Commands
                 foreach (var v in veiculos)
                     Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Código: {v.Codigo} | Modelo: {v.Modelo} | Placa: {v.Placa} | Spawnado: {(Global.Veiculos.Any(x => x.Codigo == v.Codigo) ? "SIM" : "NÃO")}");
             }
+        }
+
+        [Command("vvender")]
+        public void CMD_vvender(Client player, string idNome, int valor)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está conectado!");
+                return;
+            }
+
+            var prox = Global.Veiculos
+                .Where(x => x.Personagem == p.Codigo && player.Position.DistanceTo(x.Vehicle.Position) <= 2)
+                .OrderBy(x => player.Position.DistanceTo(x.Vehicle.Position))
+                .FirstOrDefault();
+
+            if (prox == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum veículo seu!");
+                return;
+            }
+
+            var target = Functions.ObterPersonagemPorIdNome(player, idNome, false);
+            if (target == null)
+                return;
+
+            if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
+                return;
+            }
+
+            if (valor <= 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Valor não é válido!");
+                return;
+            }
+
+            var convite = new Convite()
+            {
+                Tipo = (int)TipoConvite.VendaVeiculo,
+                Personagem = p.Codigo,
+                Valor = new string[] { prox.Codigo.ToString(), valor.ToString() },
+            };
+            target.Convites.RemoveAll(x => x.Tipo == (int)TipoConvite.VendaVeiculo);
+            target.Convites.Add(convite);
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você ofereceu seu veículo {prox.Codigo} para {target.NomeIC} por ${valor:N0}.");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} ofereceu para você o veículo {prox.Codigo} por ${valor:N0}. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
+
+            Functions.GravarLog(TipoLog.Venda, $"/vvender {prox.Codigo} {valor}", p, target);
         }
     }
 }

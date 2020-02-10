@@ -315,7 +315,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (player.Position.DistanceTo(Constants.PosicaoPrisao) > 2)
+            if (player.Position.DistanceTo(PosicaoPrisao) > 2)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está no local que as prisões são efetuadas!");
                 return;
@@ -331,8 +331,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            float distance = player.Position.DistanceTo(target.Player.Position);
-            if (distance > 2 || player.Dimension != target.Player.Dimension)
+            if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
                 return;

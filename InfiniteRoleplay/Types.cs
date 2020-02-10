@@ -53,6 +53,7 @@
         Faccao = 1,
         VendaPropriedade = 2,
         Revista = 3,
+        VendaVeiculo = 4,
     }
 
     public enum TipoInterior

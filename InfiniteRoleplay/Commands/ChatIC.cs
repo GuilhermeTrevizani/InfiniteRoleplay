@@ -70,8 +70,7 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
-            float distance = player.Position.DistanceTo(target.Player.Position);
-            if (distance > 2 || player.Dimension != target.Player.Dimension)
+            if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
                 return;

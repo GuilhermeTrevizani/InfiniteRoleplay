@@ -154,8 +154,8 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade por ${prox.Valor:N0}!");
         }
 
-        [Command("pvenderpara")]
-        public void CMD_pvenderpara(Client player, string idNome, int valor)
+        [Command("pvender")]
+        public void CMD_pvender(Client player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -179,8 +179,7 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
-            float distance = player.Position.DistanceTo(target.Player.Position);
-            if (distance > 2 || player.Dimension != target.Player.Dimension)
+            if (player.Position.DistanceTo(target.Player.Position) > 2 || player.Dimension != target.Player.Dimension)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Jogador não está próximo de você!");
                 return;
@@ -202,9 +201,9 @@ namespace InfiniteRoleplay.Commands
             target.Convites.Add(convite);
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você ofereceu sua propriedade {prox.Codigo} para {target.NomeIC} por ${valor:N0}.");
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} ofereceu para você a propriedade {prox.Codigo} ${valor:N0}. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} ofereceu para você a propriedade {prox.Codigo} por ${valor:N0}. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
 
-            Functions.GravarLog(TipoLog.Venda, $"/p venderpara {valor}", p, target);
+            Functions.GravarLog(TipoLog.Venda, $"/pvender {prox.Codigo} {valor}", p, target);
         }
     }
 }
