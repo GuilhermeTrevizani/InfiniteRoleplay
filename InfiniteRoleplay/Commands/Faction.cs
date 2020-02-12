@@ -7,7 +7,7 @@ namespace InfiniteRoleplay.Commands
 {
     public class Faction : Script
     {
-        [Command("f", GreedyArg = true)]
+        [Command("f", "!{#febd0c}USO:~w~ /f (mensagem)", GreedyArg = true)]
         public void CMD_f(Client player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
@@ -27,7 +27,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"(( {p.RankBD.Nome} {p.Nome} [{p.ID}]: {mensagem} ))");
         }
 
-        [Command("membros")]
+        [Command("membros", "!{#febd0c}USO:~w~ /membros")]
         public void CMD_membros(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -43,7 +43,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{pl.RankBD.Nome} {pl.Nome} [{pl.ID}] (( {pl.UsuarioBD.Nome} ))");
         }
 
-        [Command("blockf")]
+        [Command("blockf", "!{#febd0c}USO:~w~ /blockf")]
         public void CMD_blockf(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -57,7 +57,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(!p.FaccaoBD.IsChatBloqueado ? "des" : string.Empty)}bloqueou o chat da facção!");
         }
 
-        [Command("convidar")]
+        [Command("convidar", "!{#febd0c}USO:~w~ /convidar (ID ou nome)")]
         public void CMD_convidar(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -93,7 +93,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.FaccaoGestor, "/convidar", p, target);
         }
 
-        [Command("rank")]
+        [Command("rank", "!{#febd0c}USO:~w~ /rank (ID ou nome) (rank)")]
         public void CMD_rank(Client player, string idNome, int rank)
         {
             var p = Functions.ObterPersonagem(player);
@@ -139,7 +139,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.FaccaoGestor, $"/rank {rank}", p, target);
         }
 
-        [Command("demitir")]
+        [Command("demitir", "!{#febd0c}USO:~w~ /demitir (ID ou nome)")]
         public void CMD_demitir(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -173,7 +173,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.FaccaoGestor, "/demitir", p, target);
         }
 
-        [Command("m", GreedyArg = true)]
+        [Command("m", "!{#febd0c}USO:~w~ /m (mensagem)", GreedyArg = true)]
         public void CMD_m(Client player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
@@ -186,7 +186,7 @@ namespace InfiniteRoleplay.Commands
             Functions.SendMessageToNearbyPlayers(player, mensagem, TipoMensagemJogo.Megafone, 55.0f);
         }
 
-        [Command("duty")]
+        [Command("duty", "!{#febd0c}USO:~w~ /duty")]
         public void CMD_duty(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -201,7 +201,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"{p.RankBD.Nome} {p.Nome} {(p.IsEmTrabalho ? "entrou em" : "saiu de")} serviço!");
         }
 
-        [Command("sairfaccao")]
+        [Command("sairfaccao", "!{#febd0c}USO:~w~ /sairfaccao")]
         public void CMD_sairfaccao(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -216,7 +216,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, "Você saiu da facção.");
         }
 
-        [Command("multar", GreedyArg = true)]
+        [Command("multar", "!{#febd0c}USO:~w~ /multar (ID ou nome) (valor) (motivo)", GreedyArg = true)]
         public void CMD_multar(Client player, string idNome, int valor, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -259,7 +259,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, "!{#F0E90D}" + $"[CELULAR] SMS de {target.ObterNomeContato(911)}: Você recebeu uma multa de ${valor:N0}. Motivo: {motivo}");
         }
 
-        [Command("multaroff", GreedyArg = true)]
+        [Command("multaroff", "!{#febd0c}USO:~w~ /multar (nome completo) (valor) (motivo)", GreedyArg = true)]
         public void CMD_multaroff(Client player, string nomeCompleto, int valor, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -305,7 +305,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("prender")]
+        [Command("prender", "!{#febd0c}USO:~w~ /prender (ID ou nome) (cela [1-3]) (minutos)")]
         public void CMD_prender(Client player, string idNome, int cela, int minutos)
         {
             var p = Functions.ObterPersonagem(player);
@@ -378,7 +378,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"{p.Nome} prendeu você na cela {cela} por {minutos} minuto{(minutos > 1 ? "s" : string.Empty)}.");
         }
 
-        [Command("algemar")]
+        [Command("algemar", "!{#febd0c}USO:~w~ /agelmar (ID ou nome)")]
         public void CMD_algemar(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);

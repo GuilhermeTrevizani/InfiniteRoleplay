@@ -8,7 +8,7 @@ namespace InfiniteRoleplay.Commands
     public class Staff : Script
     {
         #region Staff 1
-        [Command("ir")]
+        [Command("ir", "!{#febd0c}USO:~w~ /ir (ID ou nome)")]
         public void CMD_ir(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -31,7 +31,7 @@ namespace InfiniteRoleplay.Commands
             player.Dimension = target.Player.Dimension;
         }
 
-        [Command("trazer")]
+        [Command("trazer", "!{#febd0c}USO:~w~ /trazer (ID ou nome)")]
         public void CMD_trazer(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -54,7 +54,7 @@ namespace InfiniteRoleplay.Commands
             target.Player.Dimension = player.Dimension;
         }
 
-        [Command("tp")]
+        [Command("tp", "!{#febd0c}USO:~w~ /tp (ID ou nome) (ID ou nome)")]
         public void CMD_tp(Client player, string idNome, string idNomeDestino)
         {
             var p = Functions.ObterPersonagem(player);
@@ -84,7 +84,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você teleportou {target.Nome} para {targetDest.Nome}.");
         }
 
-        [Command("vw")]
+        [Command("vw", "!{#febd0c}USO:~w~ /vw (ID ou nome) (vw)")]
         public void CMD_vw(Client player, string idNome, uint vw)
         {
             var p = Functions.ObterPersonagem(player);
@@ -104,7 +104,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou a dimensão de {target.Nome} para {vw}.");
         }
 
-        [Command("a", GreedyArg = true)]
+        [Command("a", "!{#febd0c}USO:~w~ /a (mensagem)", GreedyArg = true)]
         public void CMD_a(Client player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
@@ -118,7 +118,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#33EE33}" + $"(( {p.UsuarioBD.NomeStaff} {p.UsuarioBD.Nome}: {mensagem} ))");
         }
 
-        [Command("o", GreedyArg = true)]
+        [Command("o", "!{#febd0c}USO:~w~ /o (mensagem)", GreedyArg = true)]
         public void CMD_o(Client player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
@@ -132,7 +132,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#AAC4E5}" + $"(( {p.UsuarioBD.Nome}: {mensagem} ))");
         }
 
-        [Command("kick", GreedyArg = true)]
+        [Command("kick", "!{#febd0c}USO:~w~ /kick (ID ou nome) (motivo)", GreedyArg = true)]
         public void CMD_kick(Client player, string idNome, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -165,7 +165,7 @@ namespace InfiniteRoleplay.Commands
             target.Player.Kick();
         }
 
-        [Command("irveh")]
+        [Command("irveh", "!{#febd0c}USO:~w~ /irveh (codigo)")]
         public void CMD_irveh(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -189,7 +189,7 @@ namespace InfiniteRoleplay.Commands
             player.Dimension = veh.Vehicle.Dimension;
         }
 
-        [Command("trazerveh")]
+        [Command("trazerveh", "!{#febd0c}USO:~w~ /trazerveh (codigo)")]
         public void CMD_trazerveh(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -220,7 +220,7 @@ namespace InfiniteRoleplay.Commands
         #endregion Staff 1
 
         #region Staff 2
-        [Command("vida")]
+        [Command("vida", "!{#febd0c}USO:~w~ /vida (ID ou nome) (vida)")]
         public void CMD_vida(Client player, string idNome, int vida)
         {
             var p = Functions.ObterPersonagem(player);
@@ -246,7 +246,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/vida {vida}", p, target);
         }
 
-        [Command("colete")]
+        [Command("colete", "!{#febd0c}USO:~w~ /colete (ID ou nome) (colete)")]
         public void CMD_colete(Client player, string idNome, int colete)
         {
             var p = Functions.ObterPersonagem(player);
@@ -272,7 +272,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/colete {colete}", p, target);
         }
 
-        [Command("skinc")]
+        [Command("skinc", "!{#febd0c}USO:~w~ /skinc (ID ou nome) (slot) (drawable) (texture)")]
         public void CMD_skinc(Client player, string idNome, int slot, int drawable, int texture)
         {
             var p = Functions.ObterPersonagem(player);
@@ -291,7 +291,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou a roupa de {target.Nome} no slot {slot} para desenho {drawable} e textura {texture}.");
         }
 
-        [Command("skina")]
+        [Command("skina", "!{#febd0c}USO:~w~ /skina (ID ou nome) (slot) (drawable) (texture)")]
         public void CMD_skina(Client player, string idNome, int slot, int drawable, int texture)
         {
             var p = Functions.ObterPersonagem(player);
@@ -310,7 +310,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou o acessório de {target.Nome} no slot {slot} para desenho {drawable} e textura {texture}.");
         }
 
-        [Command("checar")]
+        [Command("checar", "!{#febd0c}USO:~w~ /checar (ID ou nome)")]
         public void CMD_checar(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -327,7 +327,7 @@ namespace InfiniteRoleplay.Commands
             Functions.MostrarStats(player, target);
         }
 
-        [Command("ban", GreedyArg = true)]
+        [Command("ban", "!{#febd0c}USO:~w~ /ban (ID ou nome) (dias) (motivo)", GreedyArg = true)]
         public void CMD_ban(Client player, string idNome, int dias, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -376,7 +376,7 @@ namespace InfiniteRoleplay.Commands
             target.Player.Kick();
         }
 
-        [Command("banoff", GreedyArg = true)]
+        [Command("banoff", "!{#febd0c}USO:~w~ /banoff (personagem) (dias) (motivo)", GreedyArg = true)]
         public void CMD_banoff(Client player, int personagem, int dias, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -428,7 +428,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("unban")]
+        [Command("unban", "!{#febd0c}USO:~w~ /unban (usuario)")]
         public void CMD_unban(Client player, int usuario)
         {
             var p = Functions.ObterPersonagem(player);
@@ -457,7 +457,7 @@ namespace InfiniteRoleplay.Commands
         #endregion Staff 2
 
         #region Staff 3
-        [Command("ck", GreedyArg = true)]
+        [Command("ck", "!{#febd0c}USO:~w~ /ck (ID ou nome) (motivo)", GreedyArg = true)]
         public void CMD_ck(Client player, string idNome, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -488,7 +488,7 @@ namespace InfiniteRoleplay.Commands
         #endregion
 
         #region Staff 1337
-        [Command("gmx")]
+        [Command("gmx", "!{#febd0c}USO:~w~ /gmx")]
         public void CMD_gmx(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -505,7 +505,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("tempo")]
+        [Command("tempo", "!{#febd0c}USO:~w~ /tempo (tempo)")]
         public void CMD_tempo(Client player, int tempo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -524,7 +524,7 @@ namespace InfiniteRoleplay.Commands
             NAPI.World.SetWeather((Weather)tempo);
         }
 
-        [Command("proximo")]
+        [Command("proximo", "!{#febd0c}USO:~w~ /proximo")]
         public void CMD_proximo(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -577,7 +577,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum item!");
         }
 
-        [Command("cblip", GreedyArg = true)]
+        [Command("cblip", "!{#febd0c}USO:~w~ /cblip (tipo) (cor) (nome)", GreedyArg = true)]
         public void CMD_cblip(Client player, int tipo, int cor, string nome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -628,7 +628,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/cblip {blip.Codigo}", p, null);
         }
 
-        [Command("rblip")]
+        [Command("rblip", "!{#febd0c}USO:~w~ /rblip (código)")]
         public void CMD_rblip(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -655,7 +655,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rblip {blip.Codigo}", p, null);
         }
 
-        [Command("addwhite")]
+        [Command("addwhite", "!{#febd0c}USO:~w~ /addwhite (SocialClub)")]
         public void CMD_addwhite(Client player, string socialClub)
         {
             var p = Functions.ObterPersonagem(player);
@@ -686,7 +686,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/addwhite {socialClub}", p, null);
         }
 
-        [Command("delwhite")]
+        [Command("delwhite", "!{#febd0c}USO:~w~ /dellwhite (SocialClub)")]
         public void CMD_delwhite(Client player, string socialClub)
         {
             var p = Functions.ObterPersonagem(player);
@@ -714,7 +714,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/delwhite {socialClub}", p, null);
         }
 
-        [Command("cfac", GreedyArg = true)]
+        [Command("cfac", "!{#febd0c}USO:~w~ /cfac (tipo) (nome)", GreedyArg = true)]
         public void CMD_cfac(Client player, int tipo, string nome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -755,7 +755,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/cfac {faccao.Codigo}", p, null);
         }
 
-        [Command("efacnome", GreedyArg = true)]
+        [Command("efacnome", "!{#febd0c}USO:~w~ /efacnome (código) (nome)", GreedyArg = true)]
         public void CMD_efacnome(Client player, int codigo, string nome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -790,7 +790,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/efacnome {faccao.Codigo} {nome}", p, null);
         }
 
-        [Command("efactipo")]
+        [Command("efactipo", "!{#febd0c}USO:~w~ /efacnome (código) (tipo)")]
         public void CMD_efactipo(Client player, int codigo, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -825,7 +825,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/efactipo {faccao.Codigo} {tipo}", p, null);
         }
 
-        [Command("efaccor")]
+        [Command("efaccor", "!{#febd0c}USO:~w~ /efaccor (código) (cor)")]
         public void CMD_efaccor(Client player, int codigo, string cor)
         {
             var p = Functions.ObterPersonagem(player);
@@ -860,7 +860,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/efaccor {faccao.Codigo} {cor}", p, null);
         }
 
-        [Command("efacrankgestor")]
+        [Command("efacrankgestor", "!{#febd0c}USO:~w~ /efacrankgestor (código) (rank)")]
         public void CMD_efacrankgestor(Client player, int codigo, int rank)
         {
             var p = Functions.ObterPersonagem(player);
@@ -895,7 +895,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/efacrankgestor {faccao.Codigo} {rank}", p, null);
         }
 
-        [Command("efacranklider")]
+        [Command("efacranklider", "!{#febd0c}USO:~w~ /efacranklider (código) (rank)")]
         public void CMD_efacranklider(Client player, int codigo, int rank)
         {
             var p = Functions.ObterPersonagem(player);
@@ -930,7 +930,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/efacranklider {faccao.Codigo} {rank}", p, null);
         }
 
-        [Command("rfac")]
+        [Command("rfac", "!{#febd0c}USO:~w~ /rfac (código)")]
         public void CMD_rfac(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -966,7 +966,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rfac {faccao.Codigo}", p, null);
         }
 
-        [Command("faccoes")]
+        [Command("faccoes", "!{#febd0c}USO:~w~ /faccoes")]
         public void CMD_faccoes(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -987,7 +987,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, "!{#" + f.Cor + "}" + $"{f.Nome} [{f.Codigo}]");
         }
 
-        [Command("crank", GreedyArg = true)]
+        [Command("crank", "!{#febd0c}USO:~w~ /crank (facção) (salário) (nome)", GreedyArg = true)]
         public void CMD_crank(Client player, int fac, int salario, string nome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1036,7 +1036,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/crank {faction.Codigo} {rank.Codigo}", p, null);
         }
 
-        [Command("rrank")]
+        [Command("rrank", "!{#febd0c}USO:~w~ /rrank (facção) (código) (nome)")]
         public void CMD_rrank(Client player, int fac, int rank)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1070,7 +1070,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rrank {fac} {rk.Codigo}", p, null);
         }
 
-        [Command("eranknome", GreedyArg = true)]
+        [Command("eranknome", "!{#febd0c}USO:~w~ /eranknome (facção) (código) (nome)", GreedyArg = true)]
         public void CMD_eranknome(Client player, int fac, int rank, string nome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1105,7 +1105,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/eranknome {fac} {rank} {nome}", p, null);
         }
 
-        [Command("ranks")]
+        [Command("ranks", "!{#febd0c}USO:~w~ /rabks (facção)")]
         public void CMD_ranks(Client player, int fac)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1134,7 +1134,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{r.Nome} [{r.Codigo}] | Salário: ${r.Salario:N0}");
         }
 
-        [Command("setstaff")]
+        [Command("setstaff", "!{#febd0c}USO:~w~ /setstaff (ID ou nome) (nível)")]
         public void CMD_setstaff(Client player, string idNome, int staff)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1157,7 +1157,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/staff {staff}", p, target);
         }
 
-        [Command("lider")]
+        [Command("lider", "!{#febd0c}USO:~w~ /lider (ID ou nome) (facção)")]
         public void CMD_lider(Client player, string idNome, int fac)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1193,7 +1193,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/lider {fac}", p, target);
         }
 
-        [Command("parametros")]
+        [Command("parametros", "!{#febd0c}USO:~w~ /parametros")]
         public void CMD_parametros(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1207,7 +1207,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Recorde Online: {Global.Parametros.RecordeOnline}");
         }
 
-        [Command("cprop")]
+        [Command("cprop", "!{#febd0c}USO:~w~ /cprop (interior) (valor)")]
         public void CMD_cprop(Client player, int interior, int valor)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1257,7 +1257,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/cprop {prop.Codigo} {prop.Valor}", p, null);
         }
 
-        [Command("rprop")]
+        [Command("rprop", "!{#febd0c}USO:~w~ /rprop (código)")]
         public void CMD_rprop(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1290,7 +1290,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rprop {prop.Codigo}", p, null);
         }
 
-        [Command("epropvalor")]
+        [Command("epropvalor", "!{#febd0c}USO:~w~ /epropvalor (código) (valor)")]
         public void CMD_epropvalor(Client player, int codigo, int valor)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1327,7 +1327,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/epropvalor {prop.Codigo} {valor}", p, null);
         }
 
-        [Command("epropint")]
+        [Command("epropint", "!{#febd0c}USO:~w~ /epropint (código) (interior)")]
         public void CMD_epropint(Client player, int codigo, int interior)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1368,7 +1368,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/epropinterior {prop.Codigo} {interior}", p, null);
         }
 
-        [Command("eproppos")]
+        [Command("eproppos", "!{#febd0c}USO:~w~ /eproppos (código)")]
         public void CMD_eproppos(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1402,7 +1402,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/eproppos {prop.Codigo} X: {player.Position.X} Y: {player.Position.Y} Z: {player.Position.Z} D: {player.Dimension}", p, null);
         }
 
-        [Command("irprop")]
+        [Command("irprop", "!{#febd0c}USO:~w~ /irprop (código)")]
         public void CMD_irprop(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1425,7 +1425,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até a propriedade {prop.Codigo}!");
         }
 
-        [Command("irblip")]
+        [Command("irblip", "!{#febd0c}USO:~w~ /irblip (código)")]
         public void CMD_irblip(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1448,7 +1448,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o blip {blip.Codigo}!");
         }
 
-        [Command("cpreco", GreedyArg = true)]
+        [Command("cpreco", "!{#febd0c}USO:~w~ /cpreco (tipo) (valor) (nome)", GreedyArg = true)]
         public void CMD_cpreco(Client player, int tipo, int valor, string nome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1514,7 +1514,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/cpreco {tipo} {nome} {valor}", p, null);
         }
 
-        [Command("rpreco")]
+        [Command("rpreco", "!{#febd0c}USO:~w~ /rpreco (tipo) (nome)")]
         public void CMD_rpreco(Client player, int tipo, string nome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1542,7 +1542,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rpreco {tipo} {nome}", p, null);
         }
 
-        [Command("cponto")]
+        [Command("cponto", "!{#febd0c}USO:~w~ /cponto (tipo)")]
         public void CMD_cponto(Client player, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1579,7 +1579,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/cponto {ponto.Codigo}", p, null);
         }
 
-        [Command("rponto")]
+        [Command("rponto", "!{#febd0c}USO:~w~ /rponto (código)")]
         public void CMD_rponto(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1605,7 +1605,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rponto {ponto.Codigo}", p, null);
         }
 
-        [Command("irponto")]
+        [Command("irponto", "!{#febd0c}USO:~w~ /irponto (código)")]
         public void CMD_irponto(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1628,7 +1628,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o ponto {ponto.Codigo}!");
         }
 
-        [Command("eranksalario")]
+        [Command("eranksalario", "!{#febd0c}USO:~w~ /eranksalario (facção) (código) (salário)")]
         public void CMD_eranksalario(Client player, int fac, int rank, int salario)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1663,7 +1663,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/eranksalario {fac} {rank} {salario}", p, null);
         }
 
-        [Command("eblipinativo")]
+        [Command("eblipinativo", "!{#febd0c}USO:~w~ /eblipinativo (código)")]
         public void CMD_eblipinativo(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1694,7 +1694,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/eblipinativo {blip.Codigo}", p, null);
         }
 
-        [Command("carm")]
+        [Command("carm", "!{#febd0c}USO:~w~ /carm (facção)")]
         public void CMD_carm(Client player, int faccao)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1733,7 +1733,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/carm {armario.Codigo} {faccao}", p, null);
         }
 
-        [Command("rarm")]
+        [Command("rarm", "!{#febd0c}USO:~w~ /rarm (código)")]
         public void CMD_rarm(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1764,8 +1764,8 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rarm {armario.Codigo}", p, null);
         }
 
-        [Command("earmariofac")]
-        public void CMD_earmariofac(Client player, int codigo, int faccao)
+        [Command("earmfac", "!{#febd0c}USO:~w~ /earmfac (código) (facção)")]
+        public void CMD_earmfac(Client player, int codigo, int faccao)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1800,7 +1800,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/earmariofac {armario.Codigo} {faccao}", p, null);
         }
 
-        [Command("earmpos")]
+        [Command("earmpos", "!{#febd0c}USO:~w~ /earmpos (código)")]
         public void CMD_earmpos(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1834,7 +1834,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/earmpos {armario.Codigo} X: {player.Position.X} Y: {player.Position.Y} Z: {player.Position.Z} D: {player.Dimension}", p, null);
         }
 
-        [Command("irarm")]
+        [Command("irarm", "!{#febd0c}USO:~w~ /irarm (código)")]
         public void CMD_irarm(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1857,7 +1857,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você foi até o armário {armario.Codigo}!");
         }
 
-        [Command("carmi")]
+        [Command("carmi", "!{#febd0c}USO:~w~ /carmi (armário) (arma)")]
         public void CMD_carmi(Client player, int armario, string arma)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1904,7 +1904,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/carmi {armario} {item.Arma}", p, null);
         }
 
-        [Command("rarmi")]
+        [Command("rarmi", "!{#febd0c}USO:~w~ /rarmi (armário) (arma)")]
         public void CMD_rarmi(Client player, int armario, string arma)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1945,7 +1945,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/rarmi {armario} {item.Arma}", p, null);
         }
 
-        [Command("earmimun")]
+        [Command("earmimun", "!{#febd0c}USO:~w~ /earmimun (armário) (arma) (munição)")]
         public void CMD_earmimun(Client player, int armario, string arma, int municao)
         {
             var p = Functions.ObterPersonagem(player);
@@ -1987,7 +1987,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/earmimun {armario} {item.Arma} {municao}", p, null);
         }
 
-        [Command("earmirank")]
+        [Command("earmirank", "!{#febd0c}USO:~w~ /earmirank (armário) (arma) (rank)")]
         public void CMD_earmirank(Client player, int armario, string arma, int rank)
         {
             var p = Functions.ObterPersonagem(player);
@@ -2030,7 +2030,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/earmirank {armario} {item.Arma} {rank}", p, null);
         }
 
-        [Command("earmiest")]
+        [Command("earmiest", "!{#febd0c}USO:~w~ /earmiest (armário) (arma) (estoque)")]
         public void CMD_earmiest(Client player, int armario, string arma, int estoque)
         {
             var p = Functions.ObterPersonagem(player);

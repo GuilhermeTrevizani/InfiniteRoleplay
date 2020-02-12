@@ -4,7 +4,7 @@ namespace InfiniteRoleplay.Commands
 {
     public class Radio : Script
     {
-        [Command("canal")]
+        [Command("canal", "!{#febd0c}USO:~w~ /canal (slot [1-3]) (canal)")]
         public void CMD_canal(Client player, int slot, int canal)
         {
             var p = Functions.ObterPersonagem(player);
@@ -54,13 +54,13 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou seu canal de rádio do slot {slot} para {canal}!");
         }
 
-        [Command("r", GreedyArg = true)]
+        [Command("r", "!{#febd0c}USO:~w~ /r (mensagem)", GreedyArg = true)]
         public void CMD_r(Client player, string mensagem) => Functions.EnviarMensagemRadio(Functions.ObterPersonagem(player), 1, mensagem);
 
-        [Command("r2", GreedyArg = true)]
+        [Command("r2", "!{#febd0c}USO:~w~ /r2 (mensagem)", GreedyArg = true)]
         public void CMD_r2(Client player, string mensagem) => Functions.EnviarMensagemRadio(Functions.ObterPersonagem(player), 2, mensagem);
 
-        [Command("r3", GreedyArg = true)]
+        [Command("r3", "!{#febd0c}USO:~w~ /r3 (mensagem)", GreedyArg = true)]
         public void CMD_r3(Client player, string mensagem) => Functions.EnviarMensagemRadio(Functions.ObterPersonagem(player), 3, mensagem);
     }
 }

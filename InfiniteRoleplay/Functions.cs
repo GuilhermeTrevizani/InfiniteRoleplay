@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 
 namespace InfiniteRoleplay
 {
@@ -18,9 +19,9 @@ namespace InfiniteRoleplay
         {
             var strTipo = string.Empty;
             if (tipoMensagem == TipoMensagem.Sucesso)
-                strTipo = "!{#6EB469}<!> ~w~";
+                strTipo = "!{#6EB469}SUCESSO:~w~ ";
             else if (tipoMensagem == TipoMensagem.Erro)
-                strTipo = "!{#FF6A4D}<!> ~w~";
+                strTipo = "!{#FF6A4D}ERRO:~w~ ";
             else if (tipoMensagem == TipoMensagem.Titulo)
                 strTipo = "!{#B0B0B0}";
             else if (tipoMensagem == TipoMensagem.Punicao)
@@ -203,20 +204,19 @@ namespace InfiniteRoleplay
         public static void SendMessageToNearbyPlayers(Client player, string message, TipoMensagemJogo type, float range, bool excludePlayer = false)
         {
             var p = Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
-            float distanceGap = range / 5;
+            var distanceGap = range / 5;
 
-            List<Client> targetList = NAPI.Pools.GetAllPlayers().Where(x => Global.PersonagensOnline.Any(y => y.UsuarioBD.SocialClubRegistro == x.SocialClubName) && x.Dimension == player.Dimension).ToList();
+            var targetList = NAPI.Pools.GetAllPlayers().Where(x => Global.PersonagensOnline.Any(y => y.UsuarioBD.SocialClubRegistro == x.SocialClubName) && x.Dimension == player.Dimension).ToList();
 
-            foreach (Client target in targetList)
+            foreach (var target in targetList)
             {
                 if (player != target || (player == target && !excludePlayer))
                 {
-                    float distance = player.Position.DistanceTo(target.Position);
+                    var distance = player.Position.DistanceTo(target.Position);
 
                     if (distance <= range)
                     {
-                        string chatMessageColor = GetChatMessageColor(distance, distanceGap);
-
+                        var chatMessageColor = GetChatMessageColor(distance, distanceGap);
                         switch (type)
                         {
                             case TipoMensagemJogo.ChatICNormal:
@@ -826,8 +826,7 @@ namespace InfiniteRoleplay
 
                     p.AguardandoTipoServico = (int)TipoEmprego.Taxista;
 
-                    EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}Downtown Cab Company | Solicitação de Táxi");
-                    EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}" + $"Código: ~w~{p.Codigo}");
+                    EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}" + $"Downtown Cab Company | Solicitação de Táxi #{p.Codigo}");
                     EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}" + $"De: ~w~{p.Celular}");
                     EnviarMensagemEmprego(TipoEmprego.Taxista, "!{#fcba03}" + $"Destino: ~w~{message}");
 

@@ -22,7 +22,7 @@ namespace InfiniteRoleplay.Entities
             DeletarIdentificador();
 
             string nome = string.Empty;
-            switch((TipoPonto)Tipo)
+            switch ((TipoPonto)Tipo)
             {
                 case TipoPonto.Multas:
                     nome = "Pagamento de Multas";
@@ -62,7 +62,7 @@ namespace InfiniteRoleplay.Entities
             }
 
             TextLabel = NAPI.TextLabel.CreateTextLabel(nome, new Vector3(PosX, PosY, PosZ), 5, 2, 0, new Color(254, 189, 12));
-            TextLabel2 = NAPI.TextLabel.CreateTextLabel(descricao, new Vector3(PosX, PosY, PosZ - 0.1), 5, 1, 0, new Color(255,255,255));
+            TextLabel2 = NAPI.TextLabel.CreateTextLabel(descricao, new Vector3(PosX, PosY, PosZ - 0.1), 5, 1, 0, new Color(255, 255, 255));
         }
 
         public void DeletarIdentificador()

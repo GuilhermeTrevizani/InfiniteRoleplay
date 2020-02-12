@@ -84,12 +84,6 @@ namespace InfiniteRoleplay
             NAPI.ClientEvent.TriggerClientEvent(player, "teta");
         }
 
-        [RemoteEvent("teta2")]
-        public void CMD_rottateta2ta(Client player, object a)
-        {
-            NAPI.Util.ConsoleOutput(JsonConvert.SerializeObject(a));
-        }
-
         [Command("cenario")]
         public void CMD_cenario(Client player, int opc)
         {
@@ -396,9 +390,10 @@ namespace InfiniteRoleplay
             if (!player.IsInVehicle)
                 return;
 
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Motor: {player.Vehicle.EngineStatus}");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Engine: {player.Vehicle.EngineStatus}");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Motor Health: {NAPI.Vehicle.GetVehicleEngineHealth(player.Vehicle)}");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Body Health: {NAPI.Vehicle.GetVehicleBodyHealth(player.Vehicle)}");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Health: {player.Vehicle.Health}");
         }
     }
 }

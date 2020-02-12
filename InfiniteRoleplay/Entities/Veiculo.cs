@@ -35,6 +35,7 @@ namespace InfiniteRoleplay.Entities
             Vehicle.NumberPlate = Placa;
             Vehicle.EngineStatus = false;
             Vehicle.Locked = true;
+            NAPI.Vehicle.SetVehicleBodyHealth(Vehicle, Vida);
             NAPI.Vehicle.SetVehicleCustomPrimaryColor(Vehicle, Cor1R, Cor1G, Cor1B);
             NAPI.Vehicle.SetVehicleCustomSecondaryColor(Vehicle, Cor2R, Cor2G, Cor2B);
             Global.Veiculos.Add(this);

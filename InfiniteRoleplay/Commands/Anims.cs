@@ -4,10 +4,10 @@ namespace InfiniteRoleplay.Commands
 {
     public class Anims : Script
     {
-        [Command("stopanim", Alias = "sa")]
+        [Command("stopanim", "!{#febd0c}USO:~w~ /stopanim", Alias = "sa")]
         public void CMD_stopanim(Client player) => Functions.ChecarAnimacoes(player, true);
 
-        [Command("handsup", Alias = "hs")]
+        [Command("handsup", "!{#febd0c}USO:~w~ /hs (tipo [1-13])", Alias = "hs")]
         public void CMD_hs(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -60,7 +60,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("crossarms")]
+        [Command("crossarms", "!{#febd0c}USO:~w~ /crossarms (tipo [1-2])")]
         public void CMD_crossarms(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -80,7 +80,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("smoke")]
+        [Command("smoke", "!{#febd0c}USO:~w~ /smoke (tipo [1-3])")]
         public void CMD_smoke(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -103,7 +103,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("lean")]
+        [Command("lean", "!{#febd0c}USO:~w~ /lean (tipo [1-7])")]
         public void CMD_lean(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -138,7 +138,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("police")]
+        [Command("police", "!{#febd0c}USO:~w~ /police (tipo [1-6])")]
         public void CMD_police(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -170,7 +170,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("incar")]
+        [Command("incar", "!{#febd0c}USO:~w~ /incar (tipo [1-3])")]
         public void CMD_incar(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -193,7 +193,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("pushups")]
+        [Command("pushups", "!{#febd0c}USO:~w~ /pushups (tipo [1-4])")]
         public void CMD_pushups(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -219,7 +219,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("situps")]
+        [Command("situps", "!{#febd0c}USO:~w~ /situps (tipo [1-4])")]
         public void CMD_situps(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -245,7 +245,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("blunt")]
+        [Command("blunt", "!{#febd0c}USO:~w~ /blunt (tipo [1-2])")]
         public void CMD_blunt(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -265,7 +265,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("afishing")]
+        [Command("afishing", "!{#febd0c}USO:~w~ /afishing (tipo [1-3])")]
         public void CMD_afishing(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -288,7 +288,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("acop")]
+        [Command("acop", "!{#febd0c}USO:~w~ /acop")]
         public void CMD_acop(Client player)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -297,7 +297,7 @@ namespace InfiniteRoleplay.Commands
             player.PlayAnimation("amb@world_human_cop_idles@male@base", "base", (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl | Constants.AnimationFlags.OnlyAnimateUpperBody));
         }
 
-        [Command("idle")]
+        [Command("idle", "!{#febd0c}USO:~w~ /idle (tipo [1-3])")]
         public void CMD_idle(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -320,7 +320,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("barra")]
+        [Command("barra", "!{#febd0c}USO:~w~ /barra (tipo [1-3])")]
         public void CMD_barra(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -343,7 +343,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("kneel")]
+        [Command("kneel", "!{#febd0c}USO:~w~ /kneel")]
         public void CMD_kneel(Client player)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -352,7 +352,7 @@ namespace InfiniteRoleplay.Commands
             player.PlayAnimation("amb@medic@standing@tendtodead@base", "base", (int)(Constants.AnimationFlags.Loop));
         }
 
-        [Command("revistarc")]
+        [Command("revistarc", "!{#febd0c}USO:~w~ /revistarc")]
         public void CMD_revistarc(Client player)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -361,7 +361,7 @@ namespace InfiniteRoleplay.Commands
             player.PlayAnimation("amb@medic@standing@tendtodead@idle_a", "idle_a", (int)(Constants.AnimationFlags.Loop));
         }
 
-        [Command("ajoelhar")]
+        [Command("ajoelhar", "!{#febd0c}USO:~w~ /ajoelhar (tipo [1-4])")]
         public void CMD_ajoelhar(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -387,7 +387,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("drink")]
+        [Command("drink", "!{#febd0c}USO:~w~ /drink (tipo [1-3])")]
         public void CMD_drink(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -410,7 +410,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("morto")]
+        [Command("morto", "!{#febd0c}USO:~w~ /morto (tipo [1-2])")]
         public void CMD_morto(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -430,7 +430,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("gsign")]
+        [Command("gsign", "!{#febd0c}USO:~w~ /gsign (tipo [1-2])")]
         public void CMD_gsign(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -450,7 +450,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("hurry")]
+        [Command("hurry", "!{#febd0c}USO:~w~ /hurry (tipo [1-2])")]
         public void CMD_hurry(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -470,7 +470,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("cair")]
+        [Command("cair", "!{#febd0c}USO:~w~ /cair (tipo [1-2])")]
         public void CMD_cair(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -490,7 +490,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("wsup")]
+        [Command("wsup", "!{#febd0c}USO:~w~ /wsup (tipo [1-2])")]
         public void CMD_wsup(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -510,7 +510,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("render")]
+        [Command("render", "!{#febd0c}USO:~w~ /render (tipo [1-2])")]
         public void CMD_render(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -530,7 +530,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("mirar")]
+        [Command("mirar", "!{#febd0c}USO:~w~ /mirar (tipo [1-2])")]
         public void CMD_mirar(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -550,7 +550,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("sentar")]
+        [Command("sentar", "!{#febd0c}USO:~w~ /sentar (tipo [1-8])")]
         public void CMD_sentar(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -588,7 +588,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("dormir")]
+        [Command("dormir", "!{#febd0c}USO:~w~ /dormir (tipo [1-2])")]
         public void CMD_dormir(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -608,7 +608,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("pixar")]
+        [Command("pixar", "!{#febd0c}USO:~w~ /pixar (tipo [1-2])")]
         public void CMD_pixar(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -628,7 +628,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("sexo")]
+        [Command("sexo", "!{#febd0c}USO:~w~ /sexo (tipo [1-5])")]
         public void CMD_sexo(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -657,7 +657,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("jogado")]
+        [Command("jogado", "!{#febd0c}USO:~w~ /jogado (tipo [1-3])")]
         public void CMD_jogado(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -680,7 +680,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("reparando")]
+        [Command("reparando", "!{#febd0c}USO:~w~ /reparando (tipo [1-2])")]
         public void CMD_reparando(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -700,7 +700,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("luto")]
+        [Command("luto", "!{#febd0c}USO:~w~ /luto (tipo [1-2])")]
         public void CMD_luto(Client player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -720,7 +720,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("bar")]
+        [Command("bar", "!{#febd0c}USO:~w~ /bar")]
         public void CMD_bar(Client player)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -729,7 +729,7 @@ namespace InfiniteRoleplay.Commands
             player.PlayAnimation("switch@trevor@bar", "exit_loop_bartender", (int)(Constants.AnimationFlags.Loop | Constants.AnimationFlags.AllowPlayerControl | Constants.AnimationFlags.OnlyAnimateUpperBody));
         }
 
-        [Command("necessidades")]
+        [Command("necessidades", "!{#febd0c}USO:~w~ /necessidades")]
         public void CMD_necessidades(Client player)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -738,7 +738,7 @@ namespace InfiniteRoleplay.Commands
             player.PlayAnimation("switch@trevor@on_toilet", "trev_on_toilet_loop", (int)(Constants.AnimationFlags.StopOnLastFrame));
         }
 
-        [Command("meth")]
+        [Command("meth", "!{#febd0c}USO:~w~ /meth")]
         public void CMD_meth(Client player)
         {
             if (!Functions.ChecarAnimacoes(player))
@@ -747,7 +747,7 @@ namespace InfiniteRoleplay.Commands
             player.PlayAnimation("switch@trevor@trev_smoking_meth", "trev_smoking_meth_loop", (int)(Constants.AnimationFlags.StopOnLastFrame));
         }
 
-        [Command("mijar")]
+        [Command("mijar", "!{#febd0c}USO:~w~ /mijar")]
         public void CMD_mijar(Client player)
         {
             if (!Functions.ChecarAnimacoes(player))

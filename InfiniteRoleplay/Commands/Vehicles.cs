@@ -6,10 +6,10 @@ namespace InfiniteRoleplay.Commands
 {
     public class Vehicles : Script
     {
-        [Command("vcomprar")]
+        [Command("vcomprar", "!{#febd0c}USO:~w~ /vcomprar")]
         public void CMD_vcomprar(Client player) => Functions.ComprarVeiculo(player, 0, string.Empty);
 
-        [Command("motor")]
+        [Command("motor", "!{#febd0c}USO:~w~ /motor")]
         public void CMD_motor(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -37,7 +37,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(!player.Vehicle.EngineStatus ? "des" : string.Empty)}ligou o motor do veículo!");
         }
 
-        [Command("vtrancar")]
+        [Command("vtrancar", "!{#febd0c}USO:~w~ /vtrancar")]
         public void CMD_vtrancar(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -62,7 +62,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(!veh.Vehicle.Locked ? "des" : string.Empty)}trancou o veículo!");
         }
 
-        [Command("vcomprarvaga")]
+        [Command("vcomprarvaga", "!{#febd0c}USO:~w~ /vcomprarvaga")]
         public void CMD_vcomprarvaga(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -110,7 +110,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou uma vaga por ${Global.Parametros.ValorVagaVeiculo:N0}!");
         }
 
-        [Command("vestacionar")]
+        [Command("vestacionar", "!{#febd0c}USO:~w~ /vestacionar")]
         public void CMD_vestacionar(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -139,7 +139,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            veh.Vida = player.Vehicle.Health;
+            veh.Vida = NAPI.Vehicle.GetVehicleBodyHealth(player.Vehicle);
 
             using (var context = new RoleplayContext())
             {
@@ -151,7 +151,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você estacionou seu veículo!");
         }
 
-        [Command("vspawn")]
+        [Command("vspawn", "!{#febd0c}USO:~w~ /vspawn (código do veículo)")]
         public void CMD_vspawn(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -182,7 +182,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("vlista")]
+        [Command("vlista", "!{#febd0c}USO:~w~ /vlista")]
         public void CMD_vlista(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -207,7 +207,7 @@ namespace InfiniteRoleplay.Commands
             }
         }
 
-        [Command("vvender")]
+        [Command("vvender", "!{#febd0c}USO:~w~ /vvender (ID ou nome) (valor)")]
         public void CMD_vvender(Client player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);

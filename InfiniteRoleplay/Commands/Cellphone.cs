@@ -6,7 +6,7 @@ namespace InfiniteRoleplay.Commands
 {
     public class Cellphone : Script
     {
-        [Command("sms", GreedyArg = true)]
+        [Command("sms", "!{#febd0c}USO:~w~ /sms (número ou nome do contato) (mensagem)", GreedyArg = true)]
         public void CMD_sms(Client player, string numeroNomeContato, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
@@ -45,7 +45,7 @@ namespace InfiniteRoleplay.Commands
             Functions.SendMessageToNearbyPlayers(target.Player, "recebe uma mensagem de texto.", TipoMensagemJogo.Ame, 5, true);
         }
 
-        [Command("ligar")]
+        [Command("ligar", "!{#febd0c}USO:~w~ /ligar (número ou nome do contato)")]
         public void CMD_ligar(Client player, string numeroNomeContato)
         {
             var p = Functions.ObterPersonagem(player);
@@ -157,7 +157,7 @@ namespace InfiniteRoleplay.Commands
             Functions.SendMessageToNearbyPlayers(target.Player, $"O celular de {target.NomeIC} está tocando.", TipoMensagemJogo.Do, 5, true);
         }
 
-        [Command("desligar", Alias = "des")]
+        [Command("desligar", "!{#febd0c}USO:~w~ /desligar", Alias = "des")]
         public void CMD_desligar(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -184,7 +184,7 @@ namespace InfiniteRoleplay.Commands
             target.LimparLigacao();
         }
 
-        [Command("atender")]
+        [Command("atender", "!{#febd0c}USO:~w~ /atender")]
         public void CMD_atender(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -214,10 +214,10 @@ namespace InfiniteRoleplay.Commands
             target.LimparLigacao(true);
         }
 
-        [Command("celular")]
-        public void CMD_celular(Client player) => Functions.AbrirCelular(player, string.Empty, 0);
+        [Command("cel", "!{#febd0c}USO:~w~ /cel")]
+        public void CMD_cel(Client player) => Functions.AbrirCelular(player, string.Empty, 0);
 
-        [Command("gps")]
+        [Command("gps", "!{#febd0c}USO:~w~ /gps (propriedade)")]
         public void CMD_gps(Client player, int propriedade)
         {
             var p = Functions.ObterPersonagem(player);

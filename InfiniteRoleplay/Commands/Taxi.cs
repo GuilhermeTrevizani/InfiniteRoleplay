@@ -1,12 +1,11 @@
 ﻿using GTANetworkAPI;
-using System;
 using System.Linq;
 
 namespace InfiniteRoleplay.Commands
 {
     public class Taxi : Script
     {
-        [Command("taxiduty")]
+        [Command("taxiduty", "!{#febd0c}USO:~w~ /taxiduty")]
         public void CMD_taxiduty(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -20,7 +19,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(p.IsEmTrabalho ? "entrou em" : "saiu de")} serviço como taxista!");
         }
 
-        [Command("taxicha")]
+        [Command("taxicha", "!{#febd0c}USO:~w~ /taxicha")]
         public void CMD_taxicha(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -48,7 +47,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Chamada #{c.Codigo}");
         }
 
-        [Command("taxiac")]
+        [Command("taxiac", "!{#febd0c}USO:~w~ /taxiac (chamada)")]
         public void CMD_taxiac(Client player, int chamada)
         {
             var p = Functions.ObterPersonagem(player);

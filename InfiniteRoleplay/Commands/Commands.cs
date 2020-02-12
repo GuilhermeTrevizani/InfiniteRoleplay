@@ -8,7 +8,7 @@ namespace InfiniteRoleplay.Commands
 {
     public class Commands : Script
     {
-        [Command("ajuda")]
+        [Command("ajuda", "!{#febd0c}USO:~w~ /ajuda")]
         public void CMD_ajuda(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -47,7 +47,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Celular", "/desligar /des"),
                 new Comando("Celular", "/ligar"),
                 new Comando("Celular", "/atender"),
-                new Comando("Celular", "/celular"),
+                new Comando("Celular", "/cel"),
                 new Comando("Celular", "/gps"),
                 new Comando("Veículos", "/vcomprar"),
                 new Comando("Veículos", "/motor"),
@@ -251,7 +251,7 @@ namespace InfiniteRoleplay.Commands
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoAjuda", listaComandos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome).ToList());
         }
 
-        [Command("stats")]
+        [Command("stats", "!{#febd0c}USO:~w~ /stats")]
         public void CMD_stats(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -264,7 +264,7 @@ namespace InfiniteRoleplay.Commands
             Functions.MostrarStats(player, p);
         }
 
-        [Command("id", GreedyArg = true)]
+        [Command("id", "!{#febd0c}USO:~w~ /id (ID ou nome)", GreedyArg = true)]
         public void CMD_id(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -287,7 +287,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{pl.Nome} [{pl.ID}] ({pl.UsuarioBD.Nome})");
         }
 
-        [Command("aceitar", Alias = "ac")]
+        [Command("aceitar", "!{#febd0c}USO:~w~ /aceitar (tipo)", Alias = "ac")]
         public void CMD_aceitar(Client player, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -449,7 +449,7 @@ namespace InfiniteRoleplay.Commands
             p.Convites.RemoveAll(x => x.Tipo == tipo);
         }
 
-        [Command("recusar", Alias = "rc")]
+        [Command("recusar", "!{#febd0c}USO:~w~ /recusar (tipo)", Alias = "rc")]
         public void CMD_recusar(Client player, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -502,7 +502,7 @@ namespace InfiniteRoleplay.Commands
             p.Convites.RemoveAll(x => x.Tipo == tipo);
         }
 
-        [Command("pagar")]
+        [Command("pagar", "!{#febd0c}USO:~w~ /pagar (ID ou nome) (valor)")]
         public void CMD_pagar(Client player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
@@ -544,7 +544,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Dinheiro, $"/pagar {valor}", p, target);
         }
 
-        [Command("revistar")]
+        [Command("revistar", "!{#febd0c}USO:~w~ /revistar (ID ou nome)")]
         public void CMD_revistar(Client player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
@@ -576,10 +576,10 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"Solicitou uma revista em você. (/ac {convite.Tipo} para aceitar ou /rc {convite.Tipo} para recusar)");
         }
 
-        [Command("multas")]
+        [Command("multas", "!{#febd0c}USO:~w~ /multas")]
         public void CMD_multas(Client player) => Functions.VisualizarMultas(player, string.Empty);
 
-        [Command("transferir")]
+        [Command("transferir", "!{#febd0c}USO:~w~ /transferir (ID ou nome) (valor)")]
         public void CMD_transferir(Client player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
@@ -625,7 +625,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Dinheiro, $"/transferir {valor}", p, target);
         }
 
-        [Command("sacar")]
+        [Command("sacar", "!{#febd0c}USO:~w~ /sacar (valor)")]
         public void CMD_sacar(Client player, int valor)
         {
             var p = Functions.ObterPersonagem(player);
@@ -661,7 +661,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Dinheiro, $"/sacar {valor}", p, null);
         }
 
-        [Command("depositar")]
+        [Command("depositar", "!{#febd0c}USO:~w~ /depositar (valor)")]
         public void CMD_depositar(Client player, int valor)
         {
             var p = Functions.ObterPersonagem(player);
@@ -697,7 +697,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Dinheiro, $"/depositar {valor}", p, null);
         }
 
-        [Command("comprar")]
+        [Command("comprar", "!{#febd0c}USO:~w~ /comprar")]
         public void CMD_comprar(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -720,7 +720,7 @@ namespace InfiniteRoleplay.Commands
             }).ToList(), 0, string.Empty);
         }
 
-        [Command("skin")]
+        [Command("skin", "!{#febd0c}USO:~w~ /skin (skin)")]
         public void CMD_skin(Client player, string skin)
         {
             var p = Functions.ObterPersonagem(player);
@@ -762,7 +762,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a skin {pedHash.ToString()} por ${Global.Parametros.ValorSkin:N0}.");
         }
 
-        [Command("emtrabalho")]
+        [Command("emtrabalho", "!{#febd0c}USO:~w~ /emtrabalho")]
         public void CMD_emtrabalho(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -776,7 +776,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Policiais: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == (int)TipoFaccao.Policial && x.IsEmTrabalho)} | Médicos: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == (int)TipoFaccao.Medica && x.IsEmTrabalho)} | Taxistas: {Global.PersonagensOnline.Count(x => x.Emprego == (int)TipoEmprego.Taxista && x.IsEmTrabalho)}");
         }
 
-        [Command("sairemprego")]
+        [Command("sairemprego", "!{#febd0c}USO:~w~ /sairemprego")]
         public void CMD_sairemprego(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -790,7 +790,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, "Você saiu do seu emprego!");
         }
 
-        [Command("emprego")]
+        [Command("emprego", "!{#febd0c}USO:~w~ /emprego")]
         public void CMD_emprego(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -823,7 +823,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você pegou o emprego {Functions.ObterDisplayEnum(emprego)}!");
         }
 
-        [Command("staff")]
+        [Command("staff", "!{#febd0c}USO:~w~ /staff")]
         public void CMD_staff(Client player)
         {
             var p = Functions.ObterPersonagem(player);

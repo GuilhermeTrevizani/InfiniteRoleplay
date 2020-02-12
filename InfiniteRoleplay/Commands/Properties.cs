@@ -6,7 +6,7 @@ namespace InfiniteRoleplay.Commands
 {
     public class Properties : Script
     {
-        [Command("entrar")]
+        [Command("entrar", "!{#febd0c}USO:~w~ /entrar")]
         public void CMD_entrar(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -39,7 +39,7 @@ namespace InfiniteRoleplay.Commands
             player.Position = new Vector3(prox.SaidaPosX, prox.SaidaPosY, prox.SaidaPosZ);
         }
 
-        [Command("sair")]
+        [Command("sair", "!{#febd0c}USO:~w~ /sair")]
         public void CMD_sair(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -72,7 +72,7 @@ namespace InfiniteRoleplay.Commands
             player.Position = new Vector3(prox.EntradaPosX, prox.EntradaPosY, prox.EntradaPosZ);
         }
 
-        [Command("ptrancar")]
+        [Command("ptrancar", "!{#febd0c}USO:~w~ /ptrancar")]
         public void CMD_ptrancar(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -112,7 +112,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(Global.Propriedades[Global.Propriedades.IndexOf(prox)].IsAberta ? "des" : string.Empty)}trancou a porta!");
         }
 
-        [Command("pcomprar")]
+        [Command("pcomprar", "!{#febd0c}USO:~w~ /pcomprar")]
         public void CMD_pcomprar(Client player)
         {
             var p = Functions.ObterPersonagem(player);
@@ -154,7 +154,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a propriedade por ${prox.Valor:N0}!");
         }
 
-        [Command("pvender")]
+        [Command("pvender", "!{#febd0c}USO:~w~ /pvender (ID ou nome) (valor)")]
         public void CMD_pvender(Client player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
