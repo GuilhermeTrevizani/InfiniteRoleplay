@@ -151,6 +151,7 @@ namespace InfiniteRoleplay.Commands
                         new Comando("Facção Gestor", "/convidar"),
                         new Comando("Facção Gestor", "/rank"),
                         new Comando("Facção Gestor", "/demitir"),
+                        new Comando("Facção Gestor", "/gov"),
                     });
 
                 if (p.Rank >= p.FaccaoBD.RankLider)

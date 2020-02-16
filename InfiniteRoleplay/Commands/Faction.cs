@@ -416,5 +416,22 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.NomeIC} desalgemou você.");
             }
         }
+
+        [Command("gov", "!{#febd0c}USO:~w~ /gov (mensagem)", GreedyArg = true)]
+        public void CMD_gov(Client player, string mensagem)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.Faccao == 0 || p?.Rank == 0 || p?.Rank < p?.FaccaoBD?.RankGestor)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            foreach (var pl in Global.PersonagensOnline.Where(x => x.Codigo > 0))
+            {
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + p.FaccaoBD.Nome);
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, mensagem);
+            }
+        }
     }
 }
