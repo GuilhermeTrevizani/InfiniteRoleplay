@@ -21,5 +21,6 @@ namespace InfiniteRoleplay
         public static List<ArmarioItem> ArmariosItens { get; set; }
         public static List<Concessionaria> Concessionarias { get; set; }
         public static List<Emprego> Empregos { get; set; }
+        public static List<SOS> SOSs { get; set; }
     }
 }

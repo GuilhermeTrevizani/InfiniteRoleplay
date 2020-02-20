@@ -100,6 +100,9 @@ namespace InfiniteRoleplay.Entities
         [NotMapped]
         public int AguardandoTipoServico { get; set; } = 0;
 
+        [NotMapped]
+        public bool IsEmTrabalhoAdministrativo { get; set; } = false;
+
         public void SetDinheiro()
         {
             if (Player != null)

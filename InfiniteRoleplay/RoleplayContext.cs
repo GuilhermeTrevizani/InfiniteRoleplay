@@ -24,6 +24,7 @@ namespace InfiniteRoleplay
         public DbSet<Propriedade> Propriedades { get; set; }
         public DbSet<Punicao> Punicoes { get; set; }
         public DbSet<Rank> Ranks { get; set; }
+        public DbSet<SOS> SOSs { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Veiculo> Veiculos { get; set; }
         public DbSet<Whitelist> Whitelist { get; set; }
@@ -54,6 +55,7 @@ namespace InfiniteRoleplay
             modelBuilder.Entity<Propriedade>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Punicao>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Rank>().HasKey(x => new { x.Faccao, x.Codigo });
+            modelBuilder.Entity<SOS>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Usuario>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Veiculo>().HasKey(x => x.Codigo);
             modelBuilder.Entity<Whitelist>().HasKey(x => x.SocialClub);

@@ -151,6 +151,9 @@ namespace InfiniteRoleplay
                     if (salario > 0)
                         EnviarMensagem(p.Player, TipoMensagem.Sucesso, $"Seu salário de ${salario:N0} foi depositado no banco!");
                 }
+
+                if (p.IsEmTrabalhoAdministrativo)
+                    p.UsuarioBD.TempoTrabalhoAdministrativo++;
             }
 
             if (!isOnline && p.Celular > 0)
@@ -192,10 +195,20 @@ namespace InfiniteRoleplay
                 personagem.DataMorte = p.DataMorte;
                 personagem.MotivoMorte = p.MotivoMorte;
                 personagem.Emprego = p.Emprego;
+                personagem.DataUltimoAcesso = DateTime.Now;
+                personagem.IPUltimoAcesso = p.Player.Address;
                 context.Personagens.Update(personagem);
 
                 context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
                 context.PersonagensContatos.AddRange(p.Contatos);
+
+                var usuario = context.Usuarios.FirstOrDefault(x => x.Codigo == p.UsuarioBD.Codigo);
+                usuario.Staff = p.UsuarioBD.Staff;
+                usuario.TempoTrabalhoAdministrativo = p.UsuarioBD.TempoTrabalhoAdministrativo;
+                usuario.QuantidadeSOSAceitos = p.UsuarioBD.QuantidadeSOSAceitos;
+                usuario.DataUltimoAcesso = DateTime.Now;
+                usuario.IPUltimoAcesso = p.Player.Address;
+                context.Usuarios.Update(usuario);
 
                 context.SaveChanges();
             }
@@ -272,10 +285,13 @@ namespace InfiniteRoleplay
         public static void MostrarStats(Client player, Personagem p)
         {
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Staff: {p.UsuarioBD.NomeStaff} [{p.UsuarioBD.Staff}]");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Registro: {p.DataRegistro.ToString()} | Tempo Conectado (minutos): {p.TempoConectado} | Celular: {p.Celular} | Emprego: {ObterDisplayEnum((TipoEmprego)p.Emprego)}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Registro: {p.DataRegistro.ToString()}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Tempo Conectado (minutos): {p.TempoConectado} | Celular: {p.Celular} | Emprego: {ObterDisplayEnum((TipoEmprego)p.Emprego)}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro:N0} | Banco: ${p.Banco:N0}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor} | Tempo de Prisão: {p.TempoPrisao}");
+
+            if (p.UsuarioBD.Staff > 0)
+                EnviarMensagem(player, TipoMensagem.Nenhum, $"Staff: {p.UsuarioBD.NomeStaff} [{p.UsuarioBD.Staff}] | Tempo Serviço Administrativo (minutos): {p.UsuarioBD.TempoTrabalhoAdministrativo}");
 
             if (p.CanalRadio > -1)
                 EnviarMensagem(player, TipoMensagem.Nenhum, $"Canal Rádio 1: {p.CanalRadio} | Canal Rádio 2: {p.CanalRadio2} | Canal Rádio 3: {p.CanalRadio3}");

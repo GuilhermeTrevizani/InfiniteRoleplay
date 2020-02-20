@@ -18,6 +18,8 @@ namespace InfiniteRoleplay.Entities
         public string Serial { get; set; } = string.Empty;
         public int Staff { get; set; } = 0;
         public bool PossuiNamechange { get; set; } = false;
+        public int QuantidadeSOSAceitos { get; set; } = 0;
+        public int TempoTrabalhoAdministrativo { get; set; } = 0;
 
         [NotMapped]
         public string NomeStaff

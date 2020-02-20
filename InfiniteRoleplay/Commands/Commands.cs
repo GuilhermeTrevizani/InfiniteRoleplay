@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using InfiniteRoleplay.Entities;
 using InfiniteRoleplay.Models;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Geral", "/emtrabalho"),
                 new Comando("Geral", "/emprego"),
                 new Comando("Geral", "/staff", "Lista os membros da staff que estão online"),
+                new Comando("Geral", "/sos", "Envia solicitação de ajuda aos administradores em serviço"),
                 new Comando("Propriedades", "/entrar"),
                 new Comando("Propriedades", "/sair"),
                 new Comando("Propriedades", "/ptrancar"),
@@ -176,6 +178,10 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Helper", "/kick"),
                     new Comando("Helper", "/irveh"),
                     new Comando("Helper", "/trazerveh"),
+                    new Comando("Helper", "/aduty", "Entra/sai de serviço administrativo"),
+                    new Comando("Helper", "/listasos", "Lista os SOSs pendentes"),
+                    new Comando("Helper", "/aj", "Aceita um SOS"),
+                    new Comando("Helper", "/rj", "Rejeita um SOS"),
                 });
 
             if (p.UsuarioBD.Staff >= 2)
@@ -843,7 +849,45 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Infinite Roleplay | Staff Online");
             foreach (var pl in players)
-                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{pl.UsuarioBD.NomeStaff} {pl.UsuarioBD.Nome}");
+            {
+                var status = pl.IsEmTrabalhoAdministrativo ? "!{#6EB469}EM SERVIÇO" : "!{#FF6A4D}FORA DE SERVIÇO";
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"{pl.UsuarioBD.NomeStaff} {pl.UsuarioBD.Nome} {status}");
+            }
+        }
+
+        [Command("sos", "!{#febd0c}USO:~w~ /sos (mensagem)", GreedyArg = true)]
+        public void CMD_sos(Client player, string mensagem)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff > 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            if (Global.SOSs.Any(x => x.IDPersonagem == p.ID))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você já possui um SOS pendente de resposta!");
+                return;
+            }
+
+            var sos = new SOS()
+            {
+                IDPersonagem = p.ID,
+                Mensagem = mensagem,
+                Usuario = p.UsuarioBD.Codigo,
+            };
+
+            using (var context = new RoleplayContext())
+                context.SOSs.Add(sos);
+
+            Global.SOSs.Add(sos);
+
+            foreach (var pl in Global.PersonagensOnline.Where(x => x.IsEmTrabalhoAdministrativo && x.UsuarioBD?.Staff > 0))
+            {
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Titulo, $"SOS de {p.Nome} [{p.ID}] ({p.UsuarioBD.Nome})");
+                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, mensagem);
+            }
         }
     }
 }

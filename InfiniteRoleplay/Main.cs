@@ -75,6 +75,9 @@ namespace InfiniteRoleplay
 
                 Global.ArmariosItens = context.ArmariosItens.ToList();
                 NAPI.Util.ConsoleOutput($"ArmariosItens: {Global.ArmariosItens.Count}");
+
+                Global.SOSs = context.SOSs.Where(x => x.DataResposta == null).ToList();
+                NAPI.Util.ConsoleOutput($"SOSs: {Global.SOSs.Count}");
             }
 
             Functions.CarregarSkins();

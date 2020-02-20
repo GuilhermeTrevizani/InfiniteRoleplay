@@ -165,7 +165,7 @@ namespace InfiniteRoleplay.Commands
             target.Player.Kick();
         }
 
-        [Command("irveh", "!{#febd0c}USO:~w~ /irveh (codigo)")]
+        [Command("irveh", "!{#febd0c}USO:~w~ /irveh (código)")]
         public void CMD_irveh(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -189,7 +189,7 @@ namespace InfiniteRoleplay.Commands
             player.Dimension = veh.Vehicle.Dimension;
         }
 
-        [Command("trazerveh", "!{#febd0c}USO:~w~ /trazerveh (codigo)")]
+        [Command("trazerveh", "!{#febd0c}USO:~w~ /trazerveh (código)")]
         public void CMD_trazerveh(Client player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
@@ -216,6 +216,80 @@ namespace InfiniteRoleplay.Commands
             pos.X += 5;
             veh.Vehicle.Position = pos;
             veh.Vehicle.Dimension = player.Dimension;
+        }
+
+        [Command("aduty", "!{#febd0c}USO:~w~ /aduty")]
+        public void CMD_aduty(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            p.IsEmTrabalhoAdministrativo = !p.IsEmTrabalhoAdministrativo;
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(p.IsEmTrabalhoAdministrativo ? "entrou em" : "saiu de")} serviço administrativo!");
+        }
+
+        [Command("listasos", "!{#febd0c}USO:~w~ /listasos")]
+        public void CMD_listasos(Client player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            if (Global.SOSs.Count == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Não há nenhum SOS pendente!");
+                return;
+            }
+
+            // player pode ter deslogado, valerá a pena salvar no model?
+            foreach (var x in Global.SOSs.OrderBy(x => x.Data))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Titulo, $"SOS de {p.Nome} [{x.IDPersonagem}] ({p.UsuarioBD.Nome}) | {x.Data.ToString()}");
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, x.Mensagem);
+            }
+        }
+
+        [Command("aj", "!{#febd0c}USO:~w~ /aj (código)")]
+        public void CMD_aj(Client player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var sos = Global.SOSs.FirstOrDefault(x => x.Codigo == codigo);
+            if (sos == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"SOS {codigo} não existe!");
+                return;
+            }
+        }
+
+        [Command("rj", "!{#febd0c}USO:~w~ /rj (código)")]
+        public void CMD_rj(Client player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var sos = Global.SOSs.FirstOrDefault(x => x.Codigo == codigo);
+            if (sos == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"SOS {codigo} não existe!");
+                return;
+            }
         }
         #endregion Staff 1
 
@@ -482,7 +556,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} aplicou CK no seu personagem.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você aplicou CK no personagem {target.Nome}. Motivo: {motivo}");
             target.Player.Kick();
-            
+
             Functions.GravarLog(TipoLog.Staff, $"/ck {motivo}", p, target);
         }
         #endregion
@@ -1148,9 +1222,6 @@ namespace InfiniteRoleplay.Commands
             if (target == null)
                 return;
 
-            using (var context = new RoleplayContext())
-                context.Database.ExecuteSqlCommand($"UPDATE Usuarios SET Staff = {staff} WHERE Codigo = {target.Usuario}");
-
             target.UsuarioBD.Staff = staff;
             Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou seu nível staff para {staff}.");
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou o nível staff de {target.UsuarioBD.Nome} para {staff}.");
@@ -1387,7 +1458,7 @@ namespace InfiniteRoleplay.Commands
 
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosX = player.Position.X;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosY = player.Position.Y;
-            Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosZ = player.Position.Z; 
+            Global.Propriedades[Global.Propriedades.IndexOf(prop)].EntradaPosZ = player.Position.Z;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].Dimensao = player.Dimension;
 
             using (var context = new RoleplayContext())
@@ -1968,7 +2039,7 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe no armário {armario}!");
                 return;
             }
-            
+
             if (municao <= 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Munição inválida!");
