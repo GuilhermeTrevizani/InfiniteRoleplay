@@ -6,9 +6,8 @@ namespace InfiniteRoleplay
     public class Testes : Script
     {
         #region Not Implemented Yet
-        /*
-        [Command("ame", GreedyArg = true)]
-        public void CMD_ame(Client player, string mensagem = "")
+        /*[Command("ame", GreedyArg = true)]
+        public void CMD_ame(Player player, string mensagem = "")
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -22,7 +21,7 @@ namespace InfiniteRoleplay
 
             p.TextLabel = NAPI.TextLabel.CreateTextLabel($"{p.NomeIC} {mensagem}", new Vector3(0.0f, 0.0f, 0.0f), 50.0f, 0.5f, 4, new Color(201, 90, 0, 255));
             NAPI.ClientEvent.TriggerClientEvent(player, "attachEntityToEntity", p.TextLabel, player, 31086, new Vector3(0.0f, 0.0f, 1.0f), new Vector3(0.0f, 0.0f, 0.0f));
-
+            
             NAPI.Task.Run(() =>
             {
                 if (p.TextLabel != null)
@@ -31,12 +30,11 @@ namespace InfiniteRoleplay
                     p.TextLabel = null;
                 }
             }, delayTime: 5000);
-        }
-        */
+        }*/
         #endregion
 
         [Command("w")]
-        public void CMD_w(Client player, string arma, int municao)
+        public void CMD_w(Player player, string arma, int municao)
         {
             var weaponHash = NAPI.Util.WeaponNameToModel(arma);
             if (weaponHash == 0)
@@ -49,43 +47,43 @@ namespace InfiniteRoleplay
         }
 
         [Command("p")]
-        public void CMD_p(Client sender)
+        public void CMD_p(Player player)
         {
-            NAPI.Util.ConsoleOutput($"{sender.Position.X.ToString().Replace(",", ".")}, {sender.Position.Y.ToString().Replace(",", ".")}, {sender.Position.Z.ToString().Replace(",", ".")}");
+            NAPI.Util.ConsoleOutput($"{player.Position.X.ToString().Replace(",", ".")}, {player.Position.Y.ToString().Replace(",", ".")}, {player.Position.Z.ToString().Replace(",", ".")}");
         }
 
         [Command("rot")]
-        public void CMD_rot(Client sender)
+        public void CMD_rot(Player player)
         {
-            NAPI.Util.ConsoleOutput($"{sender.Rotation.X.ToString().Replace(",", ".")}, {sender.Rotation.Y.ToString().Replace(",", ".")}, {sender.Rotation.Z.ToString().Replace(",", ".")}");
+            NAPI.Util.ConsoleOutput($"{player.Rotation.X.ToString().Replace(",", ".")}, {player.Rotation.Y.ToString().Replace(",", ".")}, {player.Rotation.Z.ToString().Replace(",", ".")}");
         }
 
         [Command("pos")]
-        public void CMD_pos(Client sender, float x, float y, float z)
+        public void CMD_pos(Player player, float x, float y, float z)
         {
-            sender.Position = new Vector3(x, y, z);
+            player.Position = new Vector3(x, y, z);
         }
 
         [Command("vp")]
-        public void CMD_vp(Client sender)
+        public void CMD_vp(Player player)
         {
-            NAPI.Util.ConsoleOutput($"{sender.Vehicle.Position.X.ToString().Replace(",", ".")}, {sender.Vehicle.Position.Y.ToString().Replace(",", ".")}, {sender.Vehicle.Position.Z.ToString().Replace(",", ".")}");
+            NAPI.Util.ConsoleOutput($"{player.Vehicle.Position.X.ToString().Replace(",", ".")}, {player.Vehicle.Position.Y.ToString().Replace(",", ".")}, {player.Vehicle.Position.Z.ToString().Replace(",", ".")}");
         }
 
         [Command("vz")]
-        public void CMD_vz(Client sender)
+        public void CMD_vz(Player player)
         {
-            NAPI.Util.ConsoleOutput($"{sender.Vehicle.Rotation.X.ToString().Replace(",", ".")}, {sender.Vehicle.Rotation.Y.ToString().Replace(",", ".")}, {sender.Vehicle.Rotation.Z.ToString().Replace(",", ".")}");
+            NAPI.Util.ConsoleOutput($"{player.Vehicle.Rotation.X.ToString().Replace(",", ".")}, {player.Vehicle.Rotation.Y.ToString().Replace(",", ".")}, {player.Vehicle.Rotation.Z.ToString().Replace(",", ".")}");
         }
 
         [Command("teta")]
-        public void CMD_rottata(Client player)
+        public void CMD_rottata(Player player)
         {
             NAPI.ClientEvent.TriggerClientEvent(player, "teta");
         }
 
         [Command("cenario")]
-        public void CMD_cenario(Client player, int opc)
+        public void CMD_cenario(Player player, int opc)
         {
             switch (opc)
             {
@@ -379,13 +377,13 @@ namespace InfiniteRoleplay
         }
 
         [Command("i")]
-        public void CMD_i(Client player, string ipl) => NAPI.ClientEvent.TriggerClientEvent(player, "setIPL", ipl);
+        public void CMD_i(Player player, string ipl) => NAPI.ClientEvent.TriggerClientEvent(player, "setIPL", ipl);
 
         [Command("ri")]
-        public void CMD_ri(Client player, string ipl) => NAPI.ClientEvent.TriggerClientEvent(player, "removeIPL", ipl);
+        public void CMD_ri(Player player, string ipl) => NAPI.ClientEvent.TriggerClientEvent(player, "removeIPL", ipl);
 
         [Command("vh")]
-        public void CMD_vh(Client player)
+        public void CMD_vh(Player player)
         {
             if (!player.IsInVehicle)
                 return;

@@ -7,7 +7,7 @@ namespace InfiniteRoleplay.Commands
     public class Properties : Script
     {
         [Command("entrar", "!{#febd0c}USO:~w~ /entrar")]
-        public void CMD_entrar(Client player)
+        public void CMD_entrar(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -40,7 +40,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("sair", "!{#febd0c}USO:~w~ /sair")]
-        public void CMD_sair(Client player)
+        public void CMD_sair(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -73,7 +73,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("ptrancar", "!{#febd0c}USO:~w~ /ptrancar")]
-        public void CMD_ptrancar(Client player)
+        public void CMD_ptrancar(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -113,7 +113,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("pcomprar", "!{#febd0c}USO:~w~ /pcomprar")]
-        public void CMD_pcomprar(Client player)
+        public void CMD_pcomprar(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -155,7 +155,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("pvender", "!{#febd0c}USO:~w~ /pvender (ID ou nome) (valor)")]
-        public void CMD_pvender(Client player, string idNome, int valor)
+        public void CMD_pvender(Player player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)

@@ -9,7 +9,7 @@ namespace InfiniteRoleplay.Commands
     {
         #region Staff 1
         [Command("ir", "!{#febd0c}USO:~w~ /ir (ID ou nome)")]
-        public void CMD_ir(Client player, string idNome)
+        public void CMD_ir(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -32,7 +32,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("trazer", "!{#febd0c}USO:~w~ /trazer (ID ou nome)")]
-        public void CMD_trazer(Client player, string idNome)
+        public void CMD_trazer(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -55,7 +55,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("tp", "!{#febd0c}USO:~w~ /tp (ID ou nome) (ID ou nome)")]
-        public void CMD_tp(Client player, string idNome, string idNomeDestino)
+        public void CMD_tp(Player player, string idNome, string idNomeDestino)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -85,7 +85,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("vw", "!{#febd0c}USO:~w~ /vw (ID ou nome) (vw)")]
-        public void CMD_vw(Client player, string idNome, uint vw)
+        public void CMD_vw(Player player, string idNome, uint vw)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -105,7 +105,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("a", "!{#febd0c}USO:~w~ /a (mensagem)", GreedyArg = true)]
-        public void CMD_a(Client player, string mensagem)
+        public void CMD_a(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -119,7 +119,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("o", "!{#febd0c}USO:~w~ /o (mensagem)", GreedyArg = true)]
-        public void CMD_o(Client player, string mensagem)
+        public void CMD_o(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -133,7 +133,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("kick", "!{#febd0c}USO:~w~ /kick (ID ou nome) (motivo)", GreedyArg = true)]
-        public void CMD_kick(Client player, string idNome, string motivo)
+        public void CMD_kick(Player player, string idNome, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -166,7 +166,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("irveh", "!{#febd0c}USO:~w~ /irveh (código)")]
-        public void CMD_irveh(Client player, int codigo)
+        public void CMD_irveh(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -190,7 +190,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("trazerveh", "!{#febd0c}USO:~w~ /trazerveh (código)")]
-        public void CMD_trazerveh(Client player, int codigo)
+        public void CMD_trazerveh(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -219,7 +219,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("aduty", "!{#febd0c}USO:~w~ /aduty")]
-        public void CMD_aduty(Client player)
+        public void CMD_aduty(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -233,7 +233,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("listasos", "!{#febd0c}USO:~w~ /listasos")]
-        public void CMD_listasos(Client player)
+        public void CMD_listasos(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -248,16 +248,15 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            // player pode ter deslogado, valerá a pena salvar no model?
             foreach (var x in Global.SOSs.OrderBy(x => x.Data))
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Titulo, $"SOS de {p.Nome} [{x.IDPersonagem}] ({p.UsuarioBD.Nome}) | {x.Data.ToString()}");
+                Functions.EnviarMensagem(player, TipoMensagem.Titulo, $"SOS de {x.NomePersonagem} [{x.IDPersonagem}] ({x.NomeUsuario}) | {x.Data.ToString()}");
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, x.Mensagem);
             }
         }
 
         [Command("aj", "!{#febd0c}USO:~w~ /aj (código)")]
-        public void CMD_aj(Client player, int codigo)
+        public void CMD_aj(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -272,10 +271,28 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"SOS {codigo} não existe!");
                 return;
             }
+
+            if (!sos.Verificar(p.Usuario))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Jogador do SOS não está conectado!");
+                return;
+            }
+
+            sos.DataResposta = DateTime.Now;
+            sos.UsuarioStaff = p.UsuarioBD.Codigo;
+            sos.TipoResposta = 1;
+
+            using (var context = new RoleplayContext())
+            {
+                context.SOSs.Update(sos);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Erro, $"SOS {codigo} não existe!");
         }
 
         [Command("rj", "!{#febd0c}USO:~w~ /rj (código)")]
-        public void CMD_rj(Client player, int codigo)
+        public void CMD_rj(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1)
@@ -289,13 +306,28 @@ namespace InfiniteRoleplay.Commands
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"SOS {codigo} não existe!");
                 return;
+            }
+
+            if (!sos.Verificar(p.Usuario))
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Jogador do SOS não está conectado!");
+                return;
+            }
+
+            sos.DataResposta = DateTime.Now;
+            sos.UsuarioStaff = p.UsuarioBD.Codigo;
+
+            using (var context = new RoleplayContext())
+            {
+                context.SOSs.Update(sos);
+                context.SaveChanges();
             }
         }
         #endregion Staff 1
 
         #region Staff 2
         [Command("vida", "!{#febd0c}USO:~w~ /vida (ID ou nome) (vida)")]
-        public void CMD_vida(Client player, string idNome, int vida)
+        public void CMD_vida(Player player, string idNome, int vida)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 2)
@@ -321,7 +353,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("colete", "!{#febd0c}USO:~w~ /colete (ID ou nome) (colete)")]
-        public void CMD_colete(Client player, string idNome, int colete)
+        public void CMD_colete(Player player, string idNome, int colete)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 2)
@@ -347,7 +379,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("skinc", "!{#febd0c}USO:~w~ /skinc (ID ou nome) (slot) (drawable) (texture)")]
-        public void CMD_skinc(Client player, string idNome, int slot, int drawable, int texture)
+        public void CMD_skinc(Player player, string idNome, int slot, int drawable, int texture)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 2)
@@ -366,7 +398,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("skina", "!{#febd0c}USO:~w~ /skina (ID ou nome) (slot) (drawable) (texture)")]
-        public void CMD_skina(Client player, string idNome, int slot, int drawable, int texture)
+        public void CMD_skina(Player player, string idNome, int slot, int drawable, int texture)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 2)
@@ -385,7 +417,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("checar", "!{#febd0c}USO:~w~ /checar (ID ou nome)")]
-        public void CMD_checar(Client player, string idNome)
+        public void CMD_checar(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 2)
@@ -402,7 +434,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("ban", "!{#febd0c}USO:~w~ /ban (ID ou nome) (dias) (motivo)", GreedyArg = true)]
-        public void CMD_ban(Client player, string idNome, int dias, string motivo)
+        public void CMD_ban(Player player, string idNome, int dias, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 2)
@@ -451,7 +483,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("banoff", "!{#febd0c}USO:~w~ /banoff (personagem) (dias) (motivo)", GreedyArg = true)]
-        public void CMD_banoff(Client player, int personagem, int dias, string motivo)
+        public void CMD_banoff(Player player, int personagem, int dias, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 2)
@@ -460,50 +492,48 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            var per = context.Personagens.FirstOrDefault(x => x.Codigo == personagem);
+            if (per == null)
             {
-                var per = context.Personagens.FirstOrDefault(x => x.Codigo == personagem);
-                if (per == null)
-                {
-                    Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Personagem {personagem} não existe!");
-                    return;
-                }
-
-                var user = context.Usuarios.FirstOrDefault(x => x.Codigo == per.Usuario);
-
-                var ban = new Entities.Banimento()
-                {
-                    Data = DateTime.Now,
-                    Expiracao = null,
-                    Motivo = motivo,
-                    Usuario = user.Codigo,
-                    SocialClub = user.SocialClubRegistro,
-                    UsuarioStaff = p.UsuarioBD.Codigo,
-                };
-
-                if (dias > 0)
-                    ban.Expiracao = DateTime.Now.AddDays(dias);
-
-                context.Banimentos.Add(ban);
-
-                context.Punicoes.Add(new Entities.Punicao()
-                {
-                    Data = DateTime.Now,
-                    Duracao = dias,
-                    Motivo = motivo,
-                    Personagem = per.Codigo,
-                    Tipo = (int)TipoPunicao.Ban,
-                    UsuarioStaff = p.UsuarioBD.Codigo,
-                });
-                context.SaveChanges();
-
-                var strBan = dias == 0 ? "permanentemente" : $"por {dias} dia{(dias > 1 ? "s" : string.Empty)}";
-                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você baniu {user.Nome} ({per.Nome}) {strBan}. Motivo: {motivo}");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Personagem {personagem} não existe!");
+                return;
             }
+
+            var user = context.Usuarios.FirstOrDefault(x => x.Codigo == per.Usuario);
+
+            var ban = new Entities.Banimento()
+            {
+                Data = DateTime.Now,
+                Expiracao = null,
+                Motivo = motivo,
+                Usuario = user.Codigo,
+                SocialClub = user.SocialClubRegistro,
+                UsuarioStaff = p.UsuarioBD.Codigo,
+            };
+
+            if (dias > 0)
+                ban.Expiracao = DateTime.Now.AddDays(dias);
+
+            context.Banimentos.Add(ban);
+
+            context.Punicoes.Add(new Entities.Punicao()
+            {
+                Data = DateTime.Now,
+                Duracao = dias,
+                Motivo = motivo,
+                Personagem = per.Codigo,
+                Tipo = (int)TipoPunicao.Ban,
+                UsuarioStaff = p.UsuarioBD.Codigo,
+            });
+            context.SaveChanges();
+
+            var strBan = dias == 0 ? "permanentemente" : $"por {dias} dia{(dias > 1 ? "s" : string.Empty)}";
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você baniu {user.Nome} ({per.Nome}) {strBan}. Motivo: {motivo}");
         }
 
         [Command("unban", "!{#febd0c}USO:~w~ /unban (usuario)")]
-        public void CMD_unban(Client player, int usuario)
+        public void CMD_unban(Player player, int usuario)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 2)
@@ -532,7 +562,7 @@ namespace InfiniteRoleplay.Commands
 
         #region Staff 3
         [Command("ck", "!{#febd0c}USO:~w~ /ck (ID ou nome) (motivo)", GreedyArg = true)]
-        public void CMD_ck(Client player, string idNome, string motivo)
+        public void CMD_ck(Player player, string idNome, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 3)
@@ -563,7 +593,7 @@ namespace InfiniteRoleplay.Commands
 
         #region Staff 1337
         [Command("gmx", "!{#febd0c}USO:~w~ /gmx")]
-        public void CMD_gmx(Client player)
+        public void CMD_gmx(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -580,7 +610,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("tempo", "!{#febd0c}USO:~w~ /tempo (tempo)")]
-        public void CMD_tempo(Client player, int tempo)
+        public void CMD_tempo(Player player, int tempo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -599,7 +629,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("proximo", "!{#febd0c}USO:~w~ /proximo")]
-        public void CMD_proximo(Client player)
+        public void CMD_proximo(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -652,7 +682,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("cblip", "!{#febd0c}USO:~w~ /cblip (tipo) (cor) (nome)", GreedyArg = true)]
-        public void CMD_cblip(Client player, int tipo, int cor, string nome)
+        public void CMD_cblip(Player player, int tipo, int cor, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -703,7 +733,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rblip", "!{#febd0c}USO:~w~ /rblip (código)")]
-        public void CMD_rblip(Client player, int codigo)
+        public void CMD_rblip(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -720,7 +750,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             using (var context = new RoleplayContext())
-                context.Database.ExecuteSqlCommand($"DELETE FROM Blips WHERE Codigo = {codigo}");
+                context.Database.ExecuteSqlRaw($"DELETE FROM Blips WHERE Codigo = {codigo}");
 
             blip.DeletarIdentificador();
 
@@ -730,7 +760,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("addwhite", "!{#febd0c}USO:~w~ /addwhite (SocialClub)")]
-        public void CMD_addwhite(Client player, string socialClub)
+        public void CMD_addwhite(Player player, string socialClub)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -761,7 +791,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("delwhite", "!{#febd0c}USO:~w~ /dellwhite (SocialClub)")]
-        public void CMD_delwhite(Client player, string socialClub)
+        public void CMD_delwhite(Player player, string socialClub)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -789,7 +819,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("cfac", "!{#febd0c}USO:~w~ /cfac (tipo) (nome)", GreedyArg = true)]
-        public void CMD_cfac(Client player, int tipo, string nome)
+        public void CMD_cfac(Player player, int tipo, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -830,7 +860,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("efacnome", "!{#febd0c}USO:~w~ /efacnome (código) (nome)", GreedyArg = true)]
-        public void CMD_efacnome(Client player, int codigo, string nome)
+        public void CMD_efacnome(Player player, int codigo, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -865,7 +895,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("efactipo", "!{#febd0c}USO:~w~ /efacnome (código) (tipo)")]
-        public void CMD_efactipo(Client player, int codigo, int tipo)
+        public void CMD_efactipo(Player player, int codigo, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -900,7 +930,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("efaccor", "!{#febd0c}USO:~w~ /efaccor (código) (cor)")]
-        public void CMD_efaccor(Client player, int codigo, string cor)
+        public void CMD_efaccor(Player player, int codigo, string cor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -935,7 +965,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("efacrankgestor", "!{#febd0c}USO:~w~ /efacrankgestor (código) (rank)")]
-        public void CMD_efacrankgestor(Client player, int codigo, int rank)
+        public void CMD_efacrankgestor(Player player, int codigo, int rank)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -970,7 +1000,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("efacranklider", "!{#febd0c}USO:~w~ /efacranklider (código) (rank)")]
-        public void CMD_efacranklider(Client player, int codigo, int rank)
+        public void CMD_efacranklider(Player player, int codigo, int rank)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1005,7 +1035,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rfac", "!{#febd0c}USO:~w~ /rfac (código)")]
-        public void CMD_rfac(Client player, int codigo)
+        public void CMD_rfac(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1029,8 +1059,8 @@ namespace InfiniteRoleplay.Commands
                     return;
                 }
 
-                context.Database.ExecuteSqlCommand($"DELETE FROM Faccoes WHERE Codigo = {codigo}");
-                context.Database.ExecuteSqlCommand($"DELETE FROM `Ranks` WHERE Faccao = {codigo}");
+                context.Database.ExecuteSqlRaw($"DELETE FROM Faccoes WHERE Codigo = {codigo}");
+                context.Database.ExecuteSqlRaw($"DELETE FROM `Ranks` WHERE Faccao = {codigo}");
             }
 
             Global.Faccoes.Remove(faccao);
@@ -1041,7 +1071,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("faccoes", "!{#febd0c}USO:~w~ /faccoes")]
-        public void CMD_faccoes(Client player)
+        public void CMD_faccoes(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1062,7 +1092,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("crank", "!{#febd0c}USO:~w~ /crank (facção) (salário) (nome)", GreedyArg = true)]
-        public void CMD_crank(Client player, int fac, int salario, string nome)
+        public void CMD_crank(Player player, int fac, int salario, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (!(p?.UsuarioBD?.Staff >= 1337 || (p.Faccao == fac && p.Rank >= p.FaccaoBD.RankLider)))
@@ -1111,7 +1141,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rrank", "!{#febd0c}USO:~w~ /rrank (facção) (código) (nome)")]
-        public void CMD_rrank(Client player, int fac, int rank)
+        public void CMD_rrank(Player player, int fac, int rank)
         {
             var p = Functions.ObterPersonagem(player);
             if (!(p?.UsuarioBD?.Staff >= 1337 || (p.Faccao == fac && p.Rank >= p.FaccaoBD.RankLider)))
@@ -1145,7 +1175,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("eranknome", "!{#febd0c}USO:~w~ /eranknome (facção) (código) (nome)", GreedyArg = true)]
-        public void CMD_eranknome(Client player, int fac, int rank, string nome)
+        public void CMD_eranknome(Player player, int fac, int rank, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (!(p?.UsuarioBD?.Staff >= 1337 || (p.Faccao == fac && p.Rank >= p.FaccaoBD.RankLider)))
@@ -1180,7 +1210,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("ranks", "!{#febd0c}USO:~w~ /rabks (facção)")]
-        public void CMD_ranks(Client player, int fac)
+        public void CMD_ranks(Player player, int fac)
         {
             var p = Functions.ObterPersonagem(player);
             if (!(p?.UsuarioBD?.Staff >= 1337 || (p.Faccao == fac && p.Rank >= p.FaccaoBD.RankLider)))
@@ -1209,7 +1239,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("setstaff", "!{#febd0c}USO:~w~ /setstaff (ID ou nome) (nível)")]
-        public void CMD_setstaff(Client player, string idNome, int staff)
+        public void CMD_setstaff(Player player, string idNome, int staff)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1229,7 +1259,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("lider", "!{#febd0c}USO:~w~ /lider (ID ou nome) (facção)")]
-        public void CMD_lider(Client player, string idNome, int fac)
+        public void CMD_lider(Player player, string idNome, int fac)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1265,7 +1295,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("parametros", "!{#febd0c}USO:~w~ /parametros")]
-        public void CMD_parametros(Client player)
+        public void CMD_parametros(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1279,7 +1309,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("cprop", "!{#febd0c}USO:~w~ /cprop (interior) (valor)")]
-        public void CMD_cprop(Client player, int interior, int valor)
+        public void CMD_cprop(Player player, int interior, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1329,7 +1359,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rprop", "!{#febd0c}USO:~w~ /rprop (código)")]
-        public void CMD_rprop(Client player, int codigo)
+        public void CMD_rprop(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1352,7 +1382,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             using (var context = new RoleplayContext())
-                context.Database.ExecuteSqlCommand($"DELETE FROM Propriedades WHERE Codigo = {codigo}");
+                context.Database.ExecuteSqlRaw($"DELETE FROM Propriedades WHERE Codigo = {codigo}");
 
             prop.DeletarIdentificador();
 
@@ -1362,7 +1392,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("epropvalor", "!{#febd0c}USO:~w~ /epropvalor (código) (valor)")]
-        public void CMD_epropvalor(Client player, int codigo, int valor)
+        public void CMD_epropvalor(Player player, int codigo, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1399,7 +1429,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("epropint", "!{#febd0c}USO:~w~ /epropint (código) (interior)")]
-        public void CMD_epropint(Client player, int codigo, int interior)
+        public void CMD_epropint(Player player, int codigo, int interior)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1440,7 +1470,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("eproppos", "!{#febd0c}USO:~w~ /eproppos (código)")]
-        public void CMD_eproppos(Client player, int codigo)
+        public void CMD_eproppos(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1474,7 +1504,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("irprop", "!{#febd0c}USO:~w~ /irprop (código)")]
-        public void CMD_irprop(Client player, int codigo)
+        public void CMD_irprop(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1497,7 +1527,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("irblip", "!{#febd0c}USO:~w~ /irblip (código)")]
-        public void CMD_irblip(Client player, int codigo)
+        public void CMD_irblip(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1520,7 +1550,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("cpreco", "!{#febd0c}USO:~w~ /cpreco (tipo) (valor) (nome)", GreedyArg = true)]
-        public void CMD_cpreco(Client player, int tipo, int valor, string nome)
+        public void CMD_cpreco(Player player, int tipo, int valor, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1586,7 +1616,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rpreco", "!{#febd0c}USO:~w~ /rpreco (tipo) (nome)")]
-        public void CMD_rpreco(Client player, int tipo, string nome)
+        public void CMD_rpreco(Player player, int tipo, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1614,7 +1644,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("cponto", "!{#febd0c}USO:~w~ /cponto (tipo)")]
-        public void CMD_cponto(Client player, int tipo)
+        public void CMD_cponto(Player player, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1651,7 +1681,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rponto", "!{#febd0c}USO:~w~ /rponto (código)")]
-        public void CMD_rponto(Client player, int codigo)
+        public void CMD_rponto(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1667,7 +1697,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
             using (var context = new RoleplayContext())
-                context.Database.ExecuteSqlCommand($"DELETE FROM Pontos WHERE Codigo = {codigo}");
+                context.Database.ExecuteSqlRaw($"DELETE FROM Pontos WHERE Codigo = {codigo}");
 
             ponto.DeletarIdentificador();
 
@@ -1677,7 +1707,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("irponto", "!{#febd0c}USO:~w~ /irponto (código)")]
-        public void CMD_irponto(Client player, int codigo)
+        public void CMD_irponto(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1700,7 +1730,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("eranksalario", "!{#febd0c}USO:~w~ /eranksalario (facção) (código) (salário)")]
-        public void CMD_eranksalario(Client player, int fac, int rank, int salario)
+        public void CMD_eranksalario(Player player, int fac, int rank, int salario)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1735,7 +1765,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("eblipinativo", "!{#febd0c}USO:~w~ /eblipinativo (código)")]
-        public void CMD_eblipinativo(Client player, int codigo)
+        public void CMD_eblipinativo(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1766,7 +1796,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("carm", "!{#febd0c}USO:~w~ /carm (facção)")]
-        public void CMD_carm(Client player, int faccao)
+        public void CMD_carm(Player player, int faccao)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1805,7 +1835,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rarm", "!{#febd0c}USO:~w~ /rarm (código)")]
-        public void CMD_rarm(Client player, int codigo)
+        public void CMD_rarm(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1823,8 +1853,8 @@ namespace InfiniteRoleplay.Commands
 
             using (var context = new RoleplayContext())
             {
-                context.Database.ExecuteSqlCommand($"DELETE FROM Armarios WHERE Codigo = {codigo}");
-                context.Database.ExecuteSqlCommand($"DELETE FROM ArmariosItens WHERE Codigo = {codigo}");
+                context.Database.ExecuteSqlRaw($"DELETE FROM Armarios WHERE Codigo = {codigo}");
+                context.Database.ExecuteSqlRaw($"DELETE FROM ArmariosItens WHERE Codigo = {codigo}");
             }
 
             armario.DeletarIdentificador();
@@ -1836,7 +1866,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("earmfac", "!{#febd0c}USO:~w~ /earmfac (código) (facção)")]
-        public void CMD_earmfac(Client player, int codigo, int faccao)
+        public void CMD_earmfac(Player player, int codigo, int faccao)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1872,7 +1902,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("earmpos", "!{#febd0c}USO:~w~ /earmpos (código)")]
-        public void CMD_earmpos(Client player, int codigo)
+        public void CMD_earmpos(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1906,7 +1936,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("irarm", "!{#febd0c}USO:~w~ /irarm (código)")]
-        public void CMD_irarm(Client player, int codigo)
+        public void CMD_irarm(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1929,7 +1959,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("carmi", "!{#febd0c}USO:~w~ /carmi (armário) (arma)")]
-        public void CMD_carmi(Client player, int armario, string arma)
+        public void CMD_carmi(Player player, int armario, string arma)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -1976,7 +2006,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rarmi", "!{#febd0c}USO:~w~ /rarmi (armário) (arma)")]
-        public void CMD_rarmi(Client player, int armario, string arma)
+        public void CMD_rarmi(Player player, int armario, string arma)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -2017,7 +2047,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("earmimun", "!{#febd0c}USO:~w~ /earmimun (armário) (arma) (munição)")]
-        public void CMD_earmimun(Client player, int armario, string arma, int municao)
+        public void CMD_earmimun(Player player, int armario, string arma, int municao)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -2059,7 +2089,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("earmirank", "!{#febd0c}USO:~w~ /earmirank (armário) (arma) (rank)")]
-        public void CMD_earmirank(Client player, int armario, string arma, int rank)
+        public void CMD_earmirank(Player player, int armario, string arma, int rank)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)
@@ -2102,7 +2132,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("earmiest", "!{#febd0c}USO:~w~ /earmiest (armário) (arma) (estoque)")]
-        public void CMD_earmiest(Client player, int armario, string arma, int estoque)
+        public void CMD_earmiest(Player player, int armario, string arma, int estoque)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.UsuarioBD?.Staff < 1337)

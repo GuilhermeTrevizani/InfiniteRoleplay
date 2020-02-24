@@ -1,8 +1,10 @@
-﻿namespace InfiniteRoleplay
+﻿using GTANetworkAPI;
+
+namespace InfiniteRoleplay
 {
     public class Constants
     {
-        public static GTANetworkAPI.Vector3 PosicaoPrisao { get; } = new GTANetworkAPI.Vector3(461.7921, -989.0697, 24.91488);
+        public static Vector3 PosicaoPrisao { get; } = new Vector3(461.7921, -989.0697, 24.91488);
 
         public enum AnimationFlags
         {

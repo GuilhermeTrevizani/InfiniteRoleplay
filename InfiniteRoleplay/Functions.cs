@@ -9,13 +9,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 
 namespace InfiniteRoleplay
 {
     public static class Functions
     {
-        public static void EnviarMensagem(Client player, TipoMensagem tipoMensagem, string mensagem)
+        public static void EnviarMensagem(Player player, TipoMensagem tipoMensagem, string mensagem)
         {
             var strTipo = string.Empty;
             if (tipoMensagem == TipoMensagem.Sucesso)
@@ -42,7 +41,7 @@ namespace InfiniteRoleplay
             return sb.ToString();
         }
 
-        public static void LogarPersonagem(Client player, Personagem p)
+        public static void LogarPersonagem(Player player, Personagem p)
         {
             p.Convites = new List<Models.Convite>();
             player.Name = $"{p.Nome} [{p.ID}]";
@@ -71,12 +70,12 @@ namespace InfiniteRoleplay
             NAPI.ClientEvent.TriggerClientEvent(player, "logarPersonagem");
         }
 
-        public static Personagem ObterPersonagem(Client player)
+        public static Personagem ObterPersonagem(Player player)
         {
             return Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player?.SocialClubName);
         }
 
-        public static Personagem ObterPersonagemPorIdNome(Client player, string idNome, bool isPodeProprioPlayer = true)
+        public static Personagem ObterPersonagemPorIdNome(Player player, string idNome, bool isPodeProprioPlayer = true)
         {
             int.TryParse(idNome, out int id);
             var p = Global.PersonagensOnline.FirstOrDefault(x => x.ID == id);
@@ -199,7 +198,7 @@ namespace InfiniteRoleplay
                 personagem.IPUltimoAcesso = p.Player.Address;
                 context.Personagens.Update(personagem);
 
-                context.Database.ExecuteSqlCommand($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
+                context.Database.ExecuteSqlRaw($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
                 context.PersonagensContatos.AddRange(p.Contatos);
 
                 var usuario = context.Usuarios.FirstOrDefault(x => x.Codigo == p.UsuarioBD.Codigo);
@@ -214,7 +213,7 @@ namespace InfiniteRoleplay
             }
         }
 
-        public static void SendMessageToNearbyPlayers(Client player, string message, TipoMensagemJogo type, float range, bool excludePlayer = false)
+        public static void SendMessageToNearbyPlayers(Player player, string message, TipoMensagemJogo type, float range, bool excludePlayer = false)
         {
             var p = Global.PersonagensOnline.FirstOrDefault(x => x.UsuarioBD.SocialClubRegistro == player.SocialClubName);
             var distanceGap = range / 5;
@@ -282,7 +281,7 @@ namespace InfiniteRoleplay
             return "!{#6E6E6E}";
         }
 
-        public static void MostrarStats(Client player, Personagem p)
+        public static void MostrarStats(Player player, Personagem p)
         {
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Registro: {p.DataRegistro.ToString()}");
@@ -291,7 +290,7 @@ namespace InfiniteRoleplay
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor} | Tempo de Prisão: {p.TempoPrisao}");
 
             if (p.UsuarioBD.Staff > 0)
-                EnviarMensagem(player, TipoMensagem.Nenhum, $"Staff: {p.UsuarioBD.NomeStaff} [{p.UsuarioBD.Staff}] | Tempo Serviço Administrativo (minutos): {p.UsuarioBD.TempoTrabalhoAdministrativo}");
+                EnviarMensagem(player, TipoMensagem.Nenhum, $"Staff: {p.UsuarioBD.NomeStaff} [{p.UsuarioBD.Staff}] | Tempo Serviço Administrativo (minutos): {p.UsuarioBD.TempoTrabalhoAdministrativo} | SOSs Aceitos: {p.UsuarioBD.QuantidadeSOSAceitos}");
 
             if (p.CanalRadio > -1)
                 EnviarMensagem(player, TipoMensagem.Nenhum, $"Canal Rádio 1: {p.CanalRadio} | Canal Rádio 2: {p.CanalRadio2} | Canal Rádio 3: {p.CanalRadio3}");
@@ -307,7 +306,7 @@ namespace InfiniteRoleplay
             }
         }
 
-        public static bool VerificarBanimento(Client player, Banimento ban)
+        public static bool VerificarBanimento(Player player, Banimento ban)
         {
             if (ban == null)
                 return true;
@@ -559,7 +558,7 @@ namespace InfiniteRoleplay
                 EnviarMensagem(pl.Player, TipoMensagem.Nenhum, (isCorFaccao ? "!{#" + pl.FaccaoBD.Cor + "}" : string.Empty) + mensagem);
         }
 
-        public static void ComprarVeiculo(Client player, int tipo, string erro)
+        public static void ComprarVeiculo(Player player, int tipo, string erro)
         {
             if (tipo == 0)
             {
@@ -592,7 +591,7 @@ namespace InfiniteRoleplay
             return $"{chars[random.Next(25)]}{chars[random.Next(25)]}{random.Next(0, 99999).ToString().PadLeft(5, '0')}{chars[random.Next(25)]}";
         }
 
-        public static void AbrirCelular(Client player, string msg, int tipoMsg)
+        public static void AbrirCelular(Player player, string msg, int tipoMsg)
         {
             var p = ObterPersonagem(player);
             if ((p?.Celular ?? 0) == 0)
@@ -603,14 +602,14 @@ namespace InfiniteRoleplay
 
             if (p.TempoPrisao > 0 || p.Algemado)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não pode usar o celular agora!");
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não pode usar o celular agora!");
                 return;
             }
 
             NAPI.ClientEvent.TriggerClientEvent(player, "abrirCelular", p.Contatos.OrderBy(x => x.Nome).ToList(), msg, tipoMsg);
         }
 
-        public static void VisualizarMultas(Client player, string erro)
+        public static void VisualizarMultas(Player player, string erro)
         {
             var p = ObterPersonagem(player);
             if (p == null)
@@ -773,7 +772,7 @@ namespace InfiniteRoleplay
             return new List<string>();
         }
 
-        public static bool ChecarAnimacoes(Client player, bool isPararAnim = false)
+        public static bool ChecarAnimacoes(Player player, bool isPararAnim = false)
         {
             if (player.IsInVehicle)
             {

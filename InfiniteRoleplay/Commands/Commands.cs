@@ -10,7 +10,7 @@ namespace InfiniteRoleplay.Commands
     public class Commands : Script
     {
         [Command("ajuda", "!{#febd0c}USO:~w~ /ajuda")]
-        public void CMD_ajuda(Client player)
+        public void CMD_ajuda(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -259,7 +259,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("stats", "!{#febd0c}USO:~w~ /stats")]
-        public void CMD_stats(Client player)
+        public void CMD_stats(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -272,7 +272,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("id", "!{#febd0c}USO:~w~ /id (ID ou nome)", GreedyArg = true)]
-        public void CMD_id(Client player, string idNome)
+        public void CMD_id(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -295,7 +295,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("aceitar", "!{#febd0c}USO:~w~ /aceitar (tipo)", Alias = "ac")]
-        public void CMD_aceitar(Client player, int tipo)
+        public void CMD_aceitar(Player player, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -457,7 +457,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("recusar", "!{#febd0c}USO:~w~ /recusar (tipo)", Alias = "rc")]
-        public void CMD_recusar(Client player, int tipo)
+        public void CMD_recusar(Player player, int tipo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -510,7 +510,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("pagar", "!{#febd0c}USO:~w~ /pagar (ID ou nome) (valor)")]
-        public void CMD_pagar(Client player, string idNome, int valor)
+        public void CMD_pagar(Player player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -552,7 +552,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("revistar", "!{#febd0c}USO:~w~ /revistar (ID ou nome)")]
-        public void CMD_revistar(Client player, string idNome)
+        public void CMD_revistar(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -584,10 +584,10 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("multas", "!{#febd0c}USO:~w~ /multas")]
-        public void CMD_multas(Client player) => Functions.VisualizarMultas(player, string.Empty);
+        public void CMD_multas(Player player) => Functions.VisualizarMultas(player, string.Empty);
 
         [Command("transferir", "!{#febd0c}USO:~w~ /transferir (ID ou nome) (valor)")]
-        public void CMD_transferir(Client player, string idNome, int valor)
+        public void CMD_transferir(Player player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -633,7 +633,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("sacar", "!{#febd0c}USO:~w~ /sacar (valor)")]
-        public void CMD_sacar(Client player, int valor)
+        public void CMD_sacar(Player player, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -669,7 +669,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("depositar", "!{#febd0c}USO:~w~ /depositar (valor)")]
-        public void CMD_depositar(Client player, int valor)
+        public void CMD_depositar(Player player, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -705,7 +705,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("comprar", "!{#febd0c}USO:~w~ /comprar")]
-        public void CMD_comprar(Client player)
+        public void CMD_comprar(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -728,7 +728,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("skin", "!{#febd0c}USO:~w~ /skin (skin)")]
-        public void CMD_skin(Client player, string skin)
+        public void CMD_skin(Player player, string skin)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -770,7 +770,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("emtrabalho", "!{#febd0c}USO:~w~ /emtrabalho")]
-        public void CMD_emtrabalho(Client player)
+        public void CMD_emtrabalho(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -784,7 +784,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("sairemprego", "!{#febd0c}USO:~w~ /sairemprego")]
-        public void CMD_sairemprego(Client player)
+        public void CMD_sairemprego(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p.Emprego == 0)
@@ -798,7 +798,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("emprego", "!{#febd0c}USO:~w~ /emprego")]
-        public void CMD_emprego(Client player)
+        public void CMD_emprego(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p.Emprego > 0)
@@ -831,7 +831,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("staff", "!{#febd0c}USO:~w~ /staff")]
-        public void CMD_staff(Client player)
+        public void CMD_staff(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -856,18 +856,25 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("sos", "!{#febd0c}USO:~w~ /sos (mensagem)", GreedyArg = true)]
-        public void CMD_sos(Client player, string mensagem)
+        public void CMD_sos(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.UsuarioBD?.Staff > 0)
+            /*if (p?.UsuarioBD?.Staff > 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
                 return;
-            }
+            }*/
 
             if (Global.SOSs.Any(x => x.IDPersonagem == p.ID))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você já possui um SOS pendente de resposta!");
+                return;
+            }
+
+            var players = Global.PersonagensOnline.Where(x => x.IsEmTrabalhoAdministrativo && x.UsuarioBD?.Staff > 0).ToList();
+            if (players.Count == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Não há administradores em serviço!");
                 return;
             }
 
@@ -879,15 +886,20 @@ namespace InfiniteRoleplay.Commands
             };
 
             using (var context = new RoleplayContext())
+            {
                 context.SOSs.Add(sos);
+                context.SaveChanges();
+            }
 
             Global.SOSs.Add(sos);
 
-            foreach (var pl in Global.PersonagensOnline.Where(x => x.IsEmTrabalhoAdministrativo && x.UsuarioBD?.Staff > 0))
+            foreach (var pl in players)
             {
                 Functions.EnviarMensagem(pl.Player, TipoMensagem.Titulo, $"SOS de {p.Nome} [{p.ID}] ({p.UsuarioBD.Nome})");
                 Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, mensagem);
             }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, "SOS enviado para os administradores em serviço!");
         }
     }
 }

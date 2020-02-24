@@ -5,7 +5,7 @@ namespace InfiniteRoleplay.Commands
     public class ChatOOC : Script
     {
         [Command("b", "!{#febd0c}USO:~w~ /b (mensagem)", GreedyArg = true)]
-        public void CMD_b(Client player, string mensagem)
+        public void CMD_b(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -18,7 +18,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("pm", "!{#febd0c}USO:~w~ /pm (ID ou nome) (mensagem)", GreedyArg = true)]
-        public void CMD_pm(Client player, string idNome, string mensagem)
+        public void CMD_pm(Player player, string idNome, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)

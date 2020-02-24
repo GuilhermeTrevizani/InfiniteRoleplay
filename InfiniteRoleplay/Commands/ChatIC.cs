@@ -5,7 +5,7 @@ namespace InfiniteRoleplay.Commands
     public class ChatIC : Script
     {
         [Command("me", "!{#febd0c}USO:~w~ /me (mensagem)", GreedyArg = true)]
-        public void CMD_me(Client player, string mensagem)
+        public void CMD_me(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -18,7 +18,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("do", "!{#febd0c}USO:~w~ /do (mensagem)", GreedyArg = true)]
-        public void CMD_do(Client player, string mensagem)
+        public void CMD_do(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -31,7 +31,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("g", "!{#febd0c}USO:~w~ /g (mensagem)", GreedyArg = true)]
-        public void CMD_g(Client player, string mensagem)
+        public void CMD_g(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -44,7 +44,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("baixo", "!{#febd0c}USO:~w~ /baixo (mensagem)", GreedyArg = true)]
-        public void CMD_baixo(Client player, string mensagem)
+        public void CMD_baixo(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -57,7 +57,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("s", "!{#febd0c}USO:~w~ /s (ID ou nome) (mensagem)", GreedyArg = true)]
-        public void CMD_s(Client player, string idNome, string mensagem)
+        public void CMD_s(Player player, string idNome, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)

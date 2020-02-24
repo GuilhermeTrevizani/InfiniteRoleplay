@@ -11,7 +11,7 @@ namespace InfiniteRoleplay
 {
     public class Main : Script
     {
-        Timer timerPrincipal { get; set; }
+        Timer TimerPrincipal { get; set; }
 
         [ServerEvent(Event.ResourceStart)]
         public void ResourceStart()
@@ -38,7 +38,7 @@ namespace InfiniteRoleplay
 
             using (var context = new RoleplayContext())
             {
-                context.Database.ExecuteSqlCommand("UPDATE Personagens SET Online=0");
+                context.Database.ExecuteSqlRaw("UPDATE Personagens SET Online=0");
                 NAPI.Util.ConsoleOutput("Status online dos personagens limpo");
 
                 Global.Parametros = context.Parametros.FirstOrDefault();
@@ -95,9 +95,9 @@ namespace InfiniteRoleplay
             NAPI.TextLabel.CreateTextLabel("Prisão", Constants.PosicaoPrisao, 5, 2, 0, new Color(254, 189, 12));
             NAPI.TextLabel.CreateTextLabel("Use /prender", new Vector3(Constants.PosicaoPrisao.X, Constants.PosicaoPrisao.Y, Constants.PosicaoPrisao.Z - 0.1), 5, 1, 0, new Color(255, 255, 255));
 
-            timerPrincipal = new Timer(60000);
-            timerPrincipal.Elapsed += TimerPrincipal_Elapsed;
-            timerPrincipal.Start();
+            TimerPrincipal = new Timer(60000);
+            TimerPrincipal.Elapsed += TimerPrincipal_Elapsed;
+            TimerPrincipal.Start();
         }
 
         private void TimerPrincipal_Elapsed(object sender, ElapsedEventArgs e)
@@ -111,13 +111,13 @@ namespace InfiniteRoleplay
         [ServerEvent(Event.ResourceStop)]
         public void ResourceStop()
         {
-            timerPrincipal?.Stop();
+            TimerPrincipal?.Stop();
             foreach (var p in Global.PersonagensOnline.Where(x => x.Codigo > 0))
                 Functions.SalvarPersonagem(p);
         }
 
         [ServerEvent(Event.PlayerConnected)]
-        public void OnPlayerConnected(Client player)
+        public void OnPlayerConnected(Player player)
         {
             player.Name = player.SocialClubName;
             player.Dimension = (uint)new Random().Next(1, 1000);
@@ -139,7 +139,7 @@ namespace InfiniteRoleplay
         }
 
         [ServerEvent(Event.PlayerDisconnected)]
-        public void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
+        public void OnPlayerDisconnected(Player player, DisconnectionType type, string reason)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Codigo > 0)
@@ -152,7 +152,7 @@ namespace InfiniteRoleplay
         }
 
         [ServerEvent(Event.PlayerDeath)]
-        public void OnPlayerDeath(Client player, Client killer, uint reason)
+        public void OnPlayerDeath(Player player, Player killer, uint reason)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -185,17 +185,17 @@ namespace InfiniteRoleplay
         }
 
         [ServerEvent(Event.ChatMessage)]
-        public void OnChatMessage(Client player, string message) => Functions.EnviarMensagemChat(Functions.ObterPersonagem(player), message, TipoMensagemJogo.ChatICNormal);
+        public void OnChatMessage(Player player, string message) => Functions.EnviarMensagemChat(Functions.ObterPersonagem(player), message, TipoMensagemJogo.ChatICNormal);
 
         [ServerEvent(Event.PlayerEnterVehicle)]
-        public void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seatID)
+        public void OnPlayerEnterVehicle(Player player, Vehicle vehicle, sbyte seatID)
         {
             var veh = Global.Veiculos.FirstOrDefault(x => x.Vehicle == vehicle);
             vehicle.EngineStatus = veh.Motor;
         }
 
         [ServerEvent(Event.PlayerExitVehicle)]
-        public void OnPlayerExitVehicle(Client player, Vehicle vehicle)
+        public void OnPlayerExitVehicle(Player player, Vehicle vehicle)
         {
             var veh = Global.Veiculos.FirstOrDefault(x => x.Vehicle == vehicle);
             vehicle.EngineStatus = veh.Motor;

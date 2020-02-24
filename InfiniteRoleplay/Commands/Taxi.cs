@@ -6,7 +6,7 @@ namespace InfiniteRoleplay.Commands
     public class Taxi : Script
     {
         [Command("taxiduty", "!{#febd0c}USO:~w~ /taxiduty")]
-        public void CMD_taxiduty(Client player)
+        public void CMD_taxiduty(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Emprego != (int)TipoEmprego.Taxista)
@@ -20,7 +20,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("taxicha", "!{#febd0c}USO:~w~ /taxicha")]
-        public void CMD_taxicha(Client player)
+        public void CMD_taxicha(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Emprego != (int)TipoEmprego.Taxista || !p.IsEmTrabalho)
@@ -48,7 +48,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("taxiac", "!{#febd0c}USO:~w~ /taxiac (chamada)")]
-        public void CMD_taxiac(Client player, int chamada)
+        public void CMD_taxiac(Player player, int chamada)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Emprego != (int)TipoEmprego.Taxista || !p.IsEmTrabalho)

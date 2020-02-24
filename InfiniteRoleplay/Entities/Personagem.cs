@@ -53,7 +53,7 @@ namespace InfiniteRoleplay.Entities
         public Usuario UsuarioBD { get; set; }
 
         [NotMapped]
-        public Client Player { get => NAPI.Pools.GetAllPlayers().FirstOrDefault(x => x.SocialClubName == UsuarioBD?.SocialClubRegistro); }
+        public Player Player { get => NAPI.Pools.GetAllPlayers().FirstOrDefault(x => x.SocialClubName == UsuarioBD?.SocialClubRegistro); }
 
         [NotMapped]
         public DateTime DataUltimaVerificacao { get; set; }

@@ -8,7 +8,7 @@ namespace InfiniteRoleplay.Commands
     public class Faction : Script
     {
         [Command("f", "!{#febd0c}USO:~w~ /f (mensagem)", GreedyArg = true)]
-        public void CMD_f(Client player, string mensagem)
+        public void CMD_f(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0)
@@ -28,7 +28,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("membros", "!{#febd0c}USO:~w~ /membros")]
-        public void CMD_membros(Client player)
+        public void CMD_membros(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0)
@@ -44,7 +44,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("blockf", "!{#febd0c}USO:~w~ /blockf")]
-        public void CMD_blockf(Client player)
+        public void CMD_blockf(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0 || p?.Rank < p?.FaccaoBD?.RankGestor)
@@ -58,7 +58,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("convidar", "!{#febd0c}USO:~w~ /convidar (ID ou nome)")]
-        public void CMD_convidar(Client player, string idNome)
+        public void CMD_convidar(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0 || p?.Rank < p?.FaccaoBD?.RankGestor)
@@ -94,7 +94,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("rank", "!{#febd0c}USO:~w~ /rank (ID ou nome) (rank)")]
-        public void CMD_rank(Client player, string idNome, int rank)
+        public void CMD_rank(Player player, string idNome, int rank)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0 || p?.Rank < p?.FaccaoBD?.RankGestor)
@@ -140,7 +140,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("demitir", "!{#febd0c}USO:~w~ /demitir (ID ou nome)")]
-        public void CMD_demitir(Client player, string idNome)
+        public void CMD_demitir(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0 || p?.Rank < p?.FaccaoBD?.RankGestor)
@@ -174,7 +174,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("m", "!{#febd0c}USO:~w~ /m (mensagem)", GreedyArg = true)]
-        public void CMD_m(Client player, string mensagem)
+        public void CMD_m(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial)
@@ -187,7 +187,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("duty", "!{#febd0c}USO:~w~ /duty")]
-        public void CMD_duty(Client player)
+        public void CMD_duty(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial && p?.FaccaoBD?.Tipo != (int)TipoFaccao.Medica)
@@ -202,7 +202,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("sairfaccao", "!{#febd0c}USO:~w~ /sairfaccao")]
-        public void CMD_sairfaccao(Client player)
+        public void CMD_sairfaccao(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0)
@@ -217,7 +217,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("multar", "!{#febd0c}USO:~w~ /multar (ID ou nome) (valor) (motivo)", GreedyArg = true)]
-        public void CMD_multar(Client player, string idNome, int valor, string motivo)
+        public void CMD_multar(Player player, string idNome, int valor, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
@@ -260,7 +260,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("multaroff", "!{#febd0c}USO:~w~ /multar (nome completo) (valor) (motivo)", GreedyArg = true)]
-        public void CMD_multaroff(Client player, string nomeCompleto, int valor, string motivo)
+        public void CMD_multaroff(Player player, string nomeCompleto, int valor, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
@@ -306,7 +306,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("prender", "!{#febd0c}USO:~w~ /prender (ID ou nome) (cela [1-3]) (minutos)")]
-        public void CMD_prender(Client player, string idNome, int cela, int minutos)
+        public void CMD_prender(Player player, string idNome, int cela, int minutos)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
@@ -379,7 +379,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("algemar", "!{#febd0c}USO:~w~ /agelmar (ID ou nome)")]
-        public void CMD_algemar(Client player, string idNome)
+        public void CMD_algemar(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
@@ -418,7 +418,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("gov", "!{#febd0c}USO:~w~ /gov (mensagem)", GreedyArg = true)]
-        public void CMD_gov(Client player, string mensagem)
+        public void CMD_gov(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0 || p?.Rank < p?.FaccaoBD?.RankGestor)

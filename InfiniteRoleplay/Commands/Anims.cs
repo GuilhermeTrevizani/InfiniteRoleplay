@@ -5,10 +5,10 @@ namespace InfiniteRoleplay.Commands
     public class Anims : Script
     {
         [Command("stopanim", "!{#febd0c}USO:~w~ /stopanim", Alias = "sa")]
-        public void CMD_stopanim(Client player) => Functions.ChecarAnimacoes(player, true);
+        public void CMD_stopanim(Player player) => Functions.ChecarAnimacoes(player, true);
 
         [Command("handsup", "!{#febd0c}USO:~w~ /hs (tipo [1-13])", Alias = "hs")]
-        public void CMD_hs(Client player, int tipo)
+        public void CMD_hs(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -61,7 +61,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("crossarms", "!{#febd0c}USO:~w~ /crossarms (tipo [1-2])")]
-        public void CMD_crossarms(Client player, int tipo)
+        public void CMD_crossarms(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -81,7 +81,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("smoke", "!{#febd0c}USO:~w~ /smoke (tipo [1-3])")]
-        public void CMD_smoke(Client player, int tipo)
+        public void CMD_smoke(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -104,7 +104,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("lean", "!{#febd0c}USO:~w~ /lean (tipo [1-7])")]
-        public void CMD_lean(Client player, int tipo)
+        public void CMD_lean(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -139,7 +139,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("police", "!{#febd0c}USO:~w~ /police (tipo [1-6])")]
-        public void CMD_police(Client player, int tipo)
+        public void CMD_police(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -171,7 +171,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("incar", "!{#febd0c}USO:~w~ /incar (tipo [1-3])")]
-        public void CMD_incar(Client player, int tipo)
+        public void CMD_incar(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -194,7 +194,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("pushups", "!{#febd0c}USO:~w~ /pushups (tipo [1-4])")]
-        public void CMD_pushups(Client player, int tipo)
+        public void CMD_pushups(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -220,7 +220,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("situps", "!{#febd0c}USO:~w~ /situps (tipo [1-4])")]
-        public void CMD_situps(Client player, int tipo)
+        public void CMD_situps(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -246,7 +246,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("blunt", "!{#febd0c}USO:~w~ /blunt (tipo [1-2])")]
-        public void CMD_blunt(Client player, int tipo)
+        public void CMD_blunt(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -266,7 +266,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("afishing", "!{#febd0c}USO:~w~ /afishing (tipo [1-3])")]
-        public void CMD_afishing(Client player, int tipo)
+        public void CMD_afishing(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -289,7 +289,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("acop", "!{#febd0c}USO:~w~ /acop")]
-        public void CMD_acop(Client player)
+        public void CMD_acop(Player player)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -298,7 +298,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("idle", "!{#febd0c}USO:~w~ /idle (tipo [1-3])")]
-        public void CMD_idle(Client player, int tipo)
+        public void CMD_idle(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -321,7 +321,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("barra", "!{#febd0c}USO:~w~ /barra (tipo [1-3])")]
-        public void CMD_barra(Client player, int tipo)
+        public void CMD_barra(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -344,7 +344,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("kneel", "!{#febd0c}USO:~w~ /kneel")]
-        public void CMD_kneel(Client player)
+        public void CMD_kneel(Player player)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -353,7 +353,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("revistarc", "!{#febd0c}USO:~w~ /revistarc")]
-        public void CMD_revistarc(Client player)
+        public void CMD_revistarc(Player player)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -362,7 +362,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("ajoelhar", "!{#febd0c}USO:~w~ /ajoelhar (tipo [1-4])")]
-        public void CMD_ajoelhar(Client player, int tipo)
+        public void CMD_ajoelhar(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -388,7 +388,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("drink", "!{#febd0c}USO:~w~ /drink (tipo [1-3])")]
-        public void CMD_drink(Client player, int tipo)
+        public void CMD_drink(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -411,7 +411,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("morto", "!{#febd0c}USO:~w~ /morto (tipo [1-2])")]
-        public void CMD_morto(Client player, int tipo)
+        public void CMD_morto(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -431,7 +431,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("gsign", "!{#febd0c}USO:~w~ /gsign (tipo [1-2])")]
-        public void CMD_gsign(Client player, int tipo)
+        public void CMD_gsign(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -451,7 +451,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("hurry", "!{#febd0c}USO:~w~ /hurry (tipo [1-2])")]
-        public void CMD_hurry(Client player, int tipo)
+        public void CMD_hurry(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -471,7 +471,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("cair", "!{#febd0c}USO:~w~ /cair (tipo [1-2])")]
-        public void CMD_cair(Client player, int tipo)
+        public void CMD_cair(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -491,7 +491,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("wsup", "!{#febd0c}USO:~w~ /wsup (tipo [1-2])")]
-        public void CMD_wsup(Client player, int tipo)
+        public void CMD_wsup(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -511,7 +511,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("render", "!{#febd0c}USO:~w~ /render (tipo [1-2])")]
-        public void CMD_render(Client player, int tipo)
+        public void CMD_render(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -531,7 +531,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("mirar", "!{#febd0c}USO:~w~ /mirar (tipo [1-2])")]
-        public void CMD_mirar(Client player, int tipo)
+        public void CMD_mirar(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -551,7 +551,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("sentar", "!{#febd0c}USO:~w~ /sentar (tipo [1-8])")]
-        public void CMD_sentar(Client player, int tipo)
+        public void CMD_sentar(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -589,7 +589,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("dormir", "!{#febd0c}USO:~w~ /dormir (tipo [1-2])")]
-        public void CMD_dormir(Client player, int tipo)
+        public void CMD_dormir(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -609,7 +609,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("pixar", "!{#febd0c}USO:~w~ /pixar (tipo [1-2])")]
-        public void CMD_pixar(Client player, int tipo)
+        public void CMD_pixar(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -629,7 +629,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("sexo", "!{#febd0c}USO:~w~ /sexo (tipo [1-5])")]
-        public void CMD_sexo(Client player, int tipo)
+        public void CMD_sexo(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -658,7 +658,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("jogado", "!{#febd0c}USO:~w~ /jogado (tipo [1-3])")]
-        public void CMD_jogado(Client player, int tipo)
+        public void CMD_jogado(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -681,7 +681,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("reparando", "!{#febd0c}USO:~w~ /reparando (tipo [1-2])")]
-        public void CMD_reparando(Client player, int tipo)
+        public void CMD_reparando(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -701,7 +701,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("luto", "!{#febd0c}USO:~w~ /luto (tipo [1-2])")]
-        public void CMD_luto(Client player, int tipo)
+        public void CMD_luto(Player player, int tipo)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -721,7 +721,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("bar", "!{#febd0c}USO:~w~ /bar")]
-        public void CMD_bar(Client player)
+        public void CMD_bar(Player player)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -730,7 +730,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("necessidades", "!{#febd0c}USO:~w~ /necessidades")]
-        public void CMD_necessidades(Client player)
+        public void CMD_necessidades(Player player)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -739,7 +739,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("meth", "!{#febd0c}USO:~w~ /meth")]
-        public void CMD_meth(Client player)
+        public void CMD_meth(Player player)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;
@@ -748,7 +748,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("mijar", "!{#febd0c}USO:~w~ /mijar")]
-        public void CMD_mijar(Client player)
+        public void CMD_mijar(Player player)
         {
             if (!Functions.ChecarAnimacoes(player))
                 return;

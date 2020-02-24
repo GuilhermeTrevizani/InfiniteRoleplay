@@ -9,7 +9,7 @@ namespace InfiniteRoleplay
     public class RemoteEvents : Script
     {
         [RemoteEvent("playersOnline")]
-        public void EVENT_playersOnline(Client player)
+        public void EVENT_playersOnline(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -20,7 +20,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("registrarUsuario")]
-        public void EVENT_registrarUsuario(Client player, string usuario, string email, string senha, string senha2)
+        public void EVENT_registrarUsuario(Player player, string usuario, string email, string senha, string senha2)
         {
             var p = Functions.ObterPersonagem(player);
             if (p != null)
@@ -90,7 +90,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("entrarUsuario")]
-        public void EVENT_entrarUsuario(Client player, string usuario, string senha)
+        public void EVENT_entrarUsuario(Player player, string usuario, string senha)
         {
             var p = Functions.ObterPersonagem(player);
             if (p != null)
@@ -132,7 +132,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("criarPersonagem")]
-        public void EVENT_criarPersonagem(Client player, string nome, string sobrenome, string sexo, string dataNascimento, string skin)
+        public void EVENT_criarPersonagem(Player player, string nome, string sobrenome, string sexo, string dataNascimento, string skin)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -253,7 +253,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("selecionarPersonagem")]
-        public void EVENT_selecionarPersonagem(Client player, int id)
+        public void EVENT_selecionarPersonagem(Player player, int id)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null || p?.ID > 0)
@@ -285,7 +285,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("voltarSelecionarPersonagem")]
-        public void EVENT_voltarSelecionarPersonagem(Client player)
+        public void EVENT_voltarSelecionarPersonagem(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null || p?.ID > 0)
@@ -305,7 +305,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("comprarVeiculo")]
-        public void EVENT_comprarVeiculo(Client player, int tipo, string veiculo, int r1, int g1, int b1, int r2, int g2, int b2)
+        public void EVENT_comprarVeiculo(Player player, int tipo, string veiculo, int r1, int g1, int b1, int r2, int g2, int b2)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -366,7 +366,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("gravarContato")]
-        public void EVENT_gravarContato(Client player, string nome, int celular)
+        public void EVENT_gravarContato(Player player, string nome, int celular)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -403,7 +403,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("excluirContato")]
-        public void EVENT_excluirContato(Client player, int celular)
+        public void EVENT_excluirContato(Player player, int celular)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -414,7 +414,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("pagarMulta")]
-        public void EVENT_pagarMulta(Client player, int codigo)
+        public void EVENT_pagarMulta(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -442,7 +442,7 @@ namespace InfiniteRoleplay
         }
 
         [RemoteEvent("comprarConveniencia")]
-        public void EVENT_comprarConveniencia(Client player, string nome)
+        public void EVENT_comprarConveniencia(Player player, string nome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)

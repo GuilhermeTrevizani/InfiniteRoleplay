@@ -7,7 +7,7 @@ namespace InfiniteRoleplay.Commands
     public class Cellphone : Script
     {
         [Command("sms", "!{#febd0c}USO:~w~ /sms (número ou nome do contato) (mensagem)", GreedyArg = true)]
-        public void CMD_sms(Client player, string numeroNomeContato, string mensagem)
+        public void CMD_sms(Player player, string numeroNomeContato, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
             if ((p?.Celular ?? 0) == 0)
@@ -46,7 +46,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("ligar", "!{#febd0c}USO:~w~ /ligar (número ou nome do contato)")]
-        public void CMD_ligar(Client player, string numeroNomeContato)
+        public void CMD_ligar(Player player, string numeroNomeContato)
         {
             var p = Functions.ObterPersonagem(player);
             if ((p?.Celular ?? 0) == 0)
@@ -158,7 +158,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("desligar", "!{#febd0c}USO:~w~ /desligar", Alias = "des")]
-        public void CMD_desligar(Client player)
+        public void CMD_desligar(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if ((p?.Celular ?? 0) == 0)
@@ -185,7 +185,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("atender", "!{#febd0c}USO:~w~ /atender")]
-        public void CMD_atender(Client player)
+        public void CMD_atender(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if ((p?.Celular ?? 0) == 0)
@@ -215,10 +215,10 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("cel", "!{#febd0c}USO:~w~ /cel")]
-        public void CMD_cel(Client player) => Functions.AbrirCelular(player, string.Empty, 0);
+        public void CMD_cel(Player player) => Functions.AbrirCelular(player, string.Empty, 0);
 
         [Command("gps", "!{#febd0c}USO:~w~ /gps (propriedade)")]
-        public void CMD_gps(Client player, int propriedade)
+        public void CMD_gps(Player player, int propriedade)
         {
             var p = Functions.ObterPersonagem(player);
             if ((p?.Celular ?? 0) == 0)

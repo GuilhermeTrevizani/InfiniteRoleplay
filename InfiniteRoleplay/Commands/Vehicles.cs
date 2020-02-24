@@ -7,10 +7,10 @@ namespace InfiniteRoleplay.Commands
     public class Vehicles : Script
     {
         [Command("vcomprar", "!{#febd0c}USO:~w~ /vcomprar")]
-        public void CMD_vcomprar(Client player) => Functions.ComprarVeiculo(player, 0, string.Empty);
+        public void CMD_vcomprar(Player player) => Functions.ComprarVeiculo(player, 0, string.Empty);
 
         [Command("motor", "!{#febd0c}USO:~w~ /motor")]
-        public void CMD_motor(Client player)
+        public void CMD_motor(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -38,7 +38,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("vtrancar", "!{#febd0c}USO:~w~ /vtrancar")]
-        public void CMD_vtrancar(Client player)
+        public void CMD_vtrancar(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -63,7 +63,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("vcomprarvaga", "!{#febd0c}USO:~w~ /vcomprarvaga")]
-        public void CMD_vcomprarvaga(Client player)
+        public void CMD_vcomprarvaga(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -111,7 +111,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("vestacionar", "!{#febd0c}USO:~w~ /vestacionar")]
-        public void CMD_vestacionar(Client player)
+        public void CMD_vestacionar(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -152,7 +152,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("vspawn", "!{#febd0c}USO:~w~ /vspawn (código do veículo)")]
-        public void CMD_vspawn(Client player, int codigo)
+        public void CMD_vspawn(Player player, int codigo)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -183,7 +183,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("vlista", "!{#febd0c}USO:~w~ /vlista")]
-        public void CMD_vlista(Client player)
+        public void CMD_vlista(Player player)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
@@ -208,7 +208,7 @@ namespace InfiniteRoleplay.Commands
         }
 
         [Command("vvender", "!{#febd0c}USO:~w~ /vvender (ID ou nome) (valor)")]
-        public void CMD_vvender(Client player, string idNome, int valor)
+        public void CMD_vvender(Player player, string idNome, int valor)
         {
             var p = Functions.ObterPersonagem(player);
             if (p == null)
