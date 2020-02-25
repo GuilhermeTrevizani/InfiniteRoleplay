@@ -18,9 +18,9 @@ namespace InfiniteRoleplay
         {
             var strTipo = string.Empty;
             if (tipoMensagem == TipoMensagem.Sucesso)
-                strTipo = "!{#6EB469}SUCESSO:~w~ ";
+                strTipo = "!{#6EB469}";
             else if (tipoMensagem == TipoMensagem.Erro)
-                strTipo = "!{#FF6A4D}ERRO:~w~ ";
+                strTipo = "!{#FF6A4D}";
             else if (tipoMensagem == TipoMensagem.Titulo)
                 strTipo = "!{#B0B0B0}";
             else if (tipoMensagem == TipoMensagem.Punicao)
@@ -57,15 +57,18 @@ namespace InfiniteRoleplay
             p.SetDinheiro();
 
             using (var context = new RoleplayContext())
+            {
                 p.Contatos = context.PersonagensContatos.Where(x => x.Codigo == p.Codigo).ToList();
 
-            if (Global.PersonagensOnline.Count > Global.Parametros.RecordeOnline)
-            {
-                Global.Parametros.RecordeOnline = Global.PersonagensOnline.Count;
-                GravarParametros();
+                if (Global.PersonagensOnline.Count > Global.Parametros.RecordeOnline)
+                {
+                    Global.Parametros.RecordeOnline = Global.PersonagensOnline.Count;
+                    context.Parametros.Update(Global.Parametros);
+                    context.SaveChanges();
+                }
             }
 
-            Functions.GravarLog(TipoLog.Entrada, string.Empty, p, null);
+            GravarLog(TipoLog.Entrada, string.Empty, p, null);
 
             NAPI.ClientEvent.TriggerClientEvent(player, "logarPersonagem");
         }
@@ -166,51 +169,49 @@ namespace InfiniteRoleplay
                 }
             }
 
-            using (var context = new RoleplayContext())
-            {
-                var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == p.Codigo);
-                personagem.Online = isOnline;
-                personagem.Skin = ((PedHash)p.Player.Model).ToString();
-                personagem.PosX = p.Player.Position.X;
-                personagem.PosY = p.Player.Position.Y;
-                personagem.PosZ = p.Player.Position.Z;
-                personagem.Vida = p.Player.Health;
-                personagem.Colete = p.Player.Armor;
-                personagem.Dimensao = p.Player.Dimension;
-                personagem.TempoConectado = p.TempoConectado;
-                personagem.Faccao = p.Faccao;
-                personagem.Rank = p.Rank;
-                personagem.Dinheiro = p.Dinheiro;
-                personagem.Celular = p.Celular;
-                personagem.Banco = p.Banco;
-                personagem.IPL = JsonConvert.SerializeObject(p.IPLs);
-                personagem.CanalRadio = p.CanalRadio;
-                personagem.CanalRadio2 = p.CanalRadio2;
-                personagem.CanalRadio3 = p.CanalRadio3;
-                personagem.TempoPrisao = p.TempoPrisao;
-                personagem.RotX = p.Player.Rotation.X;
-                personagem.RotY = p.Player.Rotation.Y;
-                personagem.RotZ = p.Player.Rotation.Z;
-                personagem.DataMorte = p.DataMorte;
-                personagem.MotivoMorte = p.MotivoMorte;
-                personagem.Emprego = p.Emprego;
-                personagem.DataUltimoAcesso = DateTime.Now;
-                personagem.IPUltimoAcesso = p.Player.Address;
-                context.Personagens.Update(personagem);
+            using var context = new RoleplayContext();
+            var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == p.Codigo);
+            personagem.Online = isOnline;
+            personagem.Skin = ((PedHash)p.Player.Model).ToString();
+            personagem.PosX = p.Player.Position.X;
+            personagem.PosY = p.Player.Position.Y;
+            personagem.PosZ = p.Player.Position.Z;
+            personagem.Vida = p.Player.Health;
+            personagem.Colete = p.Player.Armor;
+            personagem.Dimensao = p.Player.Dimension;
+            personagem.TempoConectado = p.TempoConectado;
+            personagem.Faccao = p.Faccao;
+            personagem.Rank = p.Rank;
+            personagem.Dinheiro = p.Dinheiro;
+            personagem.Celular = p.Celular;
+            personagem.Banco = p.Banco;
+            personagem.IPL = JsonConvert.SerializeObject(p.IPLs);
+            personagem.CanalRadio = p.CanalRadio;
+            personagem.CanalRadio2 = p.CanalRadio2;
+            personagem.CanalRadio3 = p.CanalRadio3;
+            personagem.TempoPrisao = p.TempoPrisao;
+            personagem.RotX = p.Player.Rotation.X;
+            personagem.RotY = p.Player.Rotation.Y;
+            personagem.RotZ = p.Player.Rotation.Z;
+            personagem.DataMorte = p.DataMorte;
+            personagem.MotivoMorte = p.MotivoMorte;
+            personagem.Emprego = p.Emprego;
+            personagem.DataUltimoAcesso = DateTime.Now;
+            personagem.IPUltimoAcesso = p.Player.Address;
+            context.Personagens.Update(personagem);
 
-                context.Database.ExecuteSqlRaw($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
-                context.PersonagensContatos.AddRange(p.Contatos);
+            context.Database.ExecuteSqlRaw($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
+            context.PersonagensContatos.AddRange(p.Contatos);
 
-                var usuario = context.Usuarios.FirstOrDefault(x => x.Codigo == p.UsuarioBD.Codigo);
-                usuario.Staff = p.UsuarioBD.Staff;
-                usuario.TempoTrabalhoAdministrativo = p.UsuarioBD.TempoTrabalhoAdministrativo;
-                usuario.QuantidadeSOSAceitos = p.UsuarioBD.QuantidadeSOSAceitos;
-                usuario.DataUltimoAcesso = DateTime.Now;
-                usuario.IPUltimoAcesso = p.Player.Address;
-                context.Usuarios.Update(usuario);
+            var usuario = context.Usuarios.FirstOrDefault(x => x.Codigo == p.UsuarioBD.Codigo);
+            usuario.Staff = p.UsuarioBD.Staff;
+            usuario.TempoTrabalhoAdministrativo = p.UsuarioBD.TempoTrabalhoAdministrativo;
+            usuario.QuantidadeSOSAceitos = p.UsuarioBD.QuantidadeSOSAceitos;
+            usuario.DataUltimoAcesso = DateTime.Now;
+            usuario.IPUltimoAcesso = p.Player.Address;
+            context.Usuarios.Update(usuario);
 
-                context.SaveChanges();
-            }
+            context.SaveChanges();
         }
 
         public static void SendMessageToNearbyPlayers(Player player, string message, TipoMensagemJogo type, float range, bool excludePlayer = false)
@@ -335,31 +336,20 @@ namespace InfiniteRoleplay
 
         public static void GravarLog(TipoLog tipo, string descricao, Personagem origem, Personagem destino)
         {
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            context.Logs.Add(new Log()
             {
-                context.Logs.Add(new Log()
-                {
-                    Data = DateTime.Now,
-                    Tipo = (int)tipo,
-                    Descricao = descricao,
-                    PersonagemOrigem = origem.Codigo,
-                    IPOrigem = origem.Player.Address,
-                    SocialClubOrigem = origem.Player.SocialClubName,
-                    PersonagemDestino = destino?.Codigo ?? 0,
-                    IPDestino = destino?.Player.Address ?? string.Empty,
-                    SocialClubDestino = destino?.Player?.SocialClubName ?? string.Empty,
-                });
-                context.SaveChanges();
-            }
-        }
-
-        public static void GravarParametros()
-        {
-            using (var context = new RoleplayContext())
-            {
-                context.Parametros.Update(Global.Parametros);
-                context.SaveChanges();
-            }
+                Data = DateTime.Now,
+                Tipo = (int)tipo,
+                Descricao = descricao,
+                PersonagemOrigem = origem.Codigo,
+                IPOrigem = origem.Player.Address,
+                SocialClubOrigem = origem.Player.SocialClubName,
+                PersonagemDestino = destino?.Codigo ?? 0,
+                IPDestino = destino?.Player.Address ?? string.Empty,
+                SocialClubDestino = destino?.Player?.SocialClubName ?? string.Empty,
+            });
+            context.SaveChanges();
         }
 
         public static int ObterNovoID()
@@ -377,166 +367,88 @@ namespace InfiniteRoleplay
 
         public static Vector3 ObterPosicaoPorInterior(TipoInterior tipo)
         {
-            switch (tipo)
+            return tipo switch
             {
-                case TipoInterior.Motel:
-                    return new Vector3(151.2564, -1007.868, -98.99999);
-                case TipoInterior.CasaBaixa:
-                    return new Vector3(265.9522, -1007.485, -101.0085);
-                case TipoInterior.CasaMedia:
-                    return new Vector3(346.4499, -1012.996, -99.19622);
-                case TipoInterior.IntegrityWay28:
-                    return new Vector3(-31.34092, -594.9429, 80.0309);
-                case TipoInterior.IntegrityWay30:
-                    return new Vector3(-17.61359, -589.3938, 90.11487);
-                case TipoInterior.DellPerroHeights4:
-                    return new Vector3(-1452.225, -540.4642, 74.04436);
-                case TipoInterior.DellPerroHeights7:
-                    return new Vector3(-1451.26, -523.9634, 56.92898);
-                case TipoInterior.RichardMajestic2:
-                    return new Vector3(-912.6351, -364.9724, 114.2748);
-                case TipoInterior.TinselTowers42:
-                    return new Vector3(-603.1113, 58.93406, 98.20017);
-                case TipoInterior.EclipseTowers3:
-                    return new Vector3(-785.1537, 323.8156, 211.9973);
-                case TipoInterior.WildOatsDrive3655:
-                    return new Vector3(-174.3753, 497.3086, 137.6669);
-                case TipoInterior.NorthConkerAvenue2044:
-                    return new Vector3(341.9306, 437.7751, 149.3901);
-                case TipoInterior.NorthConkerAvenue2045:
-                    return new Vector3(373.5803, 423.7043, 145.9078);
-                case TipoInterior.HillcrestAvenue2862:
-                    return new Vector3(-682.3693, 592.2678, 145.393);
-                case TipoInterior.HillcrestAvenue2868:
-                    return new Vector3(-758.4348, 618.8454, 144.1539);
-                case TipoInterior.HillcrestAvenue2874:
-                    return new Vector3(-859.7643, 690.8358, 152.8607);
-                case TipoInterior.WhispymoundDrive2677:
-                    return new Vector3(117.209, 559.8086, 184.3048);
-                case TipoInterior.MadWayneThunder2133:
-                    return new Vector3(-1289.775, 449.3125, 97.90256);
-                case TipoInterior.Modern1Apartment:
-                    return new Vector3(-786.8663, 315.7642, 217.6385);
-                case TipoInterior.Modern2Apartment:
-                    return new Vector3(-786.9563, 315.6229, 187.9136);
-                case TipoInterior.Modern3Apartment:
-                    return new Vector3(-774.0126, 342.0428, 196.6864);
-                case TipoInterior.Mody1Apartment:
-                    return new Vector3(-787.0749, 315.8198, 217.6386);
-                case TipoInterior.Mody2Apartment:
-                    return new Vector3(-786.8195, 315.5634, 187.9137);
-                case TipoInterior.Mody3Apartment:
-                    return new Vector3(-774.1382, 342.0316, 196.6864);
-                case TipoInterior.Vibrant1Apartment:
-                    return new Vector3(-786.6245, 315.6175, 217.6385);
-                case TipoInterior.Vibrant2Apartment:
-                    return new Vector3(-786.9584, 315.7974, 187.9135);
-                case TipoInterior.Vibrant3Apartment:
-                    return new Vector3(-774.0223, 342.1718, 196.6863);
-                case TipoInterior.Sharp1Apartment:
-                    return new Vector3(-787.0902, 315.7039, 217.6384);
-                case TipoInterior.Sharp2Apartment:
-                    return new Vector3(-787.0155, 315.7071, 187.9135);
-                case TipoInterior.Sharp3Apartment:
-                    return new Vector3(-773.8976, 342.1525, 196.6863);
-                case TipoInterior.Monochrome1Apartment:
-                    return new Vector3(-786.9887, 315.7393, 217.6386);
-                case TipoInterior.Monochrome2Apartment:
-                    return new Vector3(-786.8809, 315.6634, 187.9136);
-                case TipoInterior.Monochrome3Apartment:
-                    return new Vector3(-774.0675, 342.0773, 196.6864);
-                case TipoInterior.Seductive1Apartment:
-                    return new Vector3(-787.1423, 315.6943, 217.6384);
-                case TipoInterior.Seductive2Apartment:
-                    return new Vector3(-787.0961, 315.815, 187.9135);
-                case TipoInterior.Seductive3Apartment:
-                    return new Vector3(-773.9552, 341.9892, 196.6862);
-                case TipoInterior.Regal1Apartment:
-                    return new Vector3(-787.029, 315.7113, 217.6385);
-                case TipoInterior.Regal2Apartment:
-                    return new Vector3(-787.0574, 315.6567, 187.9135);
-                case TipoInterior.Regal3Apartment:
-                    return new Vector3(-774.0109, 342.0965, 196.6863);
-                case TipoInterior.Aqua1Apartment:
-                    return new Vector3(-786.9469, 315.5655, 217.6383);
-                case TipoInterior.Aqua2Apartment:
-                    return new Vector3(-786.9756, 315.723, 187.9134);
-                case TipoInterior.Aqua3Apartment:
-                    return new Vector3(-774.0349, 342.0296, 196.6862);
-                case TipoInterior.ArcadiusExecutiveRich:
-                    return new Vector3(-141.1987, -620.913, 168.8205);
-                case TipoInterior.ArcadiusExecutiveCool:
-                    return new Vector3(-141.5429, -620.9524, 168.8204);
-                case TipoInterior.ArcadiusExecutiveContrast:
-                    return new Vector3(-141.2896, -620.9618, 168.8204);
-                case TipoInterior.ArcadiusOldSpiceWarm:
-                    return new Vector3(-141.4966, -620.8292, 168.8204);
-                case TipoInterior.ArcadiusOldSpiceClassical:
-                    return new Vector3(-141.3997, -620.9006, 168.8204);
-                case TipoInterior.ArcadiusOldSpiceVintage:
-                    return new Vector3(-141.5361, -620.9186, 168.8204);
-                case TipoInterior.ArcadiusPowerBrokerIce:
-                    return new Vector3(-141.392, -621.0451, 168.8204);
-                case TipoInterior.ArcadiusPowerBrokeConservative:
-                    return new Vector3(-141.1945, -620.8729, 168.8204);
-                case TipoInterior.ArcadiusPowerBrokePolished:
-                    return new Vector3(-141.4924, -621.0035, 168.8205);
-                case TipoInterior.MazeBankExecutiveRich:
-                    return new Vector3(-75.8466, -826.9893, 243.3859);
-                case TipoInterior.MazeBankExecutiveCool:
-                    return new Vector3(-75.49945, -827.05, 243.386);
-                case TipoInterior.MazeBankExecutiveContrast:
-                    return new Vector3(-75.49827, -827.1889, 243.386);
-                case TipoInterior.MazeBankOldSpiceWarm:
-                    return new Vector3(-75.44054, -827.1487, 243.3859);
-                case TipoInterior.MazeBankOldSpiceClassical:
-                    return new Vector3(-75.63942, -827.1022, 243.3859);
-                case TipoInterior.MazeBankOldSpiceVintage:
-                    return new Vector3(-75.47446, -827.2621, 243.386);
-                case TipoInterior.MazeBankPowerBrokerIce:
-                    return new Vector3(-75.56978, -827.1152, 243.3859);
-                case TipoInterior.MazeBankPowerBrokeConservative:
-                    return new Vector3(-75.51953, -827.0786, 243.3859);
-                case TipoInterior.MazeBankPowerBrokePolished:
-                    return new Vector3(-75.41915, -827.1118, 243.3858);
-                case TipoInterior.LomBankExecutiveRich:
-                    return new Vector3(-1579.756, -565.0661, 108.523);
-                case TipoInterior.LomBankExecutiveCool:
-                    return new Vector3(-1579.678, -565.0034, 108.5229);
-                case TipoInterior.LomBankExecutiveContrast:
-                    return new Vector3(-1579.583, -565.0399, 108.5229);
-                case TipoInterior.LomBankOldSpiceWarm:
-                    return new Vector3(-1579.702, -565.0366, 108.5229);
-                case TipoInterior.LomBankOldSpiceClassical:
-                    return new Vector3(-1579.643, -564.9685, 108.5229);
-                case TipoInterior.LomBankOldSpiceVintage:
-                    return new Vector3(-1579.681, -565.0003, 108.523);
-                case TipoInterior.LomBankPowerBrokerIce:
-                    return new Vector3(-1579.677, -565.0689, 108.5229);
-                case TipoInterior.LomBankPowerBrokeConservative:
-                    return new Vector3(-1579.708, -564.9634, 108.5229);
-                case TipoInterior.LomBankPowerBrokePolished:
-                    return new Vector3(-1579.693, -564.8981, 108.5229);
-                case TipoInterior.MazeBankWestExecutiveRich:
-                    return new Vector3(-1392.667, -480.4736, 72.04217);
-                case TipoInterior.MazeBankWestExecutiveCool:
-                    return new Vector3(-1392.542, -480.4011, 72.04211);
-                case TipoInterior.MazeBankWestExecutiveContrast:
-                    return new Vector3(-1392.626, -480.4856, 72.04212);
-                case TipoInterior.MazeBankWestOldSpiceWarm:
-                    return new Vector3(-1392.617, -480.6363, 72.04208);
-                case TipoInterior.MazeBankWestOldSpiceClassical:
-                    return new Vector3(-1392.532, -480.7649, 72.04207);
-                case TipoInterior.MazeBankWestOldSpiceVintage:
-                    return new Vector3(-1392.611, -480.5562, 72.04214);
-                case TipoInterior.MazeBankWestPowerBrokerIce:
-                    return new Vector3(-1392.563, -480.549, 72.0421);
-                case TipoInterior.MazeBankWestPowerBrokeConservative:
-                    return new Vector3(-1392.528, -480.475, 72.04206);
-                case TipoInterior.MazeBankWestPowerBrokePolished:
-                    return new Vector3(-1392.416, -480.7485, 72.04207);
-            }
-            return new Vector3();
+                TipoInterior.Motel => new Vector3(151.2564, -1007.868, -98.99999),
+                TipoInterior.CasaBaixa => new Vector3(265.9522, -1007.485, -101.0085),
+                TipoInterior.CasaMedia => new Vector3(346.4499, -1012.996, -99.19622),
+                TipoInterior.IntegrityWay28 => new Vector3(-31.34092, -594.9429, 80.0309),
+                TipoInterior.IntegrityWay30 => new Vector3(-17.61359, -589.3938, 90.11487),
+                TipoInterior.DellPerroHeights4 => new Vector3(-1452.225, -540.4642, 74.04436),
+                TipoInterior.DellPerroHeights7 => new Vector3(-1451.26, -523.9634, 56.92898),
+                TipoInterior.RichardMajestic2 => new Vector3(-912.6351, -364.9724, 114.2748),
+                TipoInterior.TinselTowers42 => new Vector3(-603.1113, 58.93406, 98.20017),
+                TipoInterior.EclipseTowers3 => new Vector3(-785.1537, 323.8156, 211.9973),
+                TipoInterior.WildOatsDrive3655 => new Vector3(-174.3753, 497.3086, 137.6669),
+                TipoInterior.NorthConkerAvenue2044 => new Vector3(341.9306, 437.7751, 149.3901),
+                TipoInterior.NorthConkerAvenue2045 => new Vector3(373.5803, 423.7043, 145.9078),
+                TipoInterior.HillcrestAvenue2862 => new Vector3(-682.3693, 592.2678, 145.393),
+                TipoInterior.HillcrestAvenue2868 => new Vector3(-758.4348, 618.8454, 144.1539),
+                TipoInterior.HillcrestAvenue2874 => new Vector3(-859.7643, 690.8358, 152.8607),
+                TipoInterior.WhispymoundDrive2677 => new Vector3(117.209, 559.8086, 184.3048),
+                TipoInterior.MadWayneThunder2133 => new Vector3(-1289.775, 449.3125, 97.90256),
+                TipoInterior.Modern1Apartment => new Vector3(-786.8663, 315.7642, 217.6385),
+                TipoInterior.Modern2Apartment => new Vector3(-786.9563, 315.6229, 187.9136),
+                TipoInterior.Modern3Apartment => new Vector3(-774.0126, 342.0428, 196.6864),
+                TipoInterior.Mody1Apartment => new Vector3(-787.0749, 315.8198, 217.6386),
+                TipoInterior.Mody2Apartment => new Vector3(-786.8195, 315.5634, 187.9137),
+                TipoInterior.Mody3Apartment => new Vector3(-774.1382, 342.0316, 196.6864),
+                TipoInterior.Vibrant1Apartment => new Vector3(-786.6245, 315.6175, 217.6385),
+                TipoInterior.Vibrant2Apartment => new Vector3(-786.9584, 315.7974, 187.9135),
+                TipoInterior.Vibrant3Apartment => new Vector3(-774.0223, 342.1718, 196.6863),
+                TipoInterior.Sharp1Apartment => new Vector3(-787.0902, 315.7039, 217.6384),
+                TipoInterior.Sharp2Apartment => new Vector3(-787.0155, 315.7071, 187.9135),
+                TipoInterior.Sharp3Apartment => new Vector3(-773.8976, 342.1525, 196.6863),
+                TipoInterior.Monochrome1Apartment => new Vector3(-786.9887, 315.7393, 217.6386),
+                TipoInterior.Monochrome2Apartment => new Vector3(-786.8809, 315.6634, 187.9136),
+                TipoInterior.Monochrome3Apartment => new Vector3(-774.0675, 342.0773, 196.6864),
+                TipoInterior.Seductive1Apartment => new Vector3(-787.1423, 315.6943, 217.6384),
+                TipoInterior.Seductive2Apartment => new Vector3(-787.0961, 315.815, 187.9135),
+                TipoInterior.Seductive3Apartment => new Vector3(-773.9552, 341.9892, 196.6862),
+                TipoInterior.Regal1Apartment => new Vector3(-787.029, 315.7113, 217.6385),
+                TipoInterior.Regal2Apartment => new Vector3(-787.0574, 315.6567, 187.9135),
+                TipoInterior.Regal3Apartment => new Vector3(-774.0109, 342.0965, 196.6863),
+                TipoInterior.Aqua1Apartment => new Vector3(-786.9469, 315.5655, 217.6383),
+                TipoInterior.Aqua2Apartment => new Vector3(-786.9756, 315.723, 187.9134),
+                TipoInterior.Aqua3Apartment => new Vector3(-774.0349, 342.0296, 196.6862),
+                TipoInterior.ArcadiusExecutiveRich => new Vector3(-141.1987, -620.913, 168.8205),
+                TipoInterior.ArcadiusExecutiveCool => new Vector3(-141.5429, -620.9524, 168.8204),
+                TipoInterior.ArcadiusExecutiveContrast => new Vector3(-141.2896, -620.9618, 168.8204),
+                TipoInterior.ArcadiusOldSpiceWarm => new Vector3(-141.4966, -620.8292, 168.8204),
+                TipoInterior.ArcadiusOldSpiceClassical => new Vector3(-141.3997, -620.9006, 168.8204),
+                TipoInterior.ArcadiusOldSpiceVintage => new Vector3(-141.5361, -620.9186, 168.8204),
+                TipoInterior.ArcadiusPowerBrokerIce => new Vector3(-141.392, -621.0451, 168.8204),
+                TipoInterior.ArcadiusPowerBrokeConservative => new Vector3(-141.1945, -620.8729, 168.8204),
+                TipoInterior.ArcadiusPowerBrokePolished => new Vector3(-141.4924, -621.0035, 168.8205),
+                TipoInterior.MazeBankExecutiveRich => new Vector3(-75.8466, -826.9893, 243.3859),
+                TipoInterior.MazeBankExecutiveCool => new Vector3(-75.49945, -827.05, 243.386),
+                TipoInterior.MazeBankExecutiveContrast => new Vector3(-75.49827, -827.1889, 243.386),
+                TipoInterior.MazeBankOldSpiceWarm => new Vector3(-75.44054, -827.1487, 243.3859),
+                TipoInterior.MazeBankOldSpiceClassical => new Vector3(-75.63942, -827.1022, 243.3859),
+                TipoInterior.MazeBankOldSpiceVintage => new Vector3(-75.47446, -827.2621, 243.386),
+                TipoInterior.MazeBankPowerBrokerIce => new Vector3(-75.56978, -827.1152, 243.3859),
+                TipoInterior.MazeBankPowerBrokeConservative => new Vector3(-75.51953, -827.0786, 243.3859),
+                TipoInterior.MazeBankPowerBrokePolished => new Vector3(-75.41915, -827.1118, 243.3858),
+                TipoInterior.LomBankExecutiveRich => new Vector3(-1579.756, -565.0661, 108.523),
+                TipoInterior.LomBankExecutiveCool => new Vector3(-1579.678, -565.0034, 108.5229),
+                TipoInterior.LomBankExecutiveContrast => new Vector3(-1579.583, -565.0399, 108.5229),
+                TipoInterior.LomBankOldSpiceWarm => new Vector3(-1579.702, -565.0366, 108.5229),
+                TipoInterior.LomBankOldSpiceClassical => new Vector3(-1579.643, -564.9685, 108.5229),
+                TipoInterior.LomBankOldSpiceVintage => new Vector3(-1579.681, -565.0003, 108.523),
+                TipoInterior.LomBankPowerBrokerIce => new Vector3(-1579.677, -565.0689, 108.5229),
+                TipoInterior.LomBankPowerBrokeConservative => new Vector3(-1579.708, -564.9634, 108.5229),
+                TipoInterior.LomBankPowerBrokePolished => new Vector3(-1579.693, -564.8981, 108.5229),
+                TipoInterior.MazeBankWestExecutiveRich => new Vector3(-1392.667, -480.4736, 72.04217),
+                TipoInterior.MazeBankWestExecutiveCool => new Vector3(-1392.542, -480.4011, 72.04211),
+                TipoInterior.MazeBankWestExecutiveContrast => new Vector3(-1392.626, -480.4856, 72.04212),
+                TipoInterior.MazeBankWestOldSpiceWarm => new Vector3(-1392.617, -480.6363, 72.04208),
+                TipoInterior.MazeBankWestOldSpiceClassical => new Vector3(-1392.532, -480.7649, 72.04207),
+                TipoInterior.MazeBankWestOldSpiceVintage => new Vector3(-1392.611, -480.5562, 72.04214),
+                TipoInterior.MazeBankWestPowerBrokerIce => new Vector3(-1392.563, -480.549, 72.0421),
+                TipoInterior.MazeBankWestPowerBrokeConservative => new Vector3(-1392.528, -480.475, 72.04206),
+                TipoInterior.MazeBankWestPowerBrokePolished => new Vector3(-1392.416, -480.7485, 72.04207),
+                _ => new Vector3(),
+            };
         }
 
         public static void EnviarMensagemCelular(Personagem p, Personagem target, string mensagem)
@@ -624,152 +536,89 @@ namespace InfiniteRoleplay
                 return;
             }
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            var multas = context.Multas.Where(x => !x.DataPagamento.HasValue && x.PersonagemMultado == p.Codigo).OrderBy(x => x.Data).Select(x => new
             {
-                var multas = context.Multas.Where(x => !x.DataPagamento.HasValue && x.PersonagemMultado == p.Codigo).OrderBy(x => x.Data).Select(x => new
-                {
-                    x.Codigo,
-                    x.Motivo,
-                    Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
-                    Valor = $"${x.Valor:N0}",
-                }).ToList();
-                if (multas.Count == 0)
-                {
-                    EnviarMensagem(player, TipoMensagem.Erro, "Você não possui multas pendentes!");
-                    return;
-                }
-
-                NAPI.ClientEvent.TriggerClientEvent(player, "visualizarMultas", multas, erro);
+                x.Codigo,
+                x.Motivo,
+                Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
+                Valor = $"${x.Valor:N0}",
+            }).ToList();
+            if (multas.Count == 0)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não possui multas pendentes!");
+                return;
             }
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "visualizarMultas", multas, erro);
         }
 
         public static List<string> ObterIPLsPorInterior(TipoInterior tipo)
         {
-            switch (tipo)
+            return tipo switch
             {
-                case TipoInterior.Modern1Apartment:
-                    return new List<string> { "apa_v_mp_h_01_a" };
-                case TipoInterior.Modern2Apartment:
-                    return new List<string> { "apa_v_mp_h_01_c" };
-                case TipoInterior.Modern3Apartment:
-                    return new List<string> { "apa_v_mp_h_01_b" };
-                case TipoInterior.Mody1Apartment:
-                    return new List<string> { "apa_v_mp_h_02_a" };
-                case TipoInterior.Mody2Apartment:
-                    return new List<string> { "apa_v_mp_h_02_c" };
-                case TipoInterior.Mody3Apartment:
-                    return new List<string> { "apa_v_mp_h_02_b" };
-                case TipoInterior.Vibrant1Apartment:
-                    return new List<string> { "apa_v_mp_h_03_a" };
-                case TipoInterior.Vibrant2Apartment:
-                    return new List<string> { "apa_v_mp_h_03_c" };
-                case TipoInterior.Vibrant3Apartment:
-                    return new List<string> { "apa_v_mp_h_03_b" };
-                case TipoInterior.Sharp1Apartment:
-                    return new List<string> { "apa_v_mp_h_04_a" };
-                case TipoInterior.Sharp2Apartment:
-                    return new List<string> { "apa_v_mp_h_04_c" };
-                case TipoInterior.Sharp3Apartment:
-                    return new List<string> { "apa_v_mp_h_04_b" };
-                case TipoInterior.Monochrome1Apartment:
-                    return new List<string> { "apa_v_mp_h_05_a" };
-                case TipoInterior.Monochrome2Apartment:
-                    return new List<string> { "apa_v_mp_h_05_c" };
-                case TipoInterior.Monochrome3Apartment:
-                    return new List<string> { "apa_v_mp_h_05_b" };
-                case TipoInterior.Seductive1Apartment:
-                    return new List<string> { "apa_v_mp_h_06_a" };
-                case TipoInterior.Seductive2Apartment:
-                    return new List<string> { "apa_v_mp_h_06_c" };
-                case TipoInterior.Seductive3Apartment:
-                    return new List<string> { "apa_v_mp_h_06_b" };
-                case TipoInterior.Regal1Apartment:
-                    return new List<string> { "apa_v_mp_h_07_a" };
-                case TipoInterior.Regal2Apartment:
-                    return new List<string> { "apa_v_mp_h_07_c" };
-                case TipoInterior.Regal3Apartment:
-                    return new List<string> { "apa_v_mp_h_07_b" };
-                case TipoInterior.Aqua1Apartment:
-                    return new List<string> { "apa_v_mp_h_08_a" };
-                case TipoInterior.Aqua2Apartment:
-                    return new List<string> { "apa_v_mp_h_08_c" };
-                case TipoInterior.Aqua3Apartment:
-                    return new List<string> { "apa_v_mp_h_08_b" };
-                case TipoInterior.ArcadiusExecutiveRich:
-                    return new List<string> { "ex_dt1_02_office_02b" };
-                case TipoInterior.ArcadiusExecutiveCool:
-                    return new List<string> { "ex_dt1_02_office_02c" };
-                case TipoInterior.ArcadiusExecutiveContrast:
-                    return new List<string> { "ex_dt1_02_office_02a" };
-                case TipoInterior.ArcadiusOldSpiceWarm:
-                    return new List<string> { "ex_dt1_02_office_01a" };
-                case TipoInterior.ArcadiusOldSpiceClassical:
-                    return new List<string> { "ex_dt1_02_office_01b" };
-                case TipoInterior.ArcadiusOldSpiceVintage:
-                    return new List<string> { "ex_dt1_02_office_01c" };
-                case TipoInterior.ArcadiusPowerBrokerIce:
-                    return new List<string> { "ex_dt1_02_office_03a" };
-                case TipoInterior.ArcadiusPowerBrokeConservative:
-                    return new List<string> { "ex_dt1_02_office_03b" };
-                case TipoInterior.ArcadiusPowerBrokePolished:
-                    return new List<string> { "ex_dt1_02_office_03c" };
-                case TipoInterior.MazeBankExecutiveRich:
-                    return new List<string> { "ex_dt1_11_office_02b" };
-                case TipoInterior.MazeBankExecutiveCool:
-                    return new List<string> { "ex_dt1_11_office_02c" };
-                case TipoInterior.MazeBankExecutiveContrast:
-                    return new List<string> { "ex_dt1_11_office_02a" };
-                case TipoInterior.MazeBankOldSpiceWarm:
-                    return new List<string> { "ex_dt1_11_office_01a" };
-                case TipoInterior.MazeBankOldSpiceClassical:
-                    return new List<string> { "ex_dt1_11_office_01b" };
-                case TipoInterior.MazeBankOldSpiceVintage:
-                    return new List<string> { "ex_dt1_11_office_01c" };
-                case TipoInterior.MazeBankPowerBrokerIce:
-                    return new List<string> { "ex_dt1_11_office_03a" };
-                case TipoInterior.MazeBankPowerBrokeConservative:
-                    return new List<string> { "ex_dt1_11_office_03b" };
-                case TipoInterior.MazeBankPowerBrokePolished:
-                    return new List<string> { "ex_dt1_11_office_03c" };
-                case TipoInterior.LomBankExecutiveRich:
-                    return new List<string> { "ex_sm_13_office_02b" };
-                case TipoInterior.LomBankExecutiveCool:
-                    return new List<string> { "ex_sm_13_office_02c" };
-                case TipoInterior.LomBankExecutiveContrast:
-                    return new List<string> { "ex_sm_13_office_02a" };
-                case TipoInterior.LomBankOldSpiceWarm:
-                    return new List<string> { "ex_sm_13_office_01a" };
-                case TipoInterior.LomBankOldSpiceClassical:
-                    return new List<string> { "ex_sm_13_office_01b" };
-                case TipoInterior.LomBankOldSpiceVintage:
-                    return new List<string> { "ex_sm_13_office_01c" };
-                case TipoInterior.LomBankPowerBrokerIce:
-                    return new List<string> { "ex_sm_13_office_03a" };
-                case TipoInterior.LomBankPowerBrokeConservative:
-                    return new List<string> { "ex_sm_13_office_03b" };
-                case TipoInterior.LomBankPowerBrokePolished:
-                    return new List<string> { "ex_sm_13_office_03c" };
-                case TipoInterior.MazeBankWestExecutiveRich:
-                    return new List<string> { "ex_sm_15_office_02b" };
-                case TipoInterior.MazeBankWestExecutiveCool:
-                    return new List<string> { "ex_sm_15_office_02c" };
-                case TipoInterior.MazeBankWestExecutiveContrast:
-                    return new List<string> { "ex_sm_15_office_02a" };
-                case TipoInterior.MazeBankWestOldSpiceWarm:
-                    return new List<string> { "ex_sm_15_office_01a" };
-                case TipoInterior.MazeBankWestOldSpiceClassical:
-                    return new List<string> { "ex_sm_15_office_01b" };
-                case TipoInterior.MazeBankWestOldSpiceVintage:
-                    return new List<string> { "ex_sm_15_office_01c" };
-                case TipoInterior.MazeBankWestPowerBrokerIce:
-                    return new List<string> { "ex_sm_15_office_03a" };
-                case TipoInterior.MazeBankWestPowerBrokeConservative:
-                    return new List<string> { "ex_sm_15_office_03b" };
-                case TipoInterior.MazeBankWestPowerBrokePolished:
-                    return new List<string> { "ex_sm_15_office_03c" };
-            }
-
-            return new List<string>();
+                TipoInterior.Modern1Apartment => new List<string> { "apa_v_mp_h_01_a" },
+                TipoInterior.Modern2Apartment => new List<string> { "apa_v_mp_h_01_c" },
+                TipoInterior.Modern3Apartment => new List<string> { "apa_v_mp_h_01_b" },
+                TipoInterior.Mody1Apartment => new List<string> { "apa_v_mp_h_02_a" },
+                TipoInterior.Mody2Apartment => new List<string> { "apa_v_mp_h_02_c" },
+                TipoInterior.Mody3Apartment => new List<string> { "apa_v_mp_h_02_b" },
+                TipoInterior.Vibrant1Apartment => new List<string> { "apa_v_mp_h_03_a" },
+                TipoInterior.Vibrant2Apartment => new List<string> { "apa_v_mp_h_03_c" },
+                TipoInterior.Vibrant3Apartment => new List<string> { "apa_v_mp_h_03_b" },
+                TipoInterior.Sharp1Apartment => new List<string> { "apa_v_mp_h_04_a" },
+                TipoInterior.Sharp2Apartment => new List<string> { "apa_v_mp_h_04_c" },
+                TipoInterior.Sharp3Apartment => new List<string> { "apa_v_mp_h_04_b" },
+                TipoInterior.Monochrome1Apartment => new List<string> { "apa_v_mp_h_05_a" },
+                TipoInterior.Monochrome2Apartment => new List<string> { "apa_v_mp_h_05_c" },
+                TipoInterior.Monochrome3Apartment => new List<string> { "apa_v_mp_h_05_b" },
+                TipoInterior.Seductive1Apartment => new List<string> { "apa_v_mp_h_06_a" },
+                TipoInterior.Seductive2Apartment => new List<string> { "apa_v_mp_h_06_c" },
+                TipoInterior.Seductive3Apartment => new List<string> { "apa_v_mp_h_06_b" },
+                TipoInterior.Regal1Apartment => new List<string> { "apa_v_mp_h_07_a" },
+                TipoInterior.Regal2Apartment => new List<string> { "apa_v_mp_h_07_c" },
+                TipoInterior.Regal3Apartment => new List<string> { "apa_v_mp_h_07_b" },
+                TipoInterior.Aqua1Apartment => new List<string> { "apa_v_mp_h_08_a" },
+                TipoInterior.Aqua2Apartment => new List<string> { "apa_v_mp_h_08_c" },
+                TipoInterior.Aqua3Apartment => new List<string> { "apa_v_mp_h_08_b" },
+                TipoInterior.ArcadiusExecutiveRich => new List<string> { "ex_dt1_02_office_02b" },
+                TipoInterior.ArcadiusExecutiveCool => new List<string> { "ex_dt1_02_office_02c" },
+                TipoInterior.ArcadiusExecutiveContrast => new List<string> { "ex_dt1_02_office_02a" },
+                TipoInterior.ArcadiusOldSpiceWarm => new List<string> { "ex_dt1_02_office_01a" },
+                TipoInterior.ArcadiusOldSpiceClassical => new List<string> { "ex_dt1_02_office_01b" },
+                TipoInterior.ArcadiusOldSpiceVintage => new List<string> { "ex_dt1_02_office_01c" },
+                TipoInterior.ArcadiusPowerBrokerIce => new List<string> { "ex_dt1_02_office_03a" },
+                TipoInterior.ArcadiusPowerBrokeConservative => new List<string> { "ex_dt1_02_office_03b" },
+                TipoInterior.ArcadiusPowerBrokePolished => new List<string> { "ex_dt1_02_office_03c" },
+                TipoInterior.MazeBankExecutiveRich => new List<string> { "ex_dt1_11_office_02b" },
+                TipoInterior.MazeBankExecutiveCool => new List<string> { "ex_dt1_11_office_02c" },
+                TipoInterior.MazeBankExecutiveContrast => new List<string> { "ex_dt1_11_office_02a" },
+                TipoInterior.MazeBankOldSpiceWarm => new List<string> { "ex_dt1_11_office_01a" },
+                TipoInterior.MazeBankOldSpiceClassical => new List<string> { "ex_dt1_11_office_01b" },
+                TipoInterior.MazeBankOldSpiceVintage => new List<string> { "ex_dt1_11_office_01c" },
+                TipoInterior.MazeBankPowerBrokerIce => new List<string> { "ex_dt1_11_office_03a" },
+                TipoInterior.MazeBankPowerBrokeConservative => new List<string> { "ex_dt1_11_office_03b" },
+                TipoInterior.MazeBankPowerBrokePolished => new List<string> { "ex_dt1_11_office_03c" },
+                TipoInterior.LomBankExecutiveRich => new List<string> { "ex_sm_13_office_02b" },
+                TipoInterior.LomBankExecutiveCool => new List<string> { "ex_sm_13_office_02c" },
+                TipoInterior.LomBankExecutiveContrast => new List<string> { "ex_sm_13_office_02a" },
+                TipoInterior.LomBankOldSpiceWarm => new List<string> { "ex_sm_13_office_01a" },
+                TipoInterior.LomBankOldSpiceClassical => new List<string> { "ex_sm_13_office_01b" },
+                TipoInterior.LomBankOldSpiceVintage => new List<string> { "ex_sm_13_office_01c" },
+                TipoInterior.LomBankPowerBrokerIce => new List<string> { "ex_sm_13_office_03a" },
+                TipoInterior.LomBankPowerBrokeConservative => new List<string> { "ex_sm_13_office_03b" },
+                TipoInterior.LomBankPowerBrokePolished => new List<string> { "ex_sm_13_office_03c" },
+                TipoInterior.MazeBankWestExecutiveRich => new List<string> { "ex_sm_15_office_02b" },
+                TipoInterior.MazeBankWestExecutiveCool => new List<string> { "ex_sm_15_office_02c" },
+                TipoInterior.MazeBankWestExecutiveContrast => new List<string> { "ex_sm_15_office_02a" },
+                TipoInterior.MazeBankWestOldSpiceWarm => new List<string> { "ex_sm_15_office_01a" },
+                TipoInterior.MazeBankWestOldSpiceClassical => new List<string> { "ex_sm_15_office_01b" },
+                TipoInterior.MazeBankWestOldSpiceVintage => new List<string> { "ex_sm_15_office_01c" },
+                TipoInterior.MazeBankWestPowerBrokerIce => new List<string> { "ex_sm_15_office_03a" },
+                TipoInterior.MazeBankWestPowerBrokeConservative => new List<string> { "ex_sm_15_office_03b" },
+                TipoInterior.MazeBankWestPowerBrokePolished => new List<string> { "ex_sm_15_office_03c" },
+                _ => new List<string>(),
+            };
         }
 
         public static bool ChecarAnimacoes(Player player, bool isPararAnim = false)

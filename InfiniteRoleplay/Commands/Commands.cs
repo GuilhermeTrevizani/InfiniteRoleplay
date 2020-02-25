@@ -883,6 +883,8 @@ namespace InfiniteRoleplay.Commands
                 IDPersonagem = p.ID,
                 Mensagem = mensagem,
                 Usuario = p.UsuarioBD.Codigo,
+                NomePersonagem = p.Nome,
+                NomeUsuario = p.UsuarioBD.Nome,
             };
 
             using (var context = new RoleplayContext())

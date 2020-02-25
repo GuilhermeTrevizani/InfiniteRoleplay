@@ -23,23 +23,25 @@ namespace InfiniteRoleplay.Entities
         [NotMapped]
         public string NomeUsuario { get; set; }
 
-        public bool Verificar(int usuario)
+        public Personagem Verificar(int usuario)
         {
-            if (Global.PersonagensOnline.Any(x => x.Codigo == IDPersonagem))
-                return true;
+            var p = Global.PersonagensOnline.FirstOrDefault(x => x.Codigo == IDPersonagem);
+            if (p != null)
+                return p;
+
+            DataResposta = DateTime.Now;
+            UsuarioStaff = usuario;
+            TipoResposta = 3;
 
             using (var context = new RoleplayContext())
             {
-                DataResposta = DateTime.Now;
-                UsuarioStaff = usuario;
-                TipoResposta = 2;
                 context.SOSs.Update(this);
                 context.SaveChanges();
             }
 
             Global.SOSs.Remove(this);
 
-            return false;
+            return null;
         }
     }
 }

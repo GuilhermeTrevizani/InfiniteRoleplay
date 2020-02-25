@@ -103,32 +103,30 @@ namespace InfiniteRoleplay
             }
 
             var senhaCriptografada = Functions.Criptografar(senha);
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            var user = context.Usuarios.FirstOrDefault(x => x.Nome == usuario && x.Senha == senhaCriptografada);
+            if (user == null)
             {
-                var user = context.Usuarios.FirstOrDefault(x => x.Nome == usuario && x.Senha == senhaCriptografada);
-                if (user == null)
-                {
-                    NAPI.ClientEvent.TriggerClientEvent(player, "playerConnected", usuario, "Usuário ou senha inválidos!");
-                    return;
-                }
-
-                var banimento = context.Banimentos.FirstOrDefault(x => x.Usuario == user.Codigo);
-                if (!Functions.VerificarBanimento(player, banimento))
-                    return;
-
-                user.DataUltimoAcesso = DateTime.Now;
-                user.IPUltimoAcesso = player.Address;
-                user.SocialClubUltimoAcesso = player.SocialClubName;
-                context.Usuarios.Update(user);
-                context.SaveChanges();
-
-                Global.PersonagensOnline.Add(new Personagem()
-                {
-                    UsuarioBD = user,
-                });
-
-                EVENT_voltarSelecionarPersonagem(player);
+                NAPI.ClientEvent.TriggerClientEvent(player, "playerConnected", usuario, "Usuário ou senha inválidos!");
+                return;
             }
+
+            var banimento = context.Banimentos.FirstOrDefault(x => x.Usuario == user.Codigo);
+            if (!Functions.VerificarBanimento(player, banimento))
+                return;
+
+            user.DataUltimoAcesso = DateTime.Now;
+            user.IPUltimoAcesso = player.Address;
+            user.SocialClubUltimoAcesso = player.SocialClubName;
+            context.Usuarios.Update(user);
+            context.SaveChanges();
+
+            Global.PersonagensOnline.Add(new Personagem()
+            {
+                UsuarioBD = user,
+            });
+
+            EVENT_voltarSelecionarPersonagem(player);
         }
 
         [RemoteEvent("criarPersonagem")]
@@ -191,65 +189,63 @@ namespace InfiniteRoleplay
                 return;
             }
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            if (context.Personagens.Any(x => x.Nome == nomeCompleto))
             {
-                if (context.Personagens.Any(x => x.Nome == nomeCompleto))
-                {
-                    NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, $"Personagem {nomeCompleto} já existe!");
-                    return;
-                }
-
-                var personagem = new Personagem()
-                {
-                    Nome = nomeCompleto,
-                    Usuario = p.UsuarioBD.Codigo,
-                    Sexo = sexo,
-                    DataNascimento = dtNascimento,
-                    SocialClubRegistro = player.SocialClubName,
-                    SocialClubUltimoAcesso = player.SocialClubName,
-                    IPRegistro = player.Address,
-                    IPUltimoAcesso = player.Address,
-                    ID = Functions.ObterNovoID(),
-                    Skin = pedHash.ToString(),
-                };
-
-                var ultimoPersonagem = context.Personagens.LastOrDefault(x => x.Usuario == p.UsuarioBD.Codigo);
-                if (ultimoPersonagem != null)
-                {
-                    personagem.Banco += ultimoPersonagem.Dinheiro + ultimoPersonagem.Banco;
-
-                    foreach (var prop in ultimoPersonagem.Propriedades)
-                    {
-                        prop.Personagem = 0;
-                        personagem.Banco += prop.Valor;
-                        prop.CriarIdentificador();
-                        context.Propriedades.Update(prop);
-                    }
-
-                    var veiculos = context.Veiculos.Where(x => x.Personagem == ultimoPersonagem.Codigo).ToList();
-                    foreach(var veh in veiculos)
-                    {
-                        var preco = Global.Precos.FirstOrDefault(x => x.Tipo == (int)TipoPreco.CarrosMotos && x.Nome == veh.Modelo);
-                        personagem.Banco += preco?.Valor ?? 0; 
-                        context.Veiculos.Remove(veh);
-                    }
-
-                    personagem.Banco = Convert.ToInt32(personagem.Banco * (p.UsuarioBD.PossuiNamechange ? 0.75 : 0.25));
-                }
-
-                context.Personagens.Add(personagem);
-
-                p.UsuarioBD.PossuiNamechange = false;
-                context.Usuarios.Update(p.UsuarioBD);
-
-                context.SaveChanges();
-
-                var user = p.UsuarioBD;
-                Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(p)] = personagem;
-                Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(personagem)].UsuarioBD = user;
-
-                Functions.LogarPersonagem(player, personagem);
+                NAPI.ClientEvent.TriggerClientEvent(player, "criarPersonagem", nome, sobrenome, sexo, dataNascimento, skin, $"Personagem {nomeCompleto} já existe!");
+                return;
             }
+
+            var personagem = new Personagem()
+            {
+                Nome = nomeCompleto,
+                Usuario = p.UsuarioBD.Codigo,
+                Sexo = sexo,
+                DataNascimento = dtNascimento,
+                SocialClubRegistro = player.SocialClubName,
+                SocialClubUltimoAcesso = player.SocialClubName,
+                IPRegistro = player.Address,
+                IPUltimoAcesso = player.Address,
+                ID = Functions.ObterNovoID(),
+                Skin = pedHash.ToString(),
+            };
+
+            var ultimoPersonagem = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo).OrderByDescending(x => x.DataMorte).FirstOrDefault();
+            if (ultimoPersonagem != null)
+            {
+                personagem.Banco += ultimoPersonagem.Dinheiro + ultimoPersonagem.Banco;
+
+                foreach (var prop in ultimoPersonagem.Propriedades)
+                {
+                    prop.Personagem = 0;
+                    personagem.Banco += prop.Valor;
+                    prop.CriarIdentificador();
+                    context.Propriedades.Update(prop);
+                }
+
+                var veiculos = context.Veiculos.Where(x => x.Personagem == ultimoPersonagem.Codigo).ToList();
+                foreach (var veh in veiculos)
+                {
+                    var preco = Global.Precos.FirstOrDefault(x => x.Tipo == (int)TipoPreco.CarrosMotos && x.Nome == veh.Modelo);
+                    personagem.Banco += preco?.Valor ?? 0;
+                    context.Veiculos.Remove(veh);
+                }
+
+                personagem.Banco = Convert.ToInt32(personagem.Banco * (p.UsuarioBD.PossuiNamechange ? 0.75 : 0.25));
+            }
+
+            context.Personagens.Add(personagem);
+
+            p.UsuarioBD.PossuiNamechange = false;
+            context.Usuarios.Update(p.UsuarioBD);
+
+            context.SaveChanges();
+
+            var user = p.UsuarioBD;
+            Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(p)] = personagem;
+            Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(personagem)].UsuarioBD = user;
+
+            Functions.LogarPersonagem(player, personagem);
         }
 
         [RemoteEvent("selecionarPersonagem")]
@@ -259,29 +255,27 @@ namespace InfiniteRoleplay
             if (p == null || p?.ID > 0)
                 return;
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == id && x.Usuario == p.UsuarioBD.Codigo && x.DataMorte == null);
+            if (personagem == null)
             {
-                var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == id && x.Usuario == p.UsuarioBD.Codigo && x.DataMorte == null);
-                if (personagem == null)
-                {
-                    EVENT_voltarSelecionarPersonagem(player);
-                    return;
-                }
-
-                personagem.DataUltimoAcesso = DateTime.Now;
-                personagem.IPUltimoAcesso = player.Address;
-                personagem.SocialClubUltimoAcesso = player.SocialClubName;
-                personagem.ID = Functions.ObterNovoID();
-                personagem.Online = true;
-                context.Personagens.Update(personagem);
-                context.SaveChanges();
-
-                var user = p.UsuarioBD;
-                Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(p)] = personagem;
-                Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(personagem)].UsuarioBD = user;
-
-                Functions.LogarPersonagem(player, personagem);
+                EVENT_voltarSelecionarPersonagem(player);
+                return;
             }
+
+            personagem.DataUltimoAcesso = DateTime.Now;
+            personagem.IPUltimoAcesso = player.Address;
+            personagem.SocialClubUltimoAcesso = player.SocialClubName;
+            personagem.ID = Functions.ObterNovoID();
+            personagem.Online = true;
+            context.Personagens.Update(personagem);
+            context.SaveChanges();
+
+            var user = p.UsuarioBD;
+            Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(p)] = personagem;
+            Global.PersonagensOnline[Global.PersonagensOnline.IndexOf(personagem)].UsuarioBD = user;
+
+            Functions.LogarPersonagem(player, personagem);
         }
 
         [RemoteEvent("voltarSelecionarPersonagem")]
@@ -291,17 +285,15 @@ namespace InfiniteRoleplay
             if (p == null || p?.ID > 0)
                 return;
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            var personagens = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo && x.DataMorte == null).OrderBy(x => x.Codigo).Select(x => new { id = x.Codigo, nome = x.Nome }).ToList();
+            if (personagens.Count == 1)
             {
-                var personagens = context.Personagens.Where(x => x.Usuario == p.UsuarioBD.Codigo && x.DataMorte == null).OrderBy(x => x.Codigo).Select(x => new { id = x.Codigo, nome = x.Nome }).ToList();
-                if (personagens.Count == 1)
-                {
-                    EVENT_selecionarPersonagem(player, personagens.FirstOrDefault().id);
-                    return;
-                }
-
-                NAPI.ClientEvent.TriggerClientEvent(player, "selecionarPersonagem", personagens);
+                EVENT_selecionarPersonagem(player, personagens.FirstOrDefault().id);
+                return;
             }
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "selecionarPersonagem", personagens);
         }
 
         [RemoteEvent("comprarVeiculo")]

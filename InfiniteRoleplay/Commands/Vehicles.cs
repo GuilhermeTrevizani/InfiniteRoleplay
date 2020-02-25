@@ -167,19 +167,17 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            var veh = context.Veiculos.FirstOrDefault(x => x.Codigo == codigo);
+            if (veh?.Personagem != p.Codigo)
             {
-                var veh = context.Veiculos.FirstOrDefault(x => x.Codigo == codigo);
-                if (veh?.Personagem != p.Codigo)
-                {
-                    Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não é o proprietário do veículo!");
-                    return;
-                }
-
-                veh.Spawnar();
-                NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", veh.PosX, veh.PosY);
-                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você spawnou seu veículo!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não é o proprietário do veículo!");
+                return;
             }
+
+            veh.Spawnar();
+            NAPI.ClientEvent.TriggerClientEvent(player, "setWaypoint", veh.PosX, veh.PosY);
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você spawnou seu veículo!");
         }
 
         [Command("vlista", "!{#febd0c}USO:~w~ /vlista")]
@@ -192,19 +190,17 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            var veiculos = context.Veiculos.Where(x => x.Personagem == p.Codigo).ToList();
+            if (veiculos.Count == 0)
             {
-                var veiculos = context.Veiculos.Where(x => x.Personagem == p.Codigo).ToList();
-                if (veiculos.Count == 0)
-                {
-                    Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui veículos!");
-                    return;
-                }
-
-                Functions.EnviarMensagem(player, TipoMensagem.Titulo, $"Veículos de {p.Nome} [{p.Codigo}]");
-                foreach (var v in veiculos)
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Código: {v.Codigo} | Modelo: {v.Modelo} | Placa: {v.Placa} | Spawnado: {(Global.Veiculos.Any(x => x.Codigo == v.Codigo) ? "SIM" : "NÃO")}");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui veículos!");
+                return;
             }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Titulo, $"Veículos de {p.Nome} [{p.Codigo}]");
+            foreach (var v in veiculos)
+                Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Código: {v.Codigo} | Modelo: {v.Modelo} | Placa: {v.Placa} | Spawnado: {(Global.Veiculos.Any(x => x.Codigo == v.Codigo) ? "SIM" : "NÃO")}");
         }
 
         [Command("vvender", "!{#febd0c}USO:~w~ /vvender (ID ou nome) (valor)")]

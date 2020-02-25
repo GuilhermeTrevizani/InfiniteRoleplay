@@ -76,8 +76,8 @@ namespace InfiniteRoleplay
                 Global.ArmariosItens = context.ArmariosItens.ToList();
                 NAPI.Util.ConsoleOutput($"ArmariosItens: {Global.ArmariosItens.Count}");
 
-                Global.SOSs = context.SOSs.Where(x => x.DataResposta == null).ToList();
-                NAPI.Util.ConsoleOutput($"SOSs: {Global.SOSs.Count}");
+                context.Database.ExecuteSqlRaw("UPDATE SOSs SET DataResposta = now(), TipoResposta = 3");
+                NAPI.Util.ConsoleOutput("SOSs limpos");
             }
 
             Functions.CarregarSkins();
@@ -91,6 +91,7 @@ namespace InfiniteRoleplay
 
             Global.PersonagensOnline = new List<Personagem>();
             Global.Veiculos = new List<Veiculo>();
+            Global.SOSs = new List<SOS>();
 
             NAPI.TextLabel.CreateTextLabel("Prisão", Constants.PosicaoPrisao, 5, 2, 0, new Color(254, 189, 12));
             NAPI.TextLabel.CreateTextLabel("Use /prender", new Vector3(Constants.PosicaoPrisao.X, Constants.PosicaoPrisao.Y, Constants.PosicaoPrisao.Z - 0.1), 5, 1, 0, new Color(255, 255, 255));
@@ -122,20 +123,18 @@ namespace InfiniteRoleplay
             player.Name = player.SocialClubName;
             player.Dimension = (uint)new Random().Next(1, 1000);
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            if (!context.Whitelist.Any(x => x.SocialClub == player.SocialClubName))
             {
-                if (!context.Whitelist.Any(x => x.SocialClub == player.SocialClubName))
-                {
-                    NAPI.ClientEvent.TriggerClientEvent(player, "mensagem", $"Sua SocialClub ({player.SocialClubName}) não está na whitelist. Solicite em: <input type='text' class='form-control' value='https://discord.gg/53VHCrF'>");
-                    player.Kick();
-                    return;
-                }
-
-                if (!Functions.VerificarBanimento(player, context.Banimentos.FirstOrDefault(x => x.SocialClub == player.SocialClubName)))
-                    return;
-
-                NAPI.ClientEvent.TriggerClientEvent(player, "playerConnected", context.Usuarios.FirstOrDefault(x => x.SocialClubRegistro == player.SocialClubName)?.Nome ?? string.Empty, "");
+                NAPI.ClientEvent.TriggerClientEvent(player, "mensagem", $"Sua SocialClub ({player.SocialClubName}) não está na whitelist. Solicite em: <input type='text' class='form-control' value='https://discord.gg/53VHCrF'>");
+                player.Kick();
+                return;
             }
+
+            if (!Functions.VerificarBanimento(player, context.Banimentos.FirstOrDefault(x => x.SocialClub == player.SocialClubName)))
+                return;
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "playerConnected", context.Usuarios.FirstOrDefault(x => x.SocialClubRegistro == player.SocialClubName)?.Nome ?? string.Empty, "");
         }
 
         [ServerEvent(Event.PlayerDisconnected)]
@@ -168,16 +167,14 @@ namespace InfiniteRoleplay
                 var pos = new Vector3(343.8652, -1399.016, 32.50928);
                 if (p.TempoPrisao > 0)
                 {
-                    using (var context = new RoleplayContext())
-                    {
-                        var prisao = context.Prisoes.LastOrDefault(x => x.Preso == p.Codigo);
-                        if (prisao.Cela == 1)
-                            pos = new Vector3(460.4085, -994.0992, 25);
-                        else if (prisao.Cela == 2)
-                            pos = new Vector3(460.4085, -997.7994, 25);
-                        else if (prisao.Cela == 3)
-                            pos = new Vector3(460.4085, -1001.342, 25);
-                    }
+                    using var context = new RoleplayContext();
+                    var prisao = context.Prisoes.Where(x => x.Preso == p.Codigo).OrderByDescending(x => x.Codigo).FirstOrDefault();
+                    if (prisao.Cela == 1)
+                        pos = new Vector3(460.4085, -994.0992, 25);
+                    else if (prisao.Cela == 2)
+                        pos = new Vector3(460.4085, -997.7994, 25);
+                    else if (prisao.Cela == 3)
+                        pos = new Vector3(460.4085, -1001.342, 25);
                 }
 
                 NAPI.Player.SpawnPlayer(player, pos);

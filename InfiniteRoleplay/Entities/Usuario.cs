@@ -26,21 +26,15 @@ namespace InfiniteRoleplay.Entities
         {
             get
             {
-                switch(Staff)
+                return Staff switch
                 {
-                    case 1337:
-                        return "Manager";
-                    case 100:
-                        return "Lead Administrator";
-                    case 3:
-                        return "Game Administrator";
-                    case 2:
-                        return "Game Moderator";
-                    case 1:
-                        return "Helper";
-                    default:
-                        return Staff.ToString();
-                }
+                    1337 => "Manager",
+                    100 => "Lead Administrator",
+                    3 => "Game Administrator",
+                    2 => "Game Moderator",
+                    1 => "Helper",
+                    _ => Staff.ToString(),
+                };
             }
         }
     }

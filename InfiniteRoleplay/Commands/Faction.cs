@@ -283,26 +283,24 @@ namespace InfiniteRoleplay.Commands
 
             nomeCompleto = nomeCompleto.Replace("_", " ");
 
-            using (var context = new RoleplayContext())
+            using var context = new RoleplayContext();
+            var personagem = context.Personagens.FirstOrDefault(x => x.Nome.ToLower() == nomeCompleto.ToLower() && !x.Online);
+            if (personagem == null)
             {
-                var personagem = context.Personagens.FirstOrDefault(x => x.Nome.ToLower() == nomeCompleto.ToLower() && !x.Online);
-                if (personagem == null)
-                {
-                    Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Personagem {nomeCompleto} não encontrado ou está online!");
-                    return;
-                }
-
-                context.Multas.Add(new Entities.Multa()
-                {
-                    Motivo = motivo,
-                    PersonagemMultado = personagem.Codigo,
-                    PersonagemPolicial = p.Codigo,
-                    Valor = valor,
-                });
-                context.SaveChanges();
-
-                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {personagem.Nome} por ${valor:N0}. Motivo: {motivo}");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Personagem {nomeCompleto} não encontrado ou está online!");
+                return;
             }
+
+            context.Multas.Add(new Entities.Multa()
+            {
+                Motivo = motivo,
+                PersonagemMultado = personagem.Codigo,
+                PersonagemPolicial = p.Codigo,
+                Valor = valor,
+            });
+            context.SaveChanges();
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você multou {personagem.Nome} por ${valor:N0}. Motivo: {motivo}");
         }
 
         [Command("prender", "!{#febd0c}USO:~w~ /prender (ID ou nome) (cela [1-3]) (minutos)")]

@@ -265,14 +265,15 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var sos = Global.SOSs.FirstOrDefault(x => x.Codigo == codigo);
+            var sos = Global.SOSs.FirstOrDefault(x => x.IDPersonagem == codigo);
             if (sos == null)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"SOS {codigo} não existe!");
                 return;
             }
 
-            if (!sos.Verificar(p.Usuario))
+            var target = sos.Verificar(p.Usuario);
+            if (target == null)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Jogador do SOS não está conectado!");
                 return;
@@ -282,13 +283,15 @@ namespace InfiniteRoleplay.Commands
             sos.UsuarioStaff = p.UsuarioBD.Codigo;
             sos.TipoResposta = 1;
 
-            using (var context = new RoleplayContext())
-            {
-                context.SOSs.Update(sos);
-                context.SaveChanges();
-            }
+            using var context = new RoleplayContext();
+            context.SOSs.Update(sos);
+            context.SaveChanges();
+            Global.SOSs.Remove(sos);
 
-            Functions.EnviarMensagem(player, TipoMensagem.Erro, $"SOS {codigo} não existe!");
+            p.UsuarioBD.QuantidadeSOSAceitos++;
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você aceitou o SOS de {sos.NomePersonagem} [{sos.IDPersonagem}] ({sos.NomeUsuario})!");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} aceitou seu SOS!");
         }
 
         [Command("rj", "!{#febd0c}USO:~w~ /rj (código)")]
@@ -301,14 +304,15 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var sos = Global.SOSs.FirstOrDefault(x => x.Codigo == codigo);
+            var sos = Global.SOSs.FirstOrDefault(x => x.IDPersonagem == codigo);
             if (sos == null)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"SOS {codigo} não existe!");
                 return;
             }
 
-            if (!sos.Verificar(p.Usuario))
+            var target = sos.Verificar(p.Usuario);
+            if (target == null)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Jogador do SOS não está conectado!");
                 return;
@@ -316,12 +320,15 @@ namespace InfiniteRoleplay.Commands
 
             sos.DataResposta = DateTime.Now;
             sos.UsuarioStaff = p.UsuarioBD.Codigo;
+            sos.TipoResposta = 2;
 
-            using (var context = new RoleplayContext())
-            {
-                context.SOSs.Update(sos);
-                context.SaveChanges();
-            }
+            using var context = new RoleplayContext();
+            context.SOSs.Update(sos);
+            context.SaveChanges();
+            Global.SOSs.Remove(sos);
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você rejeitou o SOS de {sos.NomePersonagem} [{sos.IDPersonagem}] ({sos.NomeUsuario})!");
+            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} rejeitou seu SOS!");
         }
         #endregion Staff 1
 
