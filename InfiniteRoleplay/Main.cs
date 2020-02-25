@@ -27,7 +27,7 @@ namespace InfiniteRoleplay
             NAPI.World.SetWeather(Weather.CLEAR);
             NAPI.World.SetTime(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
 
-            NAPI.Server.SetCommandErrorMessage("!{#FF6A4D}<!>~w~ O comando informado não existe!");
+            NAPI.Server.SetCommandErrorMessage("!{#FF6A4D}O comando informado não existe! Use /ajuda para visualizar os comandos disponíveis.");
 
             var host = NAPI.Resource.GetSetting<string>(this, "db_host");
             var db = NAPI.Resource.GetSetting<string>(this, "db_database");
@@ -76,7 +76,7 @@ namespace InfiniteRoleplay
                 Global.ArmariosItens = context.ArmariosItens.ToList();
                 NAPI.Util.ConsoleOutput($"ArmariosItens: {Global.ArmariosItens.Count}");
 
-                context.Database.ExecuteSqlRaw("UPDATE SOSs SET DataResposta = now(), TipoResposta = 3");
+                context.Database.ExecuteSqlRaw("UPDATE SOSs SET DataResposta = now(), TipoResposta = 3 WHERE DataResposta is null");
                 NAPI.Util.ConsoleOutput("SOSs limpos");
             }
 

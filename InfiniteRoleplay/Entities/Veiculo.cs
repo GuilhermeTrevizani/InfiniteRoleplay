@@ -44,7 +44,6 @@ namespace InfiniteRoleplay.Entities
         public void Despawnar()
         {
             Vehicle?.Delete();
-            Vehicle = null;
             Global.Veiculos.Remove(this);
         }
     }

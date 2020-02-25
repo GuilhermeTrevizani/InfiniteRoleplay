@@ -1,5 +1,4 @@
 ﻿using GTANetworkAPI;
-using Newtonsoft.Json;
 
 namespace InfiniteRoleplay
 {

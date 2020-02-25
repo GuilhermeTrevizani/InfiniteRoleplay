@@ -859,11 +859,11 @@ namespace InfiniteRoleplay.Commands
         public void CMD_sos(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
-            /*if (p?.UsuarioBD?.Staff > 0)
+            if (p?.UsuarioBD?.Staff > 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
                 return;
-            }*/
+            }
 
             if (Global.SOSs.Any(x => x.IDPersonagem == p.ID))
             {
