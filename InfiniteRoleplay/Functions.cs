@@ -43,7 +43,7 @@ namespace InfiniteRoleplay
 
         public static void LogarPersonagem(Player player, Personagem p)
         {
-            p.Convites = new List<Models.Convite>();
+            p.Convites = new List<Convite>();
             player.Name = $"{p.Nome} [{p.ID}]";
             player.Dimension = (uint)p.Dimensao;
             p.IPLs = JsonConvert.DeserializeObject<List<string>>(p.IPL);

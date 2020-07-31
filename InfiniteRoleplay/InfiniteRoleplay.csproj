@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\RAGEMP\server-files\dotnet\resources\infiniteroleplay\</OutputPath>
+    <OutputPath>C:\RAGEMPSERVER\dotnet\resources\infiniteroleplay\</OutputPath>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>

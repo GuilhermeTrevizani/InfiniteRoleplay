@@ -376,7 +376,7 @@ namespace InfiniteRoleplay.Commands
             Functions.EnviarMensagem(target.Player, TipoMensagem.Nenhum, $"{p.Nome} prendeu você na cela {cela} por {minutos} minuto{(minutos > 1 ? "s" : string.Empty)}.");
         }
 
-        [Command("algemar", "!{#febd0c}USO:~w~ /agelmar (ID ou nome)")]
+        [Command("algemar", "!{#febd0c}USO:~w~ /algemar (ID ou nome)")]
         public void CMD_algemar(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);

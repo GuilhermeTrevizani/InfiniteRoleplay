@@ -1216,7 +1216,7 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/eranknome {fac} {rank} {nome}", p, null);
         }
 
-        [Command("ranks", "!{#febd0c}USO:~w~ /rabks (facção)")]
+        [Command("ranks", "!{#febd0c}USO:~w~ /ranks (facção)")]
         public void CMD_ranks(Player player, int fac)
         {
             var p = Functions.ObterPersonagem(player);
