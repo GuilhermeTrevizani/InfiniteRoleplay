@@ -285,10 +285,10 @@ namespace InfiniteRoleplay
         public static void MostrarStats(Player player, Personagem p)
         {
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Registro: {p.DataRegistro.ToString()}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Registro: {p.DataRegistro}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Tempo Conectado (minutos): {p.TempoConectado} | Celular: {p.Celular} | Emprego: {ObterDisplayEnum((TipoEmprego)p.Emprego)}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro:N0} | Banco: ${p.Banco:N0}");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {((PedHash)p.Player.Model).ToString()} | Vida: {p.Player.Health} | Colete: {p.Player.Armor} | Tempo de Prisão: {p.TempoPrisao}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {(PedHash)p.Player.Model} | Vida: {p.Player.Health} | Colete: {p.Player.Armor} | Tempo de Prisão: {p.TempoPrisao}");
 
             if (p.UsuarioBD.Staff > 0)
                 EnviarMensagem(player, TipoMensagem.Nenhum, $"Staff: {p.UsuarioBD.NomeStaff} [{p.UsuarioBD.Staff}] | Tempo Serviço Administrativo (minutos): {p.UsuarioBD.TempoTrabalhoAdministrativo} | SOSs Aceitos: {p.UsuarioBD.QuantidadeSOSAceitos}");
@@ -327,7 +327,7 @@ namespace InfiniteRoleplay
                 var staff = context.Usuarios.FirstOrDefault(x => x.Codigo == ban.UsuarioStaff)?.Nome;
                 var strBan = ban.Expiracao == null ? " permanentemente." : $". Seu banimento expira em: {ban.Expiracao?.ToString()}";
 
-                NAPI.ClientEvent.TriggerClientEvent(player, "mensagem", $"Você está banido{strBan}<br/>Data: {ban.Data.ToString()} | Motivo: {ban.Motivo} | Staff: {staff}");
+                NAPI.ClientEvent.TriggerClientEvent(player, "mensagem", $"Você está banido{strBan}<br/>Data: {ban.Data} | Motivo: {ban.Motivo} | Staff: {staff}");
             }
 
             player.Kick();

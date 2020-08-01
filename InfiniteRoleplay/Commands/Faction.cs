@@ -190,15 +190,23 @@ namespace InfiniteRoleplay.Commands
         public void CMD_duty(Player player)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial && p?.FaccaoBD?.Tipo != (int)TipoFaccao.Medica)
+            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial && p?.FaccaoBD?.Tipo != (int)TipoFaccao.Medica && p?.Emprego == 0)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou médica!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou médica e não possui um emprego!");
                 return;
             }
 
             p.IsEmTrabalho = !p.IsEmTrabalho;
-            foreach (var pl in Global.PersonagensOnline.Where(x => x.Faccao == p.Faccao))
-                Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"{p.RankBD.Nome} {p.Nome} {(p.IsEmTrabalho ? "entrou em" : "saiu de")} serviço!");
+
+            if (p?.Faccao == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(p.IsEmTrabalho ? "entrou em" : "saiu de")} serviço!");
+            }
+            else
+            {
+                foreach (var pl in Global.PersonagensOnline.Where(x => x.Faccao == p.Faccao))
+                    Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, "!{#" + p.FaccaoBD.Cor + "}" + $"{p.RankBD.Nome} {p.Nome} {(p.IsEmTrabalho ? "entrou em" : "saiu de")} serviço!");
+            }
         }
 
         [Command("sairfaccao", "!{#febd0c}USO:~w~ /sairfaccao")]
