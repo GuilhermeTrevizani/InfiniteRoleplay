@@ -439,5 +439,8 @@ namespace InfiniteRoleplay.Commands
                 Functions.EnviarMensagem(pl.Player, TipoMensagem.Nenhum, mensagem);
             }
         }
+
+        [Command("armario", "!{#febd0c}USO:~w~ /armario")]
+        public void CMD_armario(Player player) => Functions.AbrirArmario(player, 0, 0, string.Empty);
     }
 }

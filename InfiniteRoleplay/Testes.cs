@@ -32,19 +32,6 @@ namespace InfiniteRoleplay
         }*/
         #endregion
 
-        [Command("w")]
-        public void CMD_w(Player player, string arma, int municao)
-        {
-            var weaponHash = NAPI.Util.WeaponNameToModel(arma);
-            if (weaponHash == 0)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {arma} não existe!");
-                return;
-            }
-
-            player.GiveWeapon(weaponHash, municao);
-        }
-
         [Command("p")]
         public void CMD_p(Player player)
         {

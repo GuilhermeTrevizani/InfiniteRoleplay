@@ -1326,5 +1326,51 @@ namespace InfiniteRoleplay
             foreach (var pl in Global.PersonagensOnline.Where(x => x.Emprego == tipo && x.IsEmTrabalho))
                 EnviarMensagem(pl.Player, TipoMensagem.Nenhum, mensagem);
         }
+
+        public static void AbrirArmario(Player player, int arm, int tipoMensagem, string mensagem)
+        {
+            var p = ObterPersonagem(player);
+            if (p?.Faccao == 0 || p?.Rank == 0)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção!");
+                return;
+            }
+
+            var armario = new Armario();
+            if (arm == 0)
+            {
+                foreach (var x in Global.Armarios)
+                {
+                    if (armario.Codigo == 0 && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2 && x.Faccao == p.Faccao)
+                        armario = x;
+                }
+
+                if (armario.Codigo == 0)
+                {
+                    EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum armário da sua facção!");
+                    return;
+                }
+            }
+            else
+            {
+                armario = Global.Armarios.FirstOrDefault(x => x.Codigo == arm);
+            }
+
+            var itens = Global.ArmariosItens.Where(x => x.Codigo == armario.Codigo).OrderBy(x => x.Rank).ThenBy(x => x.Arma)
+            .Select(x => new
+            {
+                x.Arma,
+                x.Municao,
+                x.Estoque,
+                Rank = Global.Ranks.FirstOrDefault(y => y.Faccao == p.Faccao && y.Codigo == x.Rank).Nome,
+            }).ToList();
+            if (itens.Count == 0)
+            {
+                EnviarMensagem(player, TipoMensagem.Erro, "O armário não possui itens!");
+                return;
+            }
+
+            NAPI.ClientEvent.TriggerClientEvent(player, "comandoArmario", armario.Codigo, p.FaccaoBD.Nome, itens, tipoMensagem, mensagem);
+        }
     }
 }

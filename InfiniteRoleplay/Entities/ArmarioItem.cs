@@ -7,7 +7,7 @@
         public int Municao { get; set; } = 1;
         public int Estoque { get; set; } = 0;
         public int Pintura { get; set; } = 0;
-        public int Rank { get; set; } = 0;
+        public int Rank { get; set; } = 1;
         public string Componentes { get; set; } = "[]";
     }
 }

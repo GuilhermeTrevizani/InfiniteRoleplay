@@ -634,5 +634,31 @@ namespace InfiniteRoleplay
 
             context.SaveChanges();
         }
+
+        [RemoteEvent("equiparItemArmario")]
+        public void EVENT_equiparItemArmario(Player player, int armario, string wep)
+        {
+            var weapon = NAPI.Util.WeaponNameToModel(wep);
+            var arma = Global.ArmariosItens.FirstOrDefault(x => x.Codigo == armario && x.Arma == weapon.ToString());
+            if ((arma?.Estoque ?? 0) == 0)
+            {
+                Functions.AbrirArmario(player, armario, 1, $"{weapon} não possui estoque!");
+                return;
+            }
+
+            if (player.GetWeaponAmmo(weapon) > 0)
+            {
+                Functions.AbrirArmario(player, armario, 1, $"Você já possui {weapon}!");
+                return;
+            }
+
+            player.GiveWeapon(weapon, arma.Municao);
+            arma.Estoque--;
+            using var context = new RoleplayContext();
+            context.ArmariosItens.Update(arma);
+            context.SaveChanges();
+
+            Functions.AbrirArmario(player, armario, 0, $"Você equipou {weapon}!");
+        }
     }
 }
