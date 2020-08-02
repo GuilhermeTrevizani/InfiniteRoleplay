@@ -44,7 +44,7 @@ namespace InfiniteRoleplay.Entities
         public float RotZ { get; set; } = 149.1595f;
         public DateTime? DataMorte { get; set; } = null;
         public string MotivoMorte { get; set; } = string.Empty;
-        public int Emprego { get; set; } = 0;
+        public TipoEmprego Emprego { get; set; } = TipoEmprego.Nenhum;
 
         [NotMapped]
         public int ID { get; set; }

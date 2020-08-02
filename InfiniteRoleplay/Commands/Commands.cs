@@ -111,7 +111,7 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Emprego", "/sairemprego", "Sai do emprego"),
                 });
 
-                if (p.Emprego == (int)TipoEmprego.Taxista)
+                if (p.Emprego == TipoEmprego.Taxista)
                     listaComandos.AddRange(new List<Comando>()
                     {
                         new Comando("Emprego", "/taxiduty", "Entra ou sai de serviço como taxista"),
@@ -129,7 +129,7 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Facção", "/sairfaccao"),
                 });
 
-                if (p.FaccaoBD.Tipo == (int)TipoFaccao.Policial)
+                if (p.FaccaoBD.Tipo == TipoFaccao.Policial)
                     listaComandos.AddRange(new List<Comando>()
                     {
                         new Comando("Facção Policial", "/m"),
@@ -139,7 +139,7 @@ namespace InfiniteRoleplay.Commands
                         new Comando("Facção Policial", "/prender"),
                         new Comando("Facção Policial", "/algemar"),
                     });
-                else if (p.FaccaoBD.Tipo == (int)TipoFaccao.Medica)
+                else if (p.FaccaoBD.Tipo == TipoFaccao.Medica)
 
                     listaComandos.AddRange(new List<Comando>()
                     {
@@ -608,7 +608,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (!Global.Pontos.Any(x => (x.Tipo == (int)TipoPonto.Banco || x.Tipo == (int)TipoPonto.ATM) && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2) && p.Celular == 0)
+            if (!Global.Pontos.Any(x => (x.Tipo == TipoPonto.Banco || x.Tipo == TipoPonto.ATM) && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2) && p.Celular == 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um banco/ATM ou não possui um celular!");
                 return;
@@ -648,7 +648,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (!Global.Pontos.Any(x => (x.Tipo == (int)TipoPonto.Banco || x.Tipo == (int)TipoPonto.ATM) && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            if (!Global.Pontos.Any(x => (x.Tipo == TipoPonto.Banco || x.Tipo == TipoPonto.ATM) && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um banco/ATM!");
                 return;
@@ -684,7 +684,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.Banco && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            if (!Global.Pontos.Any(x => x.Tipo == TipoPonto.Banco && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um banco!");
                 return;
@@ -714,13 +714,13 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.LojaConveniencia && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            if (!Global.Pontos.Any(x => x.Tipo == TipoPonto.LojaConveniencia && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma loja de conveniência!");
                 return;
             }
 
-            NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Conveniencia).OrderBy(x => x.Nome).Select(x => new
+            NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", Global.Precos.Where(x => x.Tipo == TipoPreco.Conveniencia).OrderBy(x => x.Nome).Select(x => new
             {
                 x.Nome,
                 Preco = $"${x.Valor:N0}",
@@ -737,7 +737,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.LojaRoupas && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            if (!Global.Pontos.Any(x => x.Tipo == TipoPonto.LojaRoupas && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma loja de roupas!");
                 return;
@@ -780,7 +780,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             Functions.EnviarMensagem(player, TipoMensagem.Titulo, "Jogadores trabalhando");
-            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Policiais: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == (int)TipoFaccao.Policial && x.IsEmTrabalho)} | Médicos: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == (int)TipoFaccao.Medica && x.IsEmTrabalho)} | Taxistas: {Global.PersonagensOnline.Count(x => x.Emprego == (int)TipoEmprego.Taxista && x.IsEmTrabalho)}");
+            Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Policiais: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == TipoFaccao.Policial && x.IsEmTrabalho)} | Médicos: {Global.PersonagensOnline.Count(x => x.FaccaoBD?.Tipo == TipoFaccao.Medica && x.IsEmTrabalho)} | Taxistas: {Global.PersonagensOnline.Count(x => x.Emprego == TipoEmprego.Taxista && x.IsEmTrabalho)}");
         }
 
         [Command("sairemprego", "!{#febd0c}USO:~w~ /sairemprego")]
@@ -807,7 +807,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (p.FaccaoBD?.Tipo == (int)TipoFaccao.Policial || p.FaccaoBD?.Tipo == (int)TipoFaccao.Medica)
+            if (p.FaccaoBD?.Tipo == TipoFaccao.Policial || p.FaccaoBD?.Tipo == TipoFaccao.Medica)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não pode pegar um emprego pois está em uma facção governamental!");
                 return;
@@ -826,7 +826,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            p.Emprego = (int)emprego;
+            p.Emprego = emprego;
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você pegou o emprego {Functions.ObterDisplayEnum(emprego)}!");
         }
 

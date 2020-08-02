@@ -6,7 +6,7 @@ namespace InfiniteRoleplay.Entities
     public class Propriedade
     {
         public int Codigo { get; set; }
-        public int Interior { get; set; } = 0;
+        public TipoInterior Interior { get; set; }
         public int Valor { get; set; } = 0;
         public int Personagem { get; set; } = 0;
         public float EntradaPosX { get; set; } = 0;

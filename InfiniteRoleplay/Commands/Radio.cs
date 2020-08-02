@@ -32,13 +32,13 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if (canal == 911 && p.FaccaoBD?.Tipo != (int)TipoFaccao.Policial)
+            if (canal == 911 && p.FaccaoBD?.Tipo != TipoFaccao.Policial)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Canal 911 é reservado para facções policiais!");
                 return;
             }
 
-            if (canal == 912 && p.FaccaoBD?.Tipo != (int)TipoFaccao.Medica)
+            if (canal == 912 && p.FaccaoBD?.Tipo != TipoFaccao.Medica)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Canal 912 é reservado para facções médicas!");
                 return;

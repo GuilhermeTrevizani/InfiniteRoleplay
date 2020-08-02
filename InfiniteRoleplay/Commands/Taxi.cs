@@ -9,7 +9,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_taxiduty(Player player)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.Emprego != (int)TipoEmprego.Taxista)
+            if (p?.Emprego != TipoEmprego.Taxista)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não é um taxista!");
                 return;
@@ -23,7 +23,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_taxicha(Player player)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.Emprego != (int)TipoEmprego.Taxista || !p.IsEmTrabalho)
+            if (p?.Emprego != TipoEmprego.Taxista || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em serviço como taxista!");
                 return;
@@ -51,7 +51,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_taxiac(Player player, int chamada)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.Emprego != (int)TipoEmprego.Taxista || !p.IsEmTrabalho)
+            if (p?.Emprego != TipoEmprego.Taxista || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em serviço como taxista!");
                 return;

@@ -177,7 +177,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_m(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial)
+            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -190,7 +190,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_duty(Player player)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial && p?.FaccaoBD?.Tipo != (int)TipoFaccao.Medica && p?.Emprego == 0)
+            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial && p?.FaccaoBD?.Tipo != TipoFaccao.Medica && p?.Emprego == 0)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou médica e não possui um emprego!");
                 return;
@@ -228,7 +228,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_multar(Player player, string idNome, int valor, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
+            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -271,7 +271,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_multaroff(Player player, string nomeCompleto, int valor, string motivo)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
+            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -315,7 +315,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_prender(Player player, string idNome, int cela, int minutos)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
+            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -388,7 +388,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_algemar(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != (int)TipoFaccao.Policial || !p.IsEmTrabalho)
+            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;

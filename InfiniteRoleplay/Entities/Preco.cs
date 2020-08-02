@@ -2,7 +2,7 @@
 {
     public class Preco
     {
-        public int Tipo { get; set; }
+        public TipoPreco Tipo { get; set; }
         public string Nome { get; set; }
         public int Valor { get; set; }
     }

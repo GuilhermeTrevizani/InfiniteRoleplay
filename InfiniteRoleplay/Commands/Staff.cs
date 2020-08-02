@@ -154,7 +154,7 @@ namespace InfiniteRoleplay.Commands
                     Duracao = 0,
                     Motivo = motivo,
                     Personagem = target.Codigo,
-                    Tipo = (int)TipoPunicao.Kick,
+                    Tipo = TipoPunicao.Kick,
                     UsuarioStaff = p.UsuarioBD.Codigo,
                 });
                 context.SaveChanges();
@@ -250,7 +250,7 @@ namespace InfiniteRoleplay.Commands
 
             foreach (var x in Global.SOSs.OrderBy(x => x.Data))
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Titulo, $"SOS de {x.NomePersonagem} [{x.IDPersonagem}] ({x.NomeUsuario}) | {x.Data.ToString()}");
+                Functions.EnviarMensagem(player, TipoMensagem.Titulo, $"SOS de {x.NomePersonagem} [{x.IDPersonagem}] ({x.NomeUsuario}) | {x.Data}");
                 Functions.EnviarMensagem(player, TipoMensagem.Nenhum, x.Mensagem);
             }
         }
@@ -477,7 +477,7 @@ namespace InfiniteRoleplay.Commands
                     Duracao = dias,
                     Motivo = motivo,
                     Personagem = target.Codigo,
-                    Tipo = (int)TipoPunicao.Ban,
+                    Tipo = TipoPunicao.Ban,
                     UsuarioStaff = p.UsuarioBD.Codigo,
                 });
                 context.SaveChanges();
@@ -530,7 +530,7 @@ namespace InfiniteRoleplay.Commands
                 Duracao = dias,
                 Motivo = motivo,
                 Personagem = per.Codigo,
-                Tipo = (int)TipoPunicao.Ban,
+                Tipo = TipoPunicao.Ban,
                 UsuarioStaff = p.UsuarioBD.Codigo,
             });
             context.SaveChanges();
@@ -851,7 +851,7 @@ namespace InfiniteRoleplay.Commands
             {
                 Nome = nome,
                 Cor = "FFFFFF",
-                Tipo = tipo,
+                Tipo = (TipoFaccao)tipo,
             };
 
             using (var context = new RoleplayContext())
@@ -924,7 +924,7 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            Global.Faccoes[Global.Faccoes.IndexOf(faccao)].Tipo = tipo;
+            Global.Faccoes[Global.Faccoes.IndexOf(faccao)].Tipo = (TipoFaccao)tipo;
 
             using (var context = new RoleplayContext())
             {
@@ -1341,7 +1341,7 @@ namespace InfiniteRoleplay.Commands
 
             var prop = new Entities.Propriedade()
             {
-                Interior = interior,
+                Interior = (TipoInterior)interior,
                 EntradaPosX = player.Position.X,
                 EntradaPosY = player.Position.Y,
                 EntradaPosZ = player.Position.Z,
@@ -1459,7 +1459,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             var pos = Functions.ObterPosicaoPorInterior((TipoInterior)interior);
-            Global.Propriedades[Global.Propriedades.IndexOf(prop)].Interior = interior;
+            Global.Propriedades[Global.Propriedades.IndexOf(prop)].Interior = (TipoInterior)interior;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosX = pos.X;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosY = pos.Y;
             Global.Propriedades[Global.Propriedades.IndexOf(prop)].SaidaPosZ = pos.Z;
@@ -1584,7 +1584,8 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            if ((TipoPreco)tipo == TipoPreco.CarrosMotos)
+            var tp = (TipoPreco)tipo;
+            if (tp == TipoPreco.CarrosMotos)
             {
                 var veh = NAPI.Util.VehicleNameToModel(nome);
                 if ((int)veh == 0)
@@ -1597,12 +1598,12 @@ namespace InfiniteRoleplay.Commands
 
             using (var context = new RoleplayContext())
             {
-                var preco = Global.Precos.FirstOrDefault(x => x.Tipo == tipo && x.Nome.ToLower() == nome.ToLower());
+                var preco = Global.Precos.FirstOrDefault(x => x.Tipo == tp && x.Nome.ToLower() == nome.ToLower());
                 if (preco == null)
                 {
                     preco = new Entities.Preco()
                     {
-                        Tipo = tipo,
+                        Tipo = tp,
                         Nome = nome,
                         Valor = valor,
                     };
@@ -1618,7 +1619,7 @@ namespace InfiniteRoleplay.Commands
                 context.SaveChanges();
             }
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Preço com tipo {tipo} e nome {nome} criado/editado com sucesso!");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Preço com tipo {Functions.ObterDisplayEnum(tp)} ({tipo}) e nome {nome} criado/editado com sucesso!");
             Functions.GravarLog(TipoLog.Staff, $"/cpreco {tipo} {nome} {valor}", p, null);
         }
 
@@ -1632,10 +1633,11 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var preco = Global.Precos.FirstOrDefault(x => x.Tipo == tipo && x.Nome.ToLower() == nome.ToLower());
+            var tp = (TipoPreco)tipo;
+            var preco = Global.Precos.FirstOrDefault(x => x.Tipo == tp && x.Nome.ToLower() == nome.ToLower());
             if (preco == null)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Preço com tipo {tipo} e nome {nome} não existe!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Preço com tipo {Functions.ObterDisplayEnum(tp)} ({tipo}) e nome {nome} não existe!");
                 return;
             }
 
@@ -1646,7 +1648,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             Global.Precos.Remove(preco);
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Preço com tipo {tipo} e nome {nome} removido com sucesso!");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Preço com tipo {Functions.ObterDisplayEnum(tp)} ({tipo}) e nome {nome} removido com sucesso!");
             Functions.GravarLog(TipoLog.Staff, $"/rpreco {tipo} {nome}", p, null);
         }
 
@@ -1671,7 +1673,7 @@ namespace InfiniteRoleplay.Commands
                 PosX = player.Position.X,
                 PosY = player.Position.Y,
                 PosZ = player.Position.Z,
-                Tipo = tipo,
+                Tipo = (TipoPonto)tipo,
             };
 
             using (var context = new RoleplayContext())
@@ -1991,7 +1993,7 @@ namespace InfiniteRoleplay.Commands
 
             if (Global.ArmariosItens.Any(x => x.Codigo == armario && x.Arma == wep.ToString()))
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {wep.ToString()} já existe no armário {armario}!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {wep} já existe no armário {armario}!");
                 return;
             }
 
@@ -2039,7 +2041,7 @@ namespace InfiniteRoleplay.Commands
             var item = Global.ArmariosItens.FirstOrDefault(x => x.Codigo == armario && x.Arma == wep.ToString());
             if (item == null)
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {wep.ToString()} não existe no armário {armario}!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Arma {wep} não existe no armário {armario}!");
                 return;
             }
             using (var context = new RoleplayContext())

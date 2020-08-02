@@ -5,7 +5,7 @@ namespace InfiniteRoleplay.Entities
     public class Punicao
     {
         public int Codigo { get; set; }
-        public int Tipo { get; set; }
+        public TipoPunicao Tipo { get; set; }
         public int Duracao { get; set; }
         public DateTime Data { get; set; }
         public int Personagem { get; set; }

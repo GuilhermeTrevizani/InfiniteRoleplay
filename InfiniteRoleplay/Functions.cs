@@ -204,7 +204,7 @@ namespace InfiniteRoleplay
         {
             EnviarMensagem(player, TipoMensagem.Titulo, $"Informações de {p.Nome} [{p.Codigo}]");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"OOC: {p.UsuarioBD.Nome} | SocialClub: {p.Player.SocialClubName} | Registro: {p.DataRegistro}");
-            EnviarMensagem(player, TipoMensagem.Nenhum, $"Tempo Conectado (minutos): {p.TempoConectado} | Celular: {p.Celular} | Emprego: {ObterDisplayEnum((TipoEmprego)p.Emprego)}");
+            EnviarMensagem(player, TipoMensagem.Nenhum, $"Tempo Conectado (minutos): {p.TempoConectado} | Celular: {p.Celular} | Emprego: {ObterDisplayEnum(p.Emprego)}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Sexo: {p.Sexo} | Nascimento: {p.DataNascimento.ToShortDateString()} | Dinheiro: ${p.Dinheiro:N0} | Banco: ${p.Banco:N0}");
             EnviarMensagem(player, TipoMensagem.Nenhum, $"Skin: {(PedHash)p.Player.Model} | Vida: {p.Player.Health} | Colete: {p.Player.Armor} | Tempo de Prisão: {p.TempoPrisao}");
 
@@ -258,7 +258,7 @@ namespace InfiniteRoleplay
             context.Logs.Add(new Log()
             {
                 Data = DateTime.Now,
-                Tipo = (int)tipo,
+                Tipo = tipo,
                 Descricao = descricao,
                 PersonagemOrigem = origem.Codigo,
                 IPOrigem = origem.Player.Address,
@@ -379,7 +379,7 @@ namespace InfiniteRoleplay
 
         public static void EnviarMensagemTipoFaccao(TipoFaccao tipo, string mensagem, bool isSomenteParaTrabalho, bool isCorFaccao)
         {
-            var players = Global.PersonagensOnline.Where(x => x.FaccaoBD?.Tipo == (int)tipo);
+            var players = Global.PersonagensOnline.Where(x => x.FaccaoBD?.Tipo == tipo);
 
             if (isSomenteParaTrabalho)
                 players = players.Where(x => x.IsEmTrabalho);
@@ -405,7 +405,7 @@ namespace InfiniteRoleplay
                 }
             }
 
-            var veiculos = Global.Precos.Where(x => x.Tipo == tipo).OrderBy(x => x.Nome).Select(x => new
+            var veiculos = Global.Precos.Where(x => x.Tipo == (TipoPreco)tipo).OrderBy(x => x.Nome).Select(x => new
             {
                 x.Nome,
                 Preco = $"${x.Valor:N0}",
@@ -448,7 +448,7 @@ namespace InfiniteRoleplay
                 return;
             }
 
-            if (!Global.Pontos.Any(x => x.Tipo == (int)TipoPonto.Multas && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
+            if (!Global.Pontos.Any(x => x.Tipo == TipoPonto.Multas && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2))
             {
                 EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum ponto de pagamento de multas!");
                 return;
@@ -1323,7 +1323,7 @@ namespace InfiniteRoleplay
 
         public static void EnviarMensagemEmprego(TipoEmprego tipo, string mensagem)
         {
-            foreach (var pl in Global.PersonagensOnline.Where(x => x.Emprego == (int)tipo && x.IsEmTrabalho))
+            foreach (var pl in Global.PersonagensOnline.Where(x => x.Emprego == tipo && x.IsEmTrabalho))
                 EnviarMensagem(pl.Player, TipoMensagem.Nenhum, mensagem);
         }
     }

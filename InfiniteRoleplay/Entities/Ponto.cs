@@ -6,7 +6,7 @@ namespace InfiniteRoleplay.Entities
     public class Ponto
     {
         public int Codigo { get; set; }
-        public int Tipo { get; set; } = 0;
+        public TipoPonto Tipo { get; set; } = 0;
         public float PosX { get; set; } = 0;
         public float PosY { get; set; } = 0;
         public float PosZ { get; set; } = 0;

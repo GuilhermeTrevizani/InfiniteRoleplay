@@ -216,7 +216,7 @@ namespace InfiniteRoleplay
                 var veiculos = context.Veiculos.Where(x => x.Personagem == ultimoPersonagem.Codigo).ToList();
                 foreach (var veh in veiculos)
                 {
-                    var preco = Global.Precos.FirstOrDefault(x => x.Tipo == (int)TipoPreco.CarrosMotos && x.Nome == veh.Modelo);
+                    var preco = Global.Precos.FirstOrDefault(x => x.Tipo != TipoPreco.Conveniencia && x.Nome == veh.Modelo);
                     personagem.Banco += preco?.Valor ?? 0;
                     context.Veiculos.Remove(veh);
                 }
@@ -299,7 +299,7 @@ namespace InfiniteRoleplay
                 return;
             }
 
-            var preco = Global.Precos.FirstOrDefault(x => x.Tipo == tipo && x.Nome.ToLower() == veiculo.ToLower());
+            var preco = Global.Precos.FirstOrDefault(x => x.Tipo == (TipoPreco)tipo && x.Nome.ToLower() == veiculo.ToLower());
             if (preco == null)
             {
                 Functions.ComprarVeiculo(player, tipo, "Veículo não está disponível para compra!");
@@ -430,14 +430,13 @@ namespace InfiniteRoleplay
             if (p == null)
                 return;
 
-            var precos = Global.Precos.Where(x => x.Tipo == (int)TipoPreco.Conveniencia).OrderBy(x => x.Nome).Select(x => new
+            var precos = Global.Precos.Where(x => x.Tipo == TipoPreco.Conveniencia).OrderBy(x => x.Nome).Select(x => new
             {
                 x.Nome,
                 Preco = $"${x.Valor:N0}",
             }).ToList();
 
-            var preco = Global.Precos.FirstOrDefault(x => x.Nome == nome && x.Tipo == (int)TipoPreco.Conveniencia);
-
+            var preco = Global.Precos.FirstOrDefault(x => x.Nome == nome && x.Tipo == TipoPreco.Conveniencia);
             if (p.Dinheiro < preco.Valor)
             {
                 NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", precos, 1, "Você não possui dinheiro suficiente!");

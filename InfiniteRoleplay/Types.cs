@@ -1,4 +1,6 @@
-﻿namespace InfiniteRoleplay
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace InfiniteRoleplay
 {
     public enum TipoMensagem
     {
@@ -140,11 +142,20 @@
 
     public enum TipoPreco
     {
+        [Display(Name = "Carros e Motos")]
         CarrosMotos = 1,
+
+        [Display(Name = "Conveniência")]
         Conveniencia = 2,
+
         Barcos = 3,
+
+        [Display(Name = "Helicópteros")]
         Helicopteros = 4,
+
         Industrial = 5,
+
+        [Display(Name = "Aviões")]
         Avioes = 6,
     }
 
