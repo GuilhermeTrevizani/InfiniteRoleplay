@@ -214,7 +214,7 @@ namespace InfiniteRoleplay.Commands
             target.LimparLigacao(true);
         }
 
-        [Command("cel", "!{#febd0c}USO:~w~ /cel")]
+        [Command("celular", "!{#febd0c}USO:~w~ /cel", Alias = "cel")]
         public void CMD_cel(Player player) => Functions.AbrirCelular(player, string.Empty, 0);
 
         [Command("gps", "!{#febd0c}USO:~w~ /gps (propriedade)")]

@@ -49,7 +49,7 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Celular", "/desligar /des"),
                 new Comando("Celular", "/ligar"),
                 new Comando("Celular", "/atender"),
-                new Comando("Celular", "/cel"),
+                new Comando("Celular", " /celular /cel"),
                 new Comando("Celular", "/gps"),
                 new Comando("Veículos", "/vcomprar"),
                 new Comando("Veículos", "/motor"),
