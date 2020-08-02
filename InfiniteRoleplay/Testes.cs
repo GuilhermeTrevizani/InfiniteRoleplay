@@ -75,12 +75,6 @@ namespace InfiniteRoleplay
             NAPI.Util.ConsoleOutput($"{player.Vehicle.Rotation.X.ToString().Replace(",", ".")}, {player.Vehicle.Rotation.Y.ToString().Replace(",", ".")}, {player.Vehicle.Rotation.Z.ToString().Replace(",", ".")}");
         }
 
-        [Command("teta")]
-        public void CMD_rottata(Player player)
-        {
-            NAPI.ClientEvent.TriggerClientEvent(player, "teta");
-        }
-
         [Command("cenario")]
         public void CMD_cenario(Player player, int opc)
         {
@@ -391,6 +385,18 @@ namespace InfiniteRoleplay
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Motor Health: {NAPI.Vehicle.GetVehicleEngineHealth(player.Vehicle)}");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Body Health: {NAPI.Vehicle.GetVehicleBodyHealth(player.Vehicle)}");
             Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Health: {player.Vehicle.Health}");
+        }
+
+        [Command("ca")]
+        public void CMD_ca(Player player, int slot, int drawable, int texture)
+        {
+            player.SetAccessories(slot, drawable, texture);
+        }
+
+        [Command("cc")]
+        public void CMD_cc(Player player, int slot, int drawable, int texture)
+        {
+            player.SetClothes(slot, drawable, texture);
         }
     }
 }

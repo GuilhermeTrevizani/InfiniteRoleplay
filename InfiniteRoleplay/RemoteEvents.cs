@@ -1,6 +1,9 @@
 ﻿using GTANetworkAPI;
 using InfiniteRoleplay.Entities;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -483,6 +486,154 @@ namespace InfiniteRoleplay
             }
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoComprar", precos, 2, strMensagem);
+        }
+
+        [RemoteEvent("salvarPersonagem")]
+        public void EVENT_salvarPersonagem(Player player, string weapons, bool online)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p == null)
+                return;
+
+            var armas = new List<PersonagemArma>();
+            foreach (var x in weapons.Split(";").Where(x => !string.IsNullOrWhiteSpace(x)))
+            {
+                var y = x.Split("|");
+                long.TryParse(y.First(), out long arma);
+                int.TryParse(y.Last(), out int municao);
+                armas.Add(new PersonagemArma()
+                {
+                    Codigo = p.Codigo,
+                    Arma = ((WeaponHash)arma).ToString(),
+                    Municao = municao,
+                });
+            }
+
+            var dif = DateTime.Now - p.DataUltimaVerificacao;
+            if (dif.TotalMinutes >= 1)
+            {
+                p.TempoConectado++;
+                p.DataUltimaVerificacao = DateTime.Now;
+
+                if (p.TempoPrisao > 0)
+                {
+                    p.TempoPrisao--;
+                    if (p.TempoPrisao == 0)
+                    {
+                        p.Player.Position = new Vector3(432.8367, -981.7594, 30.71048);
+                        p.Player.Rotation = new Vector3(0, 0, 86.37479);
+                        Functions.EnviarMensagem(p.Player, TipoMensagem.Sucesso, $"Seu tempo de prisão acabou e você foi libertado!");
+                    }
+                }
+
+                if (p.TempoConectado % 60 == 0)
+                {
+                    var salario = 0;
+                    if (p.Faccao > 0)
+                        salario += p.RankBD.Salario;
+                    else if (p.Emprego > 0)
+                        salario += Global.Parametros.ValorIncentivoGovernamental;
+
+                    if (Convert.ToInt32(p.TempoConectado / 60) <= Global.Parametros.HorasIncentivoInicial)
+                        salario += Global.Parametros.ValorIncentivoInicial;
+
+                    p.Banco += salario;
+                    if (salario > 0)
+                        Functions.EnviarMensagem(p.Player, TipoMensagem.Sucesso, $"Seu salário de ${salario:N0} foi depositado no banco!");
+                }
+
+                if (p.IsEmTrabalhoAdministrativo)
+                    p.UsuarioBD.TempoTrabalhoAdministrativo++;
+            }
+
+            if (!online && p.Celular > 0)
+            {
+                p.LimparLigacao();
+                var pLigando = Global.PersonagensOnline.FirstOrDefault(x => x.NumeroLigacao == p.Celular);
+                if (pLigando != null)
+                {
+                    pLigando.LimparLigacao();
+                    Functions.EnviarMensagem(pLigando.Player, TipoMensagem.Nenhum, "!{#e6a250}" + $"[CELULAR] Sua ligação para {pLigando.ObterNomeContato(p.Celular)} caiu!");
+                }
+            }
+
+            using var context = new RoleplayContext();
+            var personagem = context.Personagens.FirstOrDefault(x => x.Codigo == p.Codigo);
+            personagem.Online = online;
+            personagem.Skin = ((PedHash)p.Player.Model).ToString();
+            personagem.PosX = p.Player.Position.X;
+            personagem.PosY = p.Player.Position.Y;
+            personagem.PosZ = p.Player.Position.Z;
+            personagem.Vida = p.Player.Health;
+            personagem.Colete = p.Player.Armor;
+            personagem.Dimensao = p.Player.Dimension;
+            personagem.TempoConectado = p.TempoConectado;
+            personagem.Faccao = p.Faccao;
+            personagem.Rank = p.Rank;
+            personagem.Dinheiro = p.Dinheiro;
+            personagem.Celular = p.Celular;
+            personagem.Banco = p.Banco;
+            personagem.IPL = JsonConvert.SerializeObject(p.IPLs);
+            personagem.CanalRadio = p.CanalRadio;
+            personagem.CanalRadio2 = p.CanalRadio2;
+            personagem.CanalRadio3 = p.CanalRadio3;
+            personagem.TempoPrisao = p.TempoPrisao;
+            personagem.RotX = p.Player.Rotation.X;
+            personagem.RotY = p.Player.Rotation.Y;
+            personagem.RotZ = p.Player.Rotation.Z;
+            personagem.DataMorte = p.DataMorte;
+            personagem.MotivoMorte = p.MotivoMorte;
+            personagem.Emprego = p.Emprego;
+            personagem.DataUltimoAcesso = DateTime.Now;
+            personagem.IPUltimoAcesso = p.Player.Address;
+            context.Personagens.Update(personagem);
+
+            context.Database.ExecuteSqlRaw($"DELETE FROM PersonagensContatos WHERE Codigo = {p.Codigo}");
+            context.Database.ExecuteSqlRaw($"DELETE FROM PersonagensRoupas WHERE Codigo = {p.Codigo}");
+            context.Database.ExecuteSqlRaw($"DELETE FROM PersonagensAcessorios WHERE Codigo = {p.Codigo}");
+            context.Database.ExecuteSqlRaw($"DELETE FROM PersonagensArmas WHERE Codigo = {p.Codigo}");
+
+            var roupas = new List<PersonagemRoupa>();
+            for (var i = 1; i <= 11; i++)
+                roupas.Add(new PersonagemRoupa()
+                {
+                    Codigo = p.Codigo,
+                    Slot = i,
+                    Drawable = p.Player.GetClothesDrawable(i),
+                    Texture = p.Player.GetClothesTexture(i),
+                });
+
+            var acessorios = new List<PersonagemAcessorio>();
+            for (var i = 0; i <= 7; i++)
+                acessorios.Add(new PersonagemAcessorio()
+                {
+                    Codigo = p.Codigo,
+                    Slot = i,
+                    Drawable = p.Player.GetAccessoryDrawable(i),
+                    Texture = p.Player.GetAccessoryTexture(i),
+                });
+
+            if (p.Contatos.Count > 0)
+                context.PersonagensContatos.AddRange(p.Contatos);
+
+            if (roupas.Count > 0)
+                context.PersonagensRoupas.AddRange(roupas);
+
+            if (acessorios.Count > 0)
+                context.PersonagensAcessorios.AddRange(acessorios);
+
+            if (armas.Count > 0)
+                context.PersonagensArmas.AddRange(armas);
+
+            var usuario = context.Usuarios.FirstOrDefault(x => x.Codigo == p.UsuarioBD.Codigo);
+            usuario.Staff = p.UsuarioBD.Staff;
+            usuario.TempoTrabalhoAdministrativo = p.UsuarioBD.TempoTrabalhoAdministrativo;
+            usuario.QuantidadeSOSAceitos = p.UsuarioBD.QuantidadeSOSAceitos;
+            usuario.DataUltimoAcesso = DateTime.Now;
+            usuario.IPUltimoAcesso = p.Player.Address;
+            context.Usuarios.Update(usuario);
+
+            context.SaveChanges();
         }
     }
 }
