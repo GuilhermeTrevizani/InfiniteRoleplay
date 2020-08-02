@@ -336,7 +336,7 @@ namespace InfiniteRoleplay
 
             using (var context = new RoleplayContext())
             {
-                context.Veiculos.Update(veh);
+                context.Veiculos.Add(veh);
                 context.SaveChanges();
             }
 
@@ -646,6 +646,13 @@ namespace InfiniteRoleplay
                 return;
             }
 
+            var p = Functions.ObterPersonagem(player);
+            if (p.Rank < arma.Rank)
+            {
+                Functions.AbrirArmario(player, armario, 1, $"Você não possui autorização para pegar {weapon}!");
+                return;
+            }
+
             if (player.GetWeaponAmmo(weapon) > 0)
             {
                 Functions.AbrirArmario(player, armario, 1, $"Você já possui {weapon}!");
@@ -658,7 +665,7 @@ namespace InfiniteRoleplay
             context.ArmariosItens.Update(arma);
             context.SaveChanges();
 
-            Functions.AbrirArmario(player, armario, 0, $"Você equipou {weapon}!");
+            Functions.AbrirArmario(player, armario, 2, $"Você equipou {weapon}!");
         }
     }
 }

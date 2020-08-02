@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace InfiniteRoleplay.Commands
 {
@@ -385,44 +386,6 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.Staff, $"/colete {colete}", p, target);
         }
 
-        [Command("skinc", "!{#febd0c}USO:~w~ /skinc (ID ou nome) (slot) (drawable) (texture)")]
-        public void CMD_skinc(Player player, string idNome, int slot, int drawable, int texture)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p?.UsuarioBD?.Staff < 2)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
-                return;
-            }
-
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
-            if (target == null)
-                return;
-
-            target.Player.SetClothes(slot, drawable, texture);
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou sua roupa no slot {slot} para desenho {drawable} e textura {texture}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou a roupa de {target.Nome} no slot {slot} para desenho {drawable} e textura {texture}.");
-        }
-
-        [Command("skina", "!{#febd0c}USO:~w~ /skina (ID ou nome) (slot) (drawable) (texture)")]
-        public void CMD_skina(Player player, string idNome, int slot, int drawable, int texture)
-        {
-            var p = Functions.ObterPersonagem(player);
-            if (p?.UsuarioBD?.Staff < 2)
-            {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
-                return;
-            }
-
-            var target = Functions.ObterPersonagemPorIdNome(player, idNome);
-            if (target == null)
-                return;
-
-            target.Player.SetAccessories(slot, drawable, texture);
-            Functions.EnviarMensagem(target.Player, TipoMensagem.Sucesso, $"{p.UsuarioBD.Nome} alterou seu acessório no slot {slot} para desenho {drawable} e textura {texture}.");
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você alterou o acessório de {target.Nome} no slot {slot} para desenho {drawable} e textura {texture}.");
-        }
-
         [Command("checar", "!{#febd0c}USO:~w~ /checar (ID ou nome)")]
         public void CMD_checar(Player player, string idNome)
         {
@@ -648,38 +611,47 @@ namespace InfiniteRoleplay.Commands
             var isTemAlgoProximo = false;
             var distanceVer = 5f;
 
-            foreach (var b in Global.Blips)
+            foreach (var x in Global.Blips)
             {
-                if (player.Position.DistanceTo(new Vector3(b.PosX, b.PosY, b.PosZ)) <= distanceVer)
+                if (player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= distanceVer)
                 {
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Blip {b.Codigo} | Inativo: {(b.Inativo ? "SIM" : "NÃO")}");
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Blip {x.Codigo} | Inativo: {(x.Inativo ? "SIM" : "NÃO")}");
                     isTemAlgoProximo = true;
                 }
             }
 
-            foreach (var prop in Global.Propriedades)
+            foreach (var x in Global.Propriedades)
             {
-                if (player.Position.DistanceTo(new Vector3(prop.EntradaPosX, prop.EntradaPosY, prop.EntradaPosZ)) <= distanceVer)
+                if (player.Position.DistanceTo(new Vector3(x.EntradaPosX, x.EntradaPosY, x.EntradaPosZ)) <= distanceVer)
                 {
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Propriedade {prop.Codigo}");
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Propriedade {x.Codigo}");
                     isTemAlgoProximo = true;
                 }
             }
 
-            foreach (var ponto in Global.Pontos)
+            foreach (var x in Global.Pontos)
             {
-                if (player.Position.DistanceTo(new Vector3(ponto.PosX, ponto.PosY, ponto.PosZ)) <= distanceVer)
+                if (player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= distanceVer)
                 {
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Ponto {ponto.Codigo}");
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Ponto {x.Codigo}");
                     isTemAlgoProximo = true;
                 }
             }
 
-            foreach (var armario in Global.Armarios)
+            foreach (var x in Global.Armarios)
             {
-                if (player.Position.DistanceTo(new Vector3(armario.PosX, armario.PosY, armario.PosZ)) <= distanceVer)
+                if (player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= distanceVer)
                 {
-                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Armário {armario.Codigo}");
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Armário {x.Codigo}");
+                    isTemAlgoProximo = true;
+                }
+            }
+
+            foreach (var x in Global.Veiculos)
+            {
+                if (player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= distanceVer)
+                {
+                    Functions.EnviarMensagem(player, TipoMensagem.Nenhum, $"Veículo {x.Codigo} | Modelo: {x.Modelo}");
                     isTemAlgoProximo = true;
                 }
             }
@@ -2100,8 +2072,15 @@ namespace InfiniteRoleplay.Commands
         [Command("earmirank", "!{#febd0c}USO:~w~ /earmirank (armário) (arma) (rank)")]
         public void CMD_earmirank(Player player, int armario, string arma, int rank)
         {
+            var arm = Global.Armarios.FirstOrDefault(x => x.Codigo == armario);
+            if (arm == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Armário {armario} não existe!");
+                return;
+            }
+
             var p = Functions.ObterPersonagem(player);
-            if (p?.UsuarioBD?.Staff < 1337)
+            if (!(p?.UsuarioBD?.Staff >= 1337 || (p.Faccao == arm.Faccao && p.Rank >= p.FaccaoBD.RankLider)))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
                 return;
@@ -2121,7 +2100,6 @@ namespace InfiniteRoleplay.Commands
                 return;
             }
 
-            var arm = Global.Armarios.FirstOrDefault(x => x.Codigo == armario);
             if (!Global.Ranks.Any(x => x.Faccao == arm.Faccao && x.Codigo == rank))
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Rank {rank} não existe na facção {arm.Faccao}!");
@@ -2180,6 +2158,161 @@ namespace InfiniteRoleplay.Commands
 
             Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Estoque da arma {item.Arma} no armário {armario} alterado para {estoque}!");
             Functions.GravarLog(TipoLog.Staff, $"/earmiest {armario} {item.Arma} {estoque}", p, null);
+        }
+
+        [Command("cveh", "!{#febd0c}USO:~w~ /cveh (modelo) (facção) (cor1) (cor2)")]
+        public void CMD_cveh(Player player, string modelo, int faccao, int cor1, int cor2)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var veh = NAPI.Util.VehicleNameToModel(modelo);
+            if (veh == 0)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Modelo {modelo} não existe!");
+                return;
+            }
+
+            var faction = Global.Faccoes.FirstOrDefault(x => x.Codigo == faccao);
+            if (faction == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Facção {faccao} não existe!");
+                return;
+            }
+
+            var veiculo = new Entities.Veiculo()
+            {
+                PosX = player.Position.X,
+                PosY = player.Position.Y,
+                PosZ = player.Position.Z,
+                RotX = player.Rotation.X,
+                RotY = player.Rotation.Y,
+                RotZ = player.Rotation.Z,
+                Faccao = faccao,
+                Placa = Functions.GerarPlacaVeiculo(),
+                Cor1R = cor1,
+                Cor2R = cor2,
+                Modelo = veh.ToString(),
+            };
+
+            using (var context = new RoleplayContext())
+            {
+                context.Veiculos.Add(veiculo);
+                context.SaveChanges();
+            }
+
+            veiculo.Spawnar();
+            NAPI.Task.Run(() =>
+            {
+                player.SetIntoVehicle(veiculo.Vehicle, (int)VehicleSeat.Driver);
+            }, 500);
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Veículo {veiculo.Codigo} criado com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/cveh {veiculo.Codigo} {veh} {faccao} {cor1} {cor2}", p, null);
+        }
+
+        [Command("rveh", "!{#febd0c}USO:~w~ /rveh (código)")]
+        public void CMD_rveh(Player player, int codigo)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var veh = Global.Veiculos.FirstOrDefault(x => x.Codigo == codigo && x.Faccao != 0);
+            if (veh == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Veículo {codigo} não existe ou não pertence a uma facção!");
+                return;
+            }
+
+            veh.Despawnar();
+
+            using (var context = new RoleplayContext())
+            {
+                context.Veiculos.Remove(veh);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Veículo {veh.Codigo} removido com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/rveh {veh.Codigo}", p, null);
+        }
+
+        [Command("evehpos", "!{#febd0c}USO:~w~ /evehpos")]
+        public void CMD_evehpos(Player player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            if (!player.IsInVehicle)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em um veículo!");
+                return;
+            }
+
+            var veh = Global.Veiculos.FirstOrDefault(x => x.Vehicle == player.Vehicle && x.Faccao != 0);
+            if (veh == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Você não está em um veículo que pertence a uma facção!");
+                return;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                veh.PosX = player.Vehicle.Position.X;
+                veh.PosY = player.Vehicle.Position.Y;
+                veh.PosZ = player.Vehicle.Position.Z;
+                veh.RotX = player.Vehicle.Rotation.X;
+                veh.RotY = player.Vehicle.Rotation.Y;
+                veh.RotZ = player.Vehicle.Rotation.Z;
+                context.Veiculos.Update(veh);
+                context.SaveChanges();
+            }
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Posição do veículo {veh.Codigo} alterada com sucesso!");
+            Functions.GravarLog(TipoLog.Staff, $"/evehpos {veh.Codigo} X: {player.Vehicle.Position.X} Y: {player.Vehicle.Position.Y} Z: {player.Vehicle.Position.Z} RX: {player.Vehicle.Rotation.X} RY: {player.Vehicle.Rotation.Y} RZ: {player.Vehicle.Rotation.Z}", p, null);
+        }
+
+        [Command("evehcor", "!{#febd0c}USO:~w~ /evehcor (código) (cor1) (cor2)")]
+        public void CMD_evehcor(Player player, int codigo, int cor1, int cor2)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.UsuarioBD?.Staff < 1337)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui autorização para usar esse comando!");
+                return;
+            }
+
+            var veh = Global.Veiculos.FirstOrDefault(x => x.Codigo == codigo && x.Faccao != 0);
+            if (veh == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, $"Veículo não existe ou não pertence a uma facção!");
+                return;
+            }
+
+            using (var context = new RoleplayContext())
+            {
+                veh.Cor1R = cor1;
+                veh.Cor2R = cor2;
+                context.Veiculos.Update(veh);
+                context.SaveChanges();
+            }
+
+            NAPI.Vehicle.SetVehicleCustomPrimaryColor(veh.Vehicle, veh.Cor1R, veh.Cor1G, veh.Cor1B);
+            NAPI.Vehicle.SetVehicleCustomSecondaryColor(veh.Vehicle, veh.Cor2R, veh.Cor2G, veh.Cor2B);
+
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Cores do veículo {veh.Codigo} alteradas para {cor1} e {cor2}!");
+            Functions.GravarLog(TipoLog.Staff, $"/evehcor {veh.Codigo} {cor1} {cor2}", p, null);
         }
         #endregion Staff 1337
     }

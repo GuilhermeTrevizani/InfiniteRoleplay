@@ -22,6 +22,7 @@ namespace InfiniteRoleplay.Entities
         public float Vida { get; set; } = 0;
         public int Personagem { get; set; } = 0;
         public string Placa { get; set; } = string.Empty;
+        public int Faccao { get; set; } = 0;
 
         [NotMapped]
         public Vehicle Vehicle { get; set; }

@@ -139,8 +139,8 @@ namespace InfiniteRoleplay.Commands
             Functions.GravarLog(TipoLog.FaccaoGestor, $"/rank {rank}", p, target);
         }
 
-        [Command("demitir", "!{#febd0c}USO:~w~ /demitir (ID ou nome)")]
-        public void CMD_demitir(Player player, string idNome)
+        [Command("expulsar", "!{#febd0c}USO:~w~ /expulsar (ID ou nome)")]
+        public void CMD_expulsar(Player player, string idNome)
         {
             var p = Functions.ObterPersonagem(player);
             if (p?.Faccao == 0 || p?.Rank == 0 || p?.Rank < p?.FaccaoBD?.RankGestor)
@@ -177,7 +177,7 @@ namespace InfiniteRoleplay.Commands
         public void CMD_m(Player player, string mensagem)
         {
             var p = Functions.ObterPersonagem(player);
-            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial)
+            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial || !p.IsEmTrabalho)
             {
                 Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
                 return;
@@ -353,7 +353,7 @@ namespace InfiniteRoleplay.Commands
             switch (cela)
             {
                 case 1:
-                    pos = new Vector3(460.4085, -994.0992, 25); 
+                    pos = new Vector3(460.4085, -994.0992, 25);
                     break;
                 case 2:
                     pos = new Vector3(460.4085, -997.7994, 25);
@@ -442,5 +442,26 @@ namespace InfiniteRoleplay.Commands
 
         [Command("armario", "!{#febd0c}USO:~w~ /armario")]
         public void CMD_armario(Player player) => Functions.AbrirArmario(player, 0, 0, string.Empty);
+
+        [Command("pegarcolete", "!{#febd0c}USO:~w~ /pegarcolete")]
+        public void CMD_pegarcolete(Player player)
+        {
+            var p = Functions.ObterPersonagem(player);
+            if (p?.FaccaoBD?.Tipo != TipoFaccao.Policial || !p.IsEmTrabalho)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está em uma facção policial ou não está em serviço!");
+                return;
+            }
+
+            var armario = Global.Armarios.FirstOrDefault(x => player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2 && x.Faccao == p.Faccao);
+            if (armario == null)
+            {
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum armário da sua facção!");
+                return;
+            }
+
+            player.Armor = 100;
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, "Você pegou colete.");
+        }
     }
 }

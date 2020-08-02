@@ -26,15 +26,15 @@ namespace InfiniteRoleplay.Commands
             }
 
             var veh = Global.Veiculos.FirstOrDefault(x => x.Vehicle == player.Vehicle);
-            if (veh.Personagem != p.Codigo)
+            if (veh.Personagem != p.Codigo && (veh.Faccao != p.Faccao || veh.Faccao == 0))
             {
-                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não é o proprietário do veículo!");
+                Functions.EnviarMensagem(player, TipoMensagem.Erro, "Você não possui acesso ao veículo!");
                 return;
             }
 
-            player.Vehicle.EngineStatus = !player.Vehicle.EngineStatus;
-            veh.Motor = player.Vehicle.EngineStatus;
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(!player.Vehicle.EngineStatus ? "des" : string.Empty)}ligou o motor do veículo!");
+            veh.Motor = !veh.Motor;
+            player.Vehicle.EngineStatus = veh.Motor;
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você {(!veh.Motor ? "des" : string.Empty)}ligou o motor do veículo!");
         }
 
         [Command("vtrancar", "!{#febd0c}USO:~w~ /vtrancar")]
@@ -48,7 +48,7 @@ namespace InfiniteRoleplay.Commands
             }
 
             var veh = Global.Veiculos
-                .Where(x => x.Personagem == p.Codigo && player.Position.DistanceTo(new Vector3(x.Vehicle.Position.X, x.Vehicle.Position.Y, x.Vehicle.Position.Z)) <= 5)
+                .Where(x => (x.Personagem == p.Codigo || (x.Faccao == p.Faccao && x.Faccao != 0)) && player.Position.DistanceTo(new Vector3(x.Vehicle.Position.X, x.Vehicle.Position.Y, x.Vehicle.Position.Z)) <= 5)
                 .OrderBy(x => player.Position.DistanceTo(new Vector3(x.Vehicle.Position.X, x.Vehicle.Position.Y, x.Vehicle.Position.Z)))
                 .FirstOrDefault();
 

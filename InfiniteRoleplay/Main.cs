@@ -45,8 +45,8 @@ namespace InfiniteRoleplay
                 NAPI.Util.ConsoleOutput("Parametros carregados");
 
                 Global.Blips = context.Blips.ToList();
-                foreach (var b in Global.Blips)
-                    b.CriarIdentificador();
+                foreach (var x in Global.Blips)
+                    x.CriarIdentificador();
                 NAPI.Util.ConsoleOutput($"Blips: {Global.Blips.Count}");
 
                 Global.Faccoes = context.Faccoes.ToList();
@@ -56,21 +56,21 @@ namespace InfiniteRoleplay
                 NAPI.Util.ConsoleOutput($"Ranks: {Global.Ranks.Count}");
 
                 Global.Propriedades = context.Propriedades.ToList();
-                foreach (var p in Global.Propriedades)
-                    p.CriarIdentificador();
+                foreach (var x in Global.Propriedades)
+                    x.CriarIdentificador();
                 NAPI.Util.ConsoleOutput($"Propriedades: {Global.Propriedades.Count}");
 
                 Global.Precos = context.Precos.ToList();
                 NAPI.Util.ConsoleOutput($"Precos: {Global.Precos.Count}");
 
                 Global.Pontos = context.Pontos.ToList();
-                foreach (var p in Global.Pontos)
-                    p.CriarIdentificador();
+                foreach (var x in Global.Pontos)
+                    x.CriarIdentificador();
                 NAPI.Util.ConsoleOutput($"Pontos: {Global.Pontos.Count}");
 
                 Global.Armarios = context.Armarios.ToList();
-                foreach (var a in Global.Armarios)
-                    a.CriarIdentificador();
+                foreach (var x in Global.Armarios)
+                    x.CriarIdentificador();
                 NAPI.Util.ConsoleOutput($"Armarios: {Global.Armarios.Count}");
 
                 Global.ArmariosItens = context.ArmariosItens.ToList();
@@ -78,6 +78,12 @@ namespace InfiniteRoleplay
 
                 context.Database.ExecuteSqlRaw("UPDATE SOSs SET DataResposta = now(), TipoResposta = 3 WHERE DataResposta is null");
                 NAPI.Util.ConsoleOutput("SOSs limpos");
+
+                Global.Veiculos = new List<Veiculo>();
+                var veiculos = context.Veiculos.Where(x => x.Faccao != 0).ToList();
+                foreach (var x in veiculos)
+                    x.Spawnar();
+                NAPI.Util.ConsoleOutput($"Veiculos: {Global.Veiculos.Count}");
             }
 
             Functions.CarregarSkins();
@@ -90,7 +96,6 @@ namespace InfiniteRoleplay
             NAPI.Util.ConsoleOutput($"Empregos: {Global.Empregos.Count}");
 
             Global.PersonagensOnline = new List<Personagem>();
-            Global.Veiculos = new List<Veiculo>();
             Global.SOSs = new List<SOS>();
 
             NAPI.TextLabel.CreateTextLabel("Prisão", Constants.PosicaoPrisao, 5, 2, 0, new Color(254, 189, 12));

@@ -79,6 +79,8 @@ namespace InfiniteRoleplay
                 }
             }
 
+            NAPI.Player.SetPlayerCurrentWeapon(player, WeaponHash.Unarmed);
+
             GravarLog(TipoLog.Entrada, string.Empty, p, null);
 
             NAPI.ClientEvent.TriggerClientEvent(player, "logarPersonagem");
@@ -416,9 +418,18 @@ namespace InfiniteRoleplay
 
         public static string GerarPlacaVeiculo()
         {
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            var random = new Random();
-            return $"{chars[random.Next(25)]}{chars[random.Next(25)]}{random.Next(0, 99999).ToString().PadLeft(5, '0')}{chars[random.Next(25)]}";
+            var placa = string.Empty;
+            var existePlaca = true;
+            while (existePlaca)
+            {
+                var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                var random = new Random();
+                placa = $"{chars[random.Next(25)]}{chars[random.Next(25)]}{random.Next(0, 99999).ToString().PadLeft(5, '0')}{chars[random.Next(25)]}";
+                using var context = new RoleplayContext();
+                existePlaca = context.Veiculos.Any(x => x.Placa == placa);
+            }
+
+            return placa;
         }
 
         public static void AbrirCelular(Player player, string msg, int tipoMsg)
@@ -1339,13 +1350,9 @@ namespace InfiniteRoleplay
             var armario = new Armario();
             if (arm == 0)
             {
-                foreach (var x in Global.Armarios)
-                {
-                    if (armario.Codigo == 0 && player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2 && x.Faccao == p.Faccao)
-                        armario = x;
-                }
+                armario = Global.Armarios.FirstOrDefault(x => player.Position.DistanceTo(new Vector3(x.PosX, x.PosY, x.PosZ)) <= 2 && x.Faccao == p.Faccao);
 
-                if (armario.Codigo == 0)
+                if (armario == null)
                 {
                     EnviarMensagem(player, TipoMensagem.Erro, "Você não está próximo de nenhum armário da sua facção!");
                     return;

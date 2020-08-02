@@ -20,10 +20,10 @@ namespace InfiniteRoleplay.Commands
             {
                 new Comando("Teclas", "F2", "Jogadores online"),
                 new Comando("Teclas", "F3", "Mostrar/ocultar cursor"),
-                new Comando("Geral", "/stats"),
-                new Comando("Geral", "/id"),
-                new Comando("Geral", "/aceitar /ac"),
-                new Comando("Geral", "/recusar /rc"),
+                new Comando("Geral", "/stats", "Mostra as informações do seu personagem"),
+                new Comando("Geral", "/id", "Procura o ID de um personagem"),
+                new Comando("Geral", "/aceitar /ac", "Aceita um convite"),
+                new Comando("Geral", "/recusar /rc", "Recusa um convite"),
                 new Comando("Geral", "/pagar"),
                 new Comando("Geral", "/revistar"),
                 new Comando("Geral", "/multas"),
@@ -43,28 +43,28 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Chat IC", "/g"),
                 new Comando("Chat IC", "/baixo"),
                 new Comando("Chat IC", "/s"),
-                new Comando("Chat OOC", "/b"),
-                new Comando("Chat OOC", "/pm"),
-                new Comando("Celular", "/sms"),
-                new Comando("Celular", "/desligar /des"),
-                new Comando("Celular", "/ligar"),
-                new Comando("Celular", "/atender"),
-                new Comando("Celular", " /celular /cel"),
-                new Comando("Celular", "/gps"),
-                new Comando("Veículos", "/vcomprar"),
-                new Comando("Veículos", "/motor"),
-                new Comando("Veículos", "/vtrancar"),
-                new Comando("Veículos", "/vcomprarvaga"),
-                new Comando("Veículos", "/vestacionar"),
-                new Comando("Veículos", "/vspawn"),
-                new Comando("Veículos", "/vlista"),
-                new Comando("Veículos", "/vvender"),
-                new Comando("Banco", "/depositar"),
-                new Comando("Banco", "/sacar"),
-                new Comando("Banco", "/transferir"),
-                new Comando("Animações", "/stopanim /sa"),
-                new Comando("Animações", "/crossarms"),
-                new Comando("Animações", "/handsup /hs"),
+                new Comando("Chat OOC", "/b", "Chat OOC local"),
+                new Comando("Chat OOC", "/pm", "Chat OOC privado"),
+                new Comando("Celular", "/sms", "Envia um SMS"),
+                new Comando("Celular", "/desligar /des", "Desliga a ligação"),
+                new Comando("Celular", "/ligar", "Liga para um número"),
+                new Comando("Celular", "/atender", "Atende uma ligação"),
+                new Comando("Celular", " /celular /cel", "Abre o celular"),
+                new Comando("Celular", "/gps", "Traça rota para uma propriedade"),
+                new Comando("Veículos", "/vcomprar", "Compra um veículo em um concessionária"),
+                new Comando("Veículos", "/motor", "Liga/desliga o motor de um veículo"),
+                new Comando("Veículos", "/vtrancar", "Tranca/destranca um veículo"),
+                new Comando("Veículos", "/vcomprarvaga", "Compra uma vaga para estacionar um veículo"),
+                new Comando("Veículos", "/vestacionar", "Estaciona um veículo"),
+                new Comando("Veículos", "/vspawn", "Spawna um veículo"),
+                new Comando("Veículos", "/vlista", "Mostra seus veículos"),
+                new Comando("Veículos", "/vvender", "Vende um veículo para outro personagem"),
+                new Comando("Banco", "/depositar", "Deposita dinheiro no banco"),
+                new Comando("Banco", "/sacar", "Saca dinheiro do banco"),
+                new Comando("Banco", "/transferir", "Transfere dinheiro para outro personagem"),
+                new Comando("Animações", "/stopanim /sa","Para as animações"),
+                new Comando("Animações", "/crossarms", "Cruza os braços"),
+                new Comando("Animações", "/handsup /hs", "Levanta as mãos"),
                 new Comando("Animações", "/smoke"),
                 new Comando("Animações", "/lean"),
                 new Comando("Animações", "/police"),
@@ -97,11 +97,11 @@ namespace InfiniteRoleplay.Commands
                 new Comando("Animações", "/bar"),
                 new Comando("Animações", "/necessidades"),
                 new Comando("Animações", "/meth"),
-                new Comando("Animações", "/mijar"),
-                new Comando("Rádio", "/canal"),
-                new Comando("Rádio", "/r"),
-                new Comando("Rádio", "/r2"),
-                new Comando("Rádio", "/r3"),
+                new Comando("Animações", "/mijar", "Mija"),
+                new Comando("Rádio", "/canal", "Troca os canais de rádio"),
+                new Comando("Rádio", "/r", "Fala no canal de rádio principal"),
+                new Comando("Rádio", "/r2", "Fala no canal de rádio secundário"),
+                new Comando("Rádio", "/r3", "Fala no canal de rádio terciário"),
             };
 
             if (p.Emprego > 0)
@@ -124,60 +124,63 @@ namespace InfiniteRoleplay.Commands
             {
                 listaComandos.AddRange(new List<Comando>()
                 {
-                    new Comando("Facção", "/f"),
-                    new Comando("Facção", "/membros"),
-                    new Comando("Facção", "/sairfaccao"),
+                    new Comando("Facção", "/f", "Chat OOC da facção"),
+                    new Comando("Facção", "/membros", "Mostra os membros da facção"),
+                    new Comando("Facção", "/sairfaccao", "Sai da facção"),
+                    new Comando("Facção", "/armario", "Usa o armário da facção"),
                 });
 
                 if (p.FaccaoBD.Tipo == TipoFaccao.Policial)
                     listaComandos.AddRange(new List<Comando>()
                     {
-                        new Comando("Facção Policial", "/m"),
-                        new Comando("Facção Policial", "/duty"),
-                        new Comando("Facção Policial", "/multar"),
-                        new Comando("Facção Policial", "/multaroff"),
-                        new Comando("Facção Policial", "/prender"),
-                        new Comando("Facção Policial", "/algemar"),
+                        new Comando("Facção Policial", "/m", "Megafone"),
+                        new Comando("Facção Policial", "/duty", "Entra/sai de trabalho"),
+                        new Comando("Facção Policial", "/multar", "Multa um personagem online"),
+                        new Comando("Facção Policial", "/multaroff", "Multa um personagem offline"),
+                        new Comando("Facção Policial", "/prender", "Prende um personagem"),
+                        new Comando("Facção Policial", "/algemar", "Algema um personagem"),
+                        new Comando("Facção Policial", "/pegarcolete", "Pega colete em um armário da facção"),
                     });
                 else if (p.FaccaoBD.Tipo == TipoFaccao.Medica)
 
                     listaComandos.AddRange(new List<Comando>()
                     {
-                        new Comando("Facção Médica", "/duty"),
+                        new Comando("Facção Médica", "/duty", "Entra/sai de trabalho"),
                     });
 
                 if (p.Rank >= p.FaccaoBD.RankGestor)
                     listaComandos.AddRange(new List<Comando>()
                     {
-                        new Comando("Facção Gestor", "/blockf"),
-                        new Comando("Facção Gestor", "/convidar"),
-                        new Comando("Facção Gestor", "/rank"),
-                        new Comando("Facção Gestor", "/demitir"),
-                        new Comando("Facção Gestor", "/gov"),
+                        new Comando("Facção Gestor", "/blockf", "Bloqueia/desbloqueia o chat OOC da facção"),
+                        new Comando("Facção Gestor", "/convidar", "Convida um personagem para a facção"),
+                        new Comando("Facção Gestor", "/rank", "Altera o rank de um personagem na facção"),
+                        new Comando("Facção Gestor", "/expulsar", "Expulsa um personagem da facção"),
+                        new Comando("Facção Gestor", "/gov", "Envia um anúncio governamental da facção"),
                     });
 
                 if (p.Rank >= p.FaccaoBD.RankLider)
                     listaComandos.AddRange(new List<Comando>()
                     {
-                        new Comando("Facção Líder", "/crank"),
-                        new Comando("Facção Líder", "/erank"),
-                        new Comando("Facção Líder", "/rrank"),
-                        new Comando("Facção Líder", "/ranks"),
+                        new Comando("Facção Líder", "/crank", "Cria um rank na facção"),
+                        new Comando("Facção Líder", "/eranknome", "Edita o nome de um rank da facção"),
+                        new Comando("Facção Líder", "/rrank", "Remove um rank da facção"),
+                        new Comando("Facção Líder", "/ranks", "Mostra os ranks da facção"),
+                        new Comando("Facção Líder", "/earmirank", "Edita o rank de um item em um armário da facção"), 
                     });
             }
 
             if (p.UsuarioBD.Staff >= 1)
                 listaComandos.AddRange(new List<Comando>()
                 {
-                    new Comando("Helper", "/ir"),
-                    new Comando("Helper", "/trazer"),
-                    new Comando("Helper", "/tp"),
-                    new Comando("Helper", "/vw"),
-                    new Comando("Helper", "/o"),
-                    new Comando("Helper", "/a"),
-                    new Comando("Helper", "/kick"),
-                    new Comando("Helper", "/irveh"),
-                    new Comando("Helper", "/trazerveh"),
+                    new Comando("Helper", "/ir", "Vai a um personagem"),
+                    new Comando("Helper", "/trazer", "Traz um personagem"),
+                    new Comando("Helper", "/tp", "Teleporta um personagem para outro"),
+                    new Comando("Helper", "/vw", "Altera o VW de um personagem"),
+                    new Comando("Helper", "/o", "Chat OOC Global"),
+                    new Comando("Helper", "/a", "Chat administrativo"),
+                    new Comando("Helper", "/kick", "Expulsa um personagem"),
+                    new Comando("Helper", "/irveh", "Vai a um veículo"),
+                    new Comando("Helper", "/trazerveh", "Traz um veículo"),
                     new Comando("Helper", "/aduty", "Entra/sai de serviço administrativo"),
                     new Comando("Helper", "/listasos", "Lista os SOSs pendentes"),
                     new Comando("Helper", "/aj", "Aceita um SOS"),
@@ -187,46 +190,44 @@ namespace InfiniteRoleplay.Commands
             if (p.UsuarioBD.Staff >= 2)
                 listaComandos.AddRange(new List<Comando>()
                 {
-                    new Comando("Game Moderator", "/vida"),
-                    new Comando("Game Moderator", "/colete"),
-                    new Comando("Game Moderator", "/skina"),
-                    new Comando("Game Moderator", "/skinc"),
-                    new Comando("Game Moderator", "/checar"),
-                    new Comando("Game Moderator", "/ban"),
-                    new Comando("Game Moderator", "/unban"),
-                    new Comando("Game Moderator", "/banoff"),
+                    new Comando("Game Moderator", "/vida", "Altera a vida de um personagem"),
+                    new Comando("Game Moderator", "/colete", "Altera o colete de um personagem"),
+                    new Comando("Game Moderator", "/checar", "Checa as informações de um personagem"),
+                    new Comando("Game Moderator", "/ban", "Bane um usuário"),
+                    new Comando("Game Moderator", "/unban", "Desbane um usuário"),
+                    new Comando("Game Moderator", "/banoff", "Bane um usuário que está offline"),
                 });
 
             if (p.UsuarioBD.Staff >= 3)
                 listaComandos.AddRange(new List<Comando>()
                 {
-                    new Comando("Game Administrator", "/ck"),
+                    new Comando("Game Administrator", "/ck", "Aplica CK em um personagem"),
                 });
 
             if (p.UsuarioBD.Staff >= 1337)
                 listaComandos.AddRange(new List<Comando>()
                 {
-                    new Comando("Manager", "/gmx"),
-                    new Comando("Manager", "/tempo"),
-                    new Comando("Manager", "/proximo"),
-                    new Comando("Manager", "/cblip"),
-                    new Comando("Manager", "/rblip"),
-                    new Comando("Manager", "/addwhite"),
-                    new Comando("Manager", "/delwhite"),
-                    new Comando("Manager", "/setstaff"),
-                    new Comando("Manager", "/cfac"),
-                    new Comando("Manager", "/efacnome"),
-                    new Comando("Manager", "/efactipo"),
-                    new Comando("Manager", "/efaccor"),
-                    new Comando("Manager", "/efacrankgestor"),
-                    new Comando("Manager", "/efacranklider"),
-                    new Comando("Manager", "/rfac"),
-                    new Comando("Manager", "/faccoes"),
-                    new Comando("Manager", "/crank"),
-                    new Comando("Manager", "/eranknome"),
-                    new Comando("Manager", "/rrank"),
-                    new Comando("Manager", "/ranks"),
-                    new Comando("Manager", "/lider"),
+                    new Comando("Manager", "/gmx", "Salva todas as informações do servidor para reiniciá-lo"),
+                    new Comando("Manager", "/tempo", "Altera o tempo"),
+                    new Comando("Manager", "/proximo", "Lista os itens que estão próximos"),
+                    new Comando("Manager", "/cblip", "Cria um blip"),
+                    new Comando("Manager", "/rblip", "Remove um blip"),
+                    new Comando("Manager", "/addwhite", "Adiciona uma Social Club na whitelist"),
+                    new Comando("Manager", "/delwhite", "Remove uma Social Club da whitelist"),
+                    new Comando("Manager", "/setstaff", "Altera o nível de staff de um usuário"),
+                    new Comando("Manager", "/cfac", "Cria uma facção"),
+                    new Comando("Manager", "/efacnome", "Edita o nome da facção"),
+                    new Comando("Manager", "/efactipo", "Edita o tipo da facção"),
+                    new Comando("Manager", "/efaccor", "Edita a cor da facção"),
+                    new Comando("Manager", "/efacrankgestor", "Edita o rank gestor da facção"),
+                    new Comando("Manager", "/efacranklider", "Edita o rank líder da facção"),
+                    new Comando("Manager", "/rfac", "Remove uma facção"),
+                    new Comando("Manager", "/faccoes", "Mostra as facções"),
+                    new Comando("Manager", "/crank", "Cria um rank na facção"),
+                    new Comando("Manager", "/eranknome", "Edita o nome de um rank da facção"),
+                    new Comando("Manager", "/rrank", "Remove um rank da facção"),
+                    new Comando("Manager", "/ranks", "Mostra os ranks da facção"),
+                    new Comando("Manager", "/lider", "Atribui o personagem como líder de uma facção"),
                     new Comando("Manager", "/parametros"),
                     new Comando("Manager", "/cprop"),
                     new Comando("Manager", "/rprop"),
@@ -253,6 +254,10 @@ namespace InfiniteRoleplay.Commands
                     new Comando("Manager", "/earminest"),
                     new Comando("Manager", "/irarm"),
                     new Comando("Manager", "/eblipinativo"),
+                    new Comando("Manager", "/cveh", "Cria um veículo"),
+                    new Comando("Manager", "/rveh", "Remove um veículo"),
+                    new Comando("Manager", "/evehpos", "Edita a posição de um veículo"),
+                    new Comando("Manager", "/evehcor", "Edita as cores de um veículo"),
                 });
 
             NAPI.ClientEvent.TriggerClientEvent(player, "comandoAjuda", listaComandos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome).ToList());
@@ -766,7 +771,7 @@ namespace InfiniteRoleplay.Commands
             p.SetDinheiro();
             player.SetSkin(pedHash);
 
-            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a skin {pedHash.ToString()} por ${Global.Parametros.ValorSkin:N0}.");
+            Functions.EnviarMensagem(player, TipoMensagem.Sucesso, $"Você comprou a skin {pedHash} por ${Global.Parametros.ValorSkin:N0}.");
         }
 
         [Command("emtrabalho", "!{#febd0c}USO:~w~ /emtrabalho")]
